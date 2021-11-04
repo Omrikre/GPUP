@@ -1,5 +1,3 @@
-import com.sun.deploy.security.SelectableSecurityManager;
-
 import java.util.*;
 
 public class Graph {
@@ -39,8 +37,20 @@ public class Graph {
             return location;
         }
 
-        //for debugging! need to do an automatic function that determines it
-        public void setLocation(Location l) {
+        public Set<Target> getDependsOn() {
+            return dependsOn;
+        }
+
+        public Set<Target> getRequiredFor() {
+            return requiredFor;
+        }
+
+        public String getInfo() {
+            return info;
+        }
+
+        //used only in the function that automatically sets a location to all the targets in the graph
+        private void setLocation(Location l) {
             location = l;
         }
 
@@ -62,6 +72,9 @@ public class Graph {
             // then y can't be required for x!
         }
 
+
+
+/*
         public String getInfo() {
             String depends;
             if (dependsOn == null) {
@@ -82,6 +95,8 @@ public class Graph {
                     "RequiredFor: " + required + "\n" +
                     "Info: " + infoString + "\n";
         }
+*/
+
 
         @Override
         public String toString() {
@@ -100,18 +115,74 @@ public class Graph {
         public int hashCode() {
             return Objects.hash(name);
         }
+    } //Target
+
+    /**
+     * This method sets the location of all the nodes in the graph, by their dependencies and requirements.
+     */
+    public void setLocationForAllTargets() {
+        for (Target t : targets.values()) { //going over all the values in the graph
+            if (t.getDependsOn().isEmpty() && t.getRequiredFor().isEmpty()) //has no dependencies or requirements
+                t.setLocation(Location.INDEPENDENT);
+            else if (t.getDependsOn().isEmpty()) //has no dependencies
+                t.setLocation(Location.LEAF);
+            else if (t.getRequiredFor().isEmpty()) //has no requirements
+                t.setLocation(Location.ROOT);
+            else //has dependencies and requirements
+                t.setLocation(Location.MIDDLE);
+        }
     }
 
+    /**
+     * This method checks if a target exists in the graph by its name
+     *
+     * @param name The target's name
+     * @return True if target exists in the graph, False if it doesn't
+     */
+    public boolean doesTargetExistByName(String name) {
+        if (targets.containsKey(name))
+            return true;
+        else
+            return false;
+    }
+
+    public Location getLocationByName(String name) {
+        return targets.get(name).getLocation();
+    }
+
+    public Set<Target> getDependsOnByName(String name) {
+        return targets.get(name).getDependsOn();
+    }
+
+    public Set<Target> getRequiredForByName(String name) {
+        return targets.get(name).getRequiredFor();
+    }
+
+    public String getInfoByName(String name) {
+        return targets.get(name).getInfo();
+    }
+
+    /**
+     * This method gets a source node and a destination node from the user, and returns a set of all paths
+     * between the source and the destination, without cycles. (simple paths)
+     *
+     * @param src  The source node
+     * @param dest The destination node
+     * @param type The method of running of the graph: Depends On or Required For
+     * @return A set that contains Lists of Strings (Paths), with each String being the name of a target in said path
+     */
     public Set<List<String>> getPathBetweenTargets(String src, String dest, int type) {
         Map<String, Boolean> visited = new HashMap<>();
         Set<List<String>> allPaths = new HashSet<>(); //where we'll save all the paths
         List<String> singlePath = new ArrayList<>();
         Target source = targets.get(src);
         Target destination = targets.get(dest);
+        //calls a private method for recursion:
         getPathBetweenTargetsRec(visited, allPaths, singlePath, source, destination, type);
         return allPaths;
     }
 
+    //to be used only in the big function, finding each simple path and adding to all the paths
     private void getPathBetweenTargetsRec(Map<String, Boolean> visited,
                                           Set<List<String>> allPaths, List<String> singlePath,
                                           Target src, Target dest, int type) {
