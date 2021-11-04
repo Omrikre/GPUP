@@ -72,32 +72,6 @@ public class Graph {
             // then y can't be required for x!
         }
 
-
-
-/*
-        public String getInfo() {
-            String depends;
-            if (dependsOn == null) {
-                depends = "Depends on no one";
-            } else depends = dependsOn.toString();
-            String required;
-            if (requiredFor == null) {
-                required = "Required for no one";
-            } else required = requiredFor.toString();
-            String infoString = info;
-            if (info == null) {
-                infoString = "Has no info";
-            }
-            return "Target details:\n" +
-                    "Name: " + name + "\n" +
-                    "Location: " + location + "\n" +
-                    "DependsOn: " + depends + "\n" +
-                    "RequiredFor: " + required + "\n" +
-                    "Info: " + infoString + "\n";
-        }
-*/
-
-
         @Override
         public String toString() {
             return name;
