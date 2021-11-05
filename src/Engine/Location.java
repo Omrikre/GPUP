@@ -1,4 +1,4 @@
-import java.util.Locale;
+package Engine;
 
 public enum Location {
     LEAF, MIDDLE, ROOT, INDEPENDENT;

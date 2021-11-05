@@ -1,3 +1,5 @@
+package UI;
+
 import static java.sql.DriverManager.println;
 
 public class Menu {
