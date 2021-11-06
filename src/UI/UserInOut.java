@@ -1,17 +1,19 @@
 package UI;
+import Engine.*;
 
-import com.sun.xml.internal.bind.v2.TODO;
-
+import java.util.Map;
 import java.util.Scanner;
 
 public class UserInOut extends Menu {
     private static boolean fileIsLoaded;
-
+    private static final Graph graph = new Graph();
+    private static Location type;
 
     public static void runProgram() {
         boolean runProgram = true;
         Scanner sc = new Scanner(System.in);
         int userChoice;
+
 
         System.out.println("\n -- Welcome To G.P.U.P -- ");
 
@@ -43,7 +45,7 @@ public class UserInOut extends Menu {
                                 System.out.println(" -- Please load file first -- ");
                                 break;
                             }
-
+                            PathBetweenTargets();
                             break;
                         case 5:
                             break;
@@ -70,56 +72,99 @@ public class UserInOut extends Menu {
 
         String filename = "**TEST**";
 
-        if(true) {
-            System.out.println(" -- The file " + filename + " has been loaded --");
-            return true;
-        }
-        else {
-            System.out.println(" -- The file has NOT been loaded --");
-            // TODO add exception toString print
-            return false;
-        }
+        System.out.println(" -- The file " + filename + " has been loaded --");
+        return true;
     }
     private static void generalInfo() {
-        //get number of the targets and the types
-        int numOfTargets = 1000;
-        int numOfLeaf = 1000;
-        int numOfMiddle = 1000;
-        int numOfRoot = 1000;
-        int numOfIndependents = 1000;
+
+        int numOfTargets = graph.getAmountOfTargets();
+        Map<Location, Integer> numOfTypes = graph.howManyTargetsInEachLocation();
 
         System.out.println("There is " + numOfTargets + " targets");
-        System.out.println(numOfLeaf + " Leafs");
-        System.out.println(numOfMiddle + " Middles");
-        System.out.println(numOfRoot + " Roots");
-        System.out.println(numOfIndependents + " Independents");
+        System.out.println(numOfTypes.get(type.LEAF) + " leaves");
+        System.out.println(numOfTypes.get(type.MIDDLE) + " middles");
+        System.out.println(numOfTypes.get(type.ROOT) + " roots");
+        System.out.println(numOfTypes.get(type.INDEPENDENT) + " independents");
     }
     private static void targetsInfo() {
-        boolean targetInFile = true;
-        boolean stayInTargetInfo = false;
-        String targetName = "";
-        String targetType = "";
-        //get line and check if in the file
+        boolean targetInFile, stayInTargetInfo;
+        Scanner sc = new Scanner(System.in);
 
-        //check if target in file -
-        while (!targetInFile)
+        System.out.print(" enter target name: ");
+        String targetName = sc.nextLine();
+        targetInFile = graph.doesTargetExistByName(targetName);
+
+        while (!targetInFile) {
             System.out.println(" -- The target you entered is not in the database --");
-        System.out.println(" do you want to try again? (y - yes | n - back to menu): ");
-        //scanner and exceptions
-        if (!stayInTargetInfo) {
-            return;
-        } else {
-            System.out.println(" enter target name: ");
-            //check again - if correct - targetInFile = true
+
+            stayInTargetInfo = keepTryingInput();
+            if (!stayInTargetInfo) {
+                return;
+            } else {
+                System.out.println(" enter target name: ");
+                targetName = sc.nextLine();
+                targetInFile = graph.doesTargetExistByName(targetName);
+            }
         }
+            //print name and type
             System.out.println("name: " + targetName);
-            System.out.println("type: " + targetType);
+            System.out.println("type: " + graph.getLocationByName(targetName).toString());
             //print dependent targets
+            System.out.println("depends: " + graph.getDependsOnByName(targetName).toString());
             //print required targets
+            System.out.println("required: " + graph.getRequiredForByName(targetName).toString());
             //print more info about the target
+            String targetInfo = graph.getInfoByName(targetName);
+            if(targetInfo != null)
+                System.out.println("info: " + targetInfo);
 
     }
+    private static void PathBetweenTargets() {
+        Scanner sc = new Scanner(System.in);
+        String srcTargetName, destTargetName;
+        boolean srcTargetExist, destTargetExist, stillTry;
 
+
+        System.out.println("Enter the name of the first target: ");
+        srcTargetName = sc.nextLine();
+        System.out.println("Enter the name of the second target: ");
+        destTargetName = sc.nextLine();
+        srcTargetExist = graph.doesTargetExistByName(srcTargetName);
+        destTargetExist = graph.doesTargetExistByName(destTargetName);
+        System.out.println(" ");
+
+        while(!srcTargetExist || !destTargetExist) {
+
+            if(!srcTargetExist && !destTargetExist) {
+                System.out.print(" -- The targets '" + srcTargetName + "' and '" + destTargetName + "' are NOT exist in the database --\n\n");
+            }
+            else {
+                System.out.print(" -- The target '");
+                if(!srcTargetExist)
+                    System.out.print(srcTargetName);
+                if(!destTargetExist)
+                    System.out.print(destTargetName);
+                System.out.print("' is NOT exist in the database --\n\n");
+            }
+
+            stillTry = keepTryingInput();
+            if(!stillTry)
+                return;
+
+            System.out.println("Enter the name of the first target: ");
+            srcTargetName = sc.nextLine();
+            System.out.println("Enter the name of the second target: ");
+            destTargetName = sc.nextLine();
+
+            srcTargetExist = graph.doesTargetExistByName(srcTargetName);
+            destTargetExist = graph.doesTargetExistByName(destTargetName);
+        }
+
+        //TODO fix the type
+        graph.getPathBetweenTargets(srcTargetName, destTargetName, 1);
+    }
+//208
+    //209
 }
 
 
