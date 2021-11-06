@@ -187,22 +187,6 @@ public class Graph {
         visited.put(src.getName(), false); //and reset the visited block for different paths
     }
 
-
-    /**
-     * This method gets a target name, and returns its info if it exists.
-     *
-     * @param name The target's name.
-     * @return String representing the info on said target.
-     */
-    public String getTargetInfoByName(String name) {
-        if (targets.containsKey(name)) {
-            return targets.get(name).getInfo();
-        } else {
-            return "Target doesn't exist!";
-        }
-    }
-
-
     /**
      * This method returns the amount of the total targets in the graph.
      *
