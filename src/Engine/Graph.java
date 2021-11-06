@@ -3,7 +3,7 @@ package Engine;
 import java.util.*;
 
 public class Graph {
-    private Map<String, Target> targets; //database that can find a target by its name
+    private static Map<String, Target> targets; //database that can find a target by its name
 
     public Graph() {
         targets = new HashMap<>();
@@ -18,16 +18,16 @@ public class Graph {
 
         public Target(String name, String info) {
             this.name = name;
-            dependsOn = new HashSet<Target>();
-            requiredFor = new HashSet<Target>();
+            dependsOn = new HashSet<>();
+            requiredFor = new HashSet<>();
             this.info = info;
             targets.put(name, this);
         }
 
         public Target(String name) {
             this.name = name;
-            dependsOn = new HashSet<Target>();
-            requiredFor = new HashSet<Target>();
+            dependsOn = new HashSet<>();
+            requiredFor = new HashSet<>();
             targets.put(name, this);
         }
 
@@ -110,32 +110,17 @@ public class Graph {
     }
 
     /**
-     * This method checks if a target exists in the graph by its name
+     * This method gets a target name, and returns its data as a TargetDTO object if it exists.
+     * if not, returns null.
      *
      * @param name The target's name
-     * @return True if target exists in the graph, False if it doesn't
+     * @return A DTO containing the target's info
      */
-    public boolean doesTargetExistByName(String name) {
+    public static TargetDTO getTargetDataTransferObjectByName(String name) {
         if (targets.containsKey(name))
-            return true;
+            return new TargetDTO(targets.get(name));
         else
-            return false;
-    }
-
-    public Location getLocationByName(String name) {
-        return targets.get(name).getLocation();
-    }
-
-    public Set<Target> getDependsOnByName(String name) {
-        return targets.get(name).getDependsOn();
-    }
-
-    public Set<Target> getRequiredForByName(String name) {
-        return targets.get(name).getRequiredFor();
-    }
-
-    public String getInfoByName(String name) {
-        return targets.get(name).getInfo();
+            return null;
     }
 
     /**
@@ -186,6 +171,11 @@ public class Graph {
         singlePath.remove(src.getName()); //if nowhere else to go, we remove everything
         visited.put(src.getName(), false); //and reset the visited block for different paths
     }
+
+    //method that checks if there's a circle for bonus:
+    /*
+                TBD
+     */
 
     /**
      * This method returns the amount of the total targets in the graph.
