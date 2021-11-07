@@ -3,7 +3,7 @@ package Engine;
 import java.util.*;
 
 public class Graph {
-    private static Map<String, Target> targets; //database that can find a target by its name
+    private Map<String, Target> targets; //database that can find a target by its name
 
     public Graph() {
         targets = new HashMap<>();
@@ -94,6 +94,30 @@ public class Graph {
     } //Target
 
     /**
+     * This method gets a name and return true if a target corresponding to said name is in the graph
+     * or false if it isn't.
+     *
+     * @param name The target's name
+     * @return true if the target is in the graph, false if it isn't.
+     */
+    public boolean isTargetInGraphByName(String name) {
+        return targets.containsKey(name);
+    }
+
+    /**
+     * This method gets a name and returns the corresponding target.
+     * If the target doesn't exist, returns null. expected to check!
+     *
+     * @param name The target's name.
+     * @return The target as a Target object.
+     */
+    public Target getTargetByName(String name) {
+        if (isTargetInGraphByName(name))
+            return targets.get(name);
+        else return null;
+    }
+
+    /**
      * This method sets the location of all the nodes in the graph, by their dependencies and requirements.
      */
     public void setLocationForAllTargets() {
@@ -109,19 +133,6 @@ public class Graph {
         }
     }
 
-    /**
-     * This method gets a target name, and returns its data as a TargetDTO object if it exists.
-     * if not, returns null.
-     *
-     * @param name The target's name
-     * @return A DTO containing the target's info
-     */
-    public static TargetDTO getTargetDataTransferObjectByName(String name) {
-        if (targets.containsKey(name))
-            return new TargetDTO(targets.get(name));
-        else
-            return null;
-    }
 
     /**
      * This method gets a source node and a destination node from the user, and returns a set of all paths
