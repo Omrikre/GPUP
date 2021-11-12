@@ -1,5 +1,8 @@
 package Engine;
 
+import Engine.Enums.Location;
+import Engine.Enums.State;
+
 import java.util.*;
 
 public class Graph {
@@ -15,12 +18,14 @@ public class Graph {
         private Set<Target> dependsOn;
         private Set<Target> requiredFor;
         private String info;
+        private State state;
 
         public Target(String name, String info) {
             this.name = name;
             dependsOn = new HashSet<>();
             requiredFor = new HashSet<>();
             this.info = info;
+            this.state = State.WAITING;
             targets.put(name, this);
         }
 
@@ -28,6 +33,7 @@ public class Graph {
             this.name = name;
             dependsOn = new HashSet<>();
             requiredFor = new HashSet<>();
+            this.state = State.WAITING;
             targets.put(name, this);
         }
 
@@ -51,9 +57,17 @@ public class Graph {
             return info;
         }
 
+        public State getState() {
+            return state;
+        }
+
         //used only in the function that automatically sets a location to all the targets in the graph
         private void setLocation(Location l) {
             location = l;
+        }
+
+        public void setState(State s) {
+            state = s;
         }
 
         public void addDependedTarget(Target t) {
@@ -227,5 +241,22 @@ public class Graph {
         res.put(Location.MIDDLE, middle);
         return res;
     }
+
+    /**
+     * This method gets a location, and returns a set of all the targets with said location
+     * @param location The target's location
+     * @return a Set of all the targets with said location. If there are no targets in it, returns null
+     */
+    public Set<Graph.Target> getSetOfTargetsByLocation(Location location) {
+        Set<Graph.Target> res = new HashSet<>();
+        for (Target t : targets.values()) {
+            if (t.location.equals(location))
+                res.add(t);
+        }
+        if (res.isEmpty()) //no targets were added
+            return null;
+        else return res;
+    }
+
 
 }

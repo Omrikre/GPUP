@@ -1,5 +1,7 @@
 package Engine;
 
+import Engine.Enums.Location;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +25,16 @@ public class Engine {
             return new TargetDTO(g.getTargetByName(name));
         else
             return null;
+    }
+
+    /**
+     * This method gets a target's name, and returns whether it's in the graph
+     *
+     * @param name The target's name
+     * @return True if the target is in the graph, False if not
+     */
+    public boolean isTargetInGraphByName(String name) {
+        return g.isTargetInGraphByName(name);
     }
 
     /**
@@ -55,4 +67,15 @@ public class Engine {
     public Map<Location, Integer> howManyTargetsInEachLocation() {
         return g.howManyTargetsInEachLocation();
     }
+
+    /**
+     * This method gets a location, and returns a set of all the targets with said location
+     *
+     * @param location The target's location
+     * @return a Set of all the targets with said location. If there are no targets in it, returns null
+     */
+    public Set<Graph.Target> getSetOfTargetsByLocation(Location location) {
+        return g.getSetOfTargetsByLocation(location);
+    }
 }
+

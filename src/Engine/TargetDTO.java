@@ -1,5 +1,8 @@
 package Engine;
 
+import Engine.Enums.Location;
+import Engine.Enums.State;
+
 import java.util.Set;
 
 public class TargetDTO {
@@ -8,6 +11,7 @@ public class TargetDTO {
     private final Set<Graph.Target> targetDependsOn;
     private final Set<Graph.Target> targetRequiredFor;
     private final String targetInfo;
+    private final State targetState;
 
     public TargetDTO(Graph.Target t) {
         targetName = t.getName();
@@ -15,6 +19,7 @@ public class TargetDTO {
         targetDependsOn = t.getDependsOn();
         targetRequiredFor = t.getRequiredFor();
         targetInfo = t.getInfo();
+        targetState = t.getState();
     }
 
     public String getTargetName() {
@@ -35,5 +40,9 @@ public class TargetDTO {
 
     public String getTargetInfo() {
         return targetInfo;
+    }
+
+    public State getTargetState() {
+        return targetState;
     }
 }

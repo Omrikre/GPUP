@@ -1,4 +1,4 @@
-package Engine;
+package Engine.Enums;
 
 public enum Location {
     LEAF, MIDDLE, ROOT, INDEPENDENT;

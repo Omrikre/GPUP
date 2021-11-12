@@ -1,5 +1,6 @@
 package UI;
 import Engine.*;
+import Engine.Enums.Location;
 
 import java.util.Map;
 import java.util.Scanner;
