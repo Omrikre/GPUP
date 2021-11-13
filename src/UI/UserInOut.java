@@ -1,13 +1,19 @@
 package UI;
 import Engine.*;
 import Engine.Enums.Location;
+import Engine.Enums.State;
 
+import java.sql.Time;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
+
+import static java.lang.Math.random;
+import static java.lang.Thread.sleep;
 
 public class UserInOut extends Menu {
     private static boolean fileIsLoaded;
-    private static boolean
     private static final Engine engine = new Engine();
     private static Location type;
 
@@ -52,9 +58,14 @@ public class UserInOut extends Menu {
                             System.out.println(" -- Please load file first -- ");
                             break;
                         }
-                        PathBetweenTargets();
+                        pathBetweenTargets();
                         break;
                     case 5:
+                        if (!fileIsLoaded) {
+                            System.out.println(" -- Please load file first -- ");
+                            break;
+                        }
+                        Simulation();
                         break;
                     case 0:
                         runProgram = false;
@@ -97,34 +108,31 @@ public class UserInOut extends Menu {
     private static void targetsInfo() {
         boolean targetInFile, stayInTargetInfo;
         Scanner sc = new Scanner(System.in);
-        TargetDTO target = new TargetDTO();
 
         System.out.print(" enter target name: ");
         String targetName = sc.nextLine();
-        //  targetInFile =
-        //         engine.getTargetDataTransferObjectByName(targetName);
+        targetInFile = engine.isTargetInGraphByName(targetName);
 
         while (!targetInFile) {
             System.out.println(" -- The target you entered is not in the database --");
-
-            stayInTargetInfo = keepTryingInput();
-            if (!stayInTargetInfo) {
+            if (!keepTryingInput()) {
                 return;
             } else {
                 System.out.println(" enter target name: ");
                 targetName = sc.nextLine();
-                targetInFile = graph.isTargetInGraphByName(targetName);
+                targetInFile = engine.isTargetInGraphByName(targetName);
             }
         }
+        TargetDTO dto = engine.getTargetDataTransferObjectByName(targetName);
         //print name and type
         System.out.println("name: " + targetName);
-        System.out.println("type: " + graph.getLocationByName(targetName).toString());
+        System.out.println("type: " + dto.getTargetLocation().toString());
         //print dependent targets
-        System.out.println("depends: " + graph.getDependsOnByName(targetName).toString());
+        System.out.println("depends: " + dto.getTargetDependsOn().toString());
         //print required targets
-        System.out.println("required: " + graph.getRequiredForByName(targetName).toString());
+        System.out.println("required: " + dto.getTargetRequiredFor().toString());
         //print more info about the target
-        String targetInfo = graph.getInfoByName(targetName);
+        String targetInfo = dto.getTargetInfo();
         if (targetInfo != null)
             System.out.println("info: " + targetInfo);
 
@@ -140,8 +148,8 @@ public class UserInOut extends Menu {
         srcTargetName = sc.nextLine();
         System.out.println("Enter the name of the second target: ");
         destTargetName = sc.nextLine();
-        srcTargetExist = graph.isTargetInGraphByName(srcTargetName);
-        destTargetExist = graph.isTargetInGraphByName(destTargetName);
+        srcTargetExist = engine.isTargetInGraphByName(srcTargetName);
+        destTargetExist = engine.isTargetInGraphByName(destTargetName);
         System.out.println(" ");
 
         while (!srcTargetExist || !destTargetExist) {
@@ -166,22 +174,22 @@ public class UserInOut extends Menu {
             System.out.println("Enter the name of the second target: ");
             destTargetName = sc.nextLine();
 
-            srcTargetExist = graph.isTargetInGraphByName(srcTargetName);
-            destTargetExist = graph.isTargetInGraphByName(destTargetName);
+            srcTargetExist = engine.isTargetInGraphByName(srcTargetName);
+            destTargetExist = engine.isTargetInGraphByName(destTargetName);
         }
 
         //TODO fix the type
-        graph.getPathBetweenTargets(srcTargetName, destTargetName, 1);
+        engine.getPathBetweenTargets(srcTargetName, destTargetName, 1);
     }
 
 
 
     //TODO finish simul, print the res, create log
-    private static void runSimulation() {
+    private static void Simulation() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
-        int runTime, tempMenuChoice = -1;
+        int runTime;
         float probabilityForSuccess, probabilityForSuccessWarnings;
-        boolean randomRunTime;
+        boolean randomRunTime = false;
 
         // get simulation time per target
         System.out.print(" enter the simulation time per target (in ms): ");
@@ -198,14 +206,43 @@ public class UserInOut extends Menu {
         probabilityForSuccess = getProbabilityToSuccess();
         probabilityForSuccessWarnings = getProbabilityToSuccessWarnings();
 
-        /*
-        * מידעים שיש להדפיס במהלך ריצת task על כל target:
-•	מידע על הזמן שה task הולך "לישון"
-•	שורת מידע לפני "השינה".
-•	שורת מידע אחרי "השינה"
-        */
-
+        runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
        }
+
+    private static void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
+        Set<String> simTargets;
+        int realRunTime = runTime;
+        Random rand = new Random();
+        Time runningTime = null;
+        String targetInfo;
+        TargetDTO dto;
+        State targetState;
+
+        System.out.println("\n\n -- START SIMULATION -- ");
+        simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
+        while(simTargets != null) {
+            simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
+
+            for (String s : simTargets) {
+                if (randomRunTime)
+                    realRunTime = rand.nextInt(runTime);
+                System.out.println("\n target name: " + s);
+                dto = engine.getTargetDataTransferObjectByName(s);
+                targetInfo = dto.getTargetInfo();
+                if (targetInfo != null)
+                    System.out.println(" target info: " + targetInfo);
+                else
+                    System.out.println(" no additional info for this target");
+                goToSleep(realRunTime);
+
+                runningTime.setTime(realRunTime);
+                targetState = changTargetState(s,success,successWithWarnings, runningTime);
+                System.out.println(" running result: " + targetState.toString());
+            }
+        }
+        System.out.println("\n\n -- END SIMULATION -- \n");
+
+    }
 
     // get how to run the simulation (fixed or random processing time)
     private static int randomRunTime(int runTime) {
@@ -262,6 +299,37 @@ public class UserInOut extends Menu {
             System.out.print(" enter your choice: ");
         }
         return res;
+    }
+    // sleep machine
+    private static void goToSleep(int sleepTime) throws InterruptedException {
+        try {
+            System.out.println(" goes to sleep for " + sleepTime + " ms");
+            System.out.println(" -- layla tov --");
+            sleep(sleepTime);
+            System.out.println(" -- boker tov --");
+            }
+        catch (InterruptedException e) {} //TODO
+
+    }
+
+    private static State changTargetState(String targetName ,double success ,double successWithWarnings, Time runTime) {
+        Random rand = new Random();
+        double magicNumber = rand.nextDouble();
+        if(success >= magicNumber) {
+            magicNumber = rand.nextDouble();
+            if (successWithWarnings >= magicNumber) {
+                setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
+                return State.FINISHED_WARNINGS;
+            }
+            else {
+                setFinishedState(targetName, State.FINISHED_SUCCESS, runTime);
+                return State.FINISHED_SUCCESS;
+            }
+        }
+        else {
+            setFinishedState(targetName, State.FINISHED_FAILURE, runTime);
+            return State.FINISHED_FAILURE;
+        }
     }
 }
 
