@@ -3,6 +3,7 @@ package Engine;
 import Engine.Enums.Location;
 import Engine.Enums.State;
 
+import java.sql.Time;
 import java.util.Set;
 
 public class TargetDTO {
@@ -12,14 +13,16 @@ public class TargetDTO {
     private final Set<Graph.Target> targetRequiredFor;
     private final String targetInfo;
     private final State targetState;
+    private final Time targetTime;
 
     public TargetDTO(Graph.Target t) {
-        targetName = t.getName();
-        targetLocation = t.getLocation();
-        targetDependsOn = t.getDependsOn();
-        targetRequiredFor = t.getRequiredFor();
-        targetInfo = t.getInfo();
-        targetState = t.getState();
+        this.targetName = t.getName();
+        this.targetLocation = t.getLocation();
+        this.targetDependsOn = t.getDependsOn();
+        this.targetRequiredFor = t.getRequiredFor();
+        this.targetInfo = t.getInfo();
+        this.targetState = t.getState();
+        this.targetTime = t.getTime();
     }
 
     public String getTargetName() {
@@ -44,5 +47,9 @@ public class TargetDTO {
 
     public State getTargetState() {
         return targetState;
+    }
+
+    public Time getTargetTime() {
+        return targetTime;
     }
 }

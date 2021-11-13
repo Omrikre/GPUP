@@ -1,8 +1,10 @@
 package Engine;
 
+import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
 
+import java.sql.Time;
 import java.util.*;
 
 public class Graph {
@@ -19,6 +21,7 @@ public class Graph {
         private Set<Target> requiredFor;
         private String info;
         private State state;
+        private Time time;
 
         public Target(String name, String info) {
             this.name = name;
@@ -61,13 +64,21 @@ public class Graph {
             return state;
         }
 
+        public Time getTime() {
+            return time;
+        }
+
         //used only in the function that automatically sets a location to all the targets in the graph
         private void setLocation(Location l) {
-            location = l;
+            this.location = l;
         }
 
         public void setState(State s) {
-            state = s;
+            this.state = s;
+        }
+
+        public void setTime(Time t) {
+            this.time = t;
         }
 
         public void addDependedTarget(Target t) {
@@ -154,24 +165,24 @@ public class Graph {
      *
      * @param src  The source node
      * @param dest The destination node
-     * @param type The method of running of the graph: Depends On or Required For
+     * @param bond The method of running of the graph: Depends On or Required For
      * @return A set that contains Lists of Strings (Paths), with each String being the name of a target in said path
      */
-    public Set<List<String>> getPathBetweenTargets(String src, String dest, int type) {
+    public Set<List<String>> getPathBetweenTargets(String src, String dest, Bond bond) {
         Map<String, Boolean> visited = new HashMap<>();
         Set<List<String>> allPaths = new HashSet<>(); //where we'll save all the paths
         List<String> singlePath = new ArrayList<>();
         Target source = targets.get(src);
         Target destination = targets.get(dest);
         //calls a private method for recursion:
-        getPathBetweenTargetsRec(visited, allPaths, singlePath, source, destination, type);
+        getPathBetweenTargetsRec(visited, allPaths, singlePath, source, destination, bond);
         return allPaths;
     }
 
     //to be used only in the big function, finding each simple path and adding to all the paths
     private void getPathBetweenTargetsRec(Map<String, Boolean> visited,
                                           Set<List<String>> allPaths, List<String> singlePath,
-                                          Target src, Target dest, int type) {
+                                          Target src, Target dest, Bond bond) {
         if (visited.get(src.getName()) != null &&
                 visited.get(src.getName()).equals(true)) { //check if we visited the node yet
             return; //go back to not create a cycle
@@ -185,13 +196,13 @@ public class Graph {
             singlePath.remove(src.getName()); //removing it from the current path as we go back
             return;
         }
-        if (type == 1)
+        if (bond.equals(Bond.DEPENDS_ON))
             for (Target t : src.dependsOn) {
-                getPathBetweenTargetsRec(visited, allPaths, singlePath, t, dest, type);
+                getPathBetweenTargetsRec(visited, allPaths, singlePath, t, dest, bond);
             }
-        else
+        else if (bond.equals(Bond.REQUIRED_FOR))
             for (Target t : src.requiredFor) {
-                getPathBetweenTargetsRec(visited, allPaths, singlePath, t, dest, type);
+                getPathBetweenTargetsRec(visited, allPaths, singlePath, t, dest, bond);
             }
         singlePath.remove(src.getName()); //if nowhere else to go, we remove everything
         visited.put(src.getName(), false); //and reset the visited block for different paths
@@ -209,6 +220,37 @@ public class Graph {
      */
     public int getAmountOfTargets() {
         return targets.size();
+    }
+
+    /**
+     * This method returns a map containing how many targets are in each state.
+     *
+     * @return A map with key: State and value: Integer (how many targets in each state)
+     */
+    public Map<State, Integer> howManyTargetsInEachState() {
+        Map<State, Integer> res = new HashMap<>();
+        int frozen = 0, failure = 0, warnings = 0, success = 0;
+        for (Target t : targets.values()) {
+            switch (t.getState()) {
+                case FROZEN:
+                    frozen++;
+                    break;
+                case FINISHED_FAILURE:
+                    failure++;
+                    break;
+                case FINISHED_WARNINGS:
+                    warnings++;
+                    break;
+                case FINISHED_SUCCESS:
+                    success++;
+                    break;
+            }
+        }
+        res.put(State.FROZEN, frozen);
+        res.put(State.FINISHED_FAILURE, failure);
+        res.put(State.FINISHED_SUCCESS, success);
+        res.put(State.FINISHED_WARNINGS, warnings);
+        return res;
     }
 
     /**
@@ -243,10 +285,11 @@ public class Graph {
     }
 
     /**
-     * This method gets a location, and returns a set of all the targets with said location
+     * This method gets a location, and returns a set of all the
+     * waiting targets with said location
      *
      * @param location The target's location
-     * @return a Set of all the targets with said location. If there are no targets in it, returns null
+     * @return a Set of all the waiting targets with said location.
      */
     private Set<Graph.Target> getSetOfWaitingTargetsByLocation(Location location) {
         Set<Graph.Target> res = new HashSet<>();
@@ -301,22 +344,22 @@ public class Graph {
         Target t = targets.get(targetName);
         t.setState(targetState);
         if (t.getState().equals(State.FINISHED_FAILURE)) {
-            setAllRequiredTargetsFrozen(t);
+            setAllRequiredTargetsSkipped(t);
         }
     }
 
     /**
-     * This method gets a target and sets all it's requiredFor targets to FROZEN
+     * This method gets a target and sets all it's requiredFor targets to SKIPPED
      * to be used if target task has failed
      *
      * @param t The failed target
      */
-    private void setAllRequiredTargetsFrozen(Target t) {
+    private void setAllRequiredTargetsSkipped(Target t) {
         //if t.state!=failed, throw exception
         for (Target temp : t.getRequiredFor()) {
-            setAllRequiredTargetsFrozen(temp);
-            if (!temp.getState().equals(State.FROZEN))
-                temp.setState(State.FROZEN);
+            setAllRequiredTargetsSkipped(temp);
+            if (!temp.getState().equals(State.SKIPPED))
+                temp.setState(State.SKIPPED);
         }
     }
 }

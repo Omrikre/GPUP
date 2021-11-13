@@ -1,5 +1,6 @@
 package Engine;
 
+import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
 
@@ -45,11 +46,11 @@ public class Engine {
      *
      * @param src  The source node
      * @param dest The destination node
-     * @param type The method of running of the graph: Depends On or Required For
+     * @param bond The method of running of the graph: Depends On or Required For
      * @return A set that contains Lists of Strings (Paths), with each String being the name of a target in said path
      */
-    public Set<List<String>> getPathBetweenTargets(String src, String dest, int type) {
-        return g.getPathBetweenTargets(src, dest, type);
+    public Set<List<String>> getPathBetweenTargets(String src, String dest, Bond bond) {
+        return g.getPathBetweenTargets(src, dest, bond);
     }
 
     /**
@@ -68,6 +69,15 @@ public class Engine {
      */
     public Map<Location, Integer> howManyTargetsInEachLocation() {
         return g.howManyTargetsInEachLocation();
+    }
+
+    /**
+     * This method returns a map containing how many targets are in each state.
+     *
+     * @return A map with key: State and value: Integer (how many targets in each state)
+     */
+    public Map<State, Integer> howManyTargetsInEachState() {
+        return g.howManyTargetsInEachState();
     }
 
     /**

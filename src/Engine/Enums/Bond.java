@@ -1,8 +1,7 @@
 package Engine.Enums;
 
-public enum State {
-    FROZEN, SKIPPED, WAITING, IN_PROCESS, FINISHED_SUCCESS, FINISHED_FAILURE, FINISHED_WARNINGS;
-
+public enum Bond {
+    DEPENDS_ON, REQUIRED_FOR;
 
     @Override
     public String toString() {
@@ -12,5 +11,4 @@ public enum State {
             return s.replace('_', ' ');
         return s;
     }
-
 }

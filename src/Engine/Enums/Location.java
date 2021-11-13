@@ -5,8 +5,11 @@ public enum Location {
 
     @Override
     public String toString() {
-        return super.toString().substring(0, 1).toUpperCase() +
+        String s = super.toString().substring(0, 1).toUpperCase() +
                 super.toString().substring(1).toLowerCase();
+        if (s.contains("_"))
+            return s.replace('_', ' ');
+        return s;
     }
 
 }
