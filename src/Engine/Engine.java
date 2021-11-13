@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.Enums.Location;
+import Engine.Enums.State;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ public class Engine {
     public Engine() {
         g = new Graph();
     }
+
 
     /**
      * This method gets a target name, and returns its data as a TargetDTO object if it exists.
@@ -69,13 +71,26 @@ public class Engine {
     }
 
     /**
-     * This method gets a location, and returns a set of all the targets with said location
+     * This method returns a set of targets names if they are in a waiting state,
+     * from independent to roots. If the entire graph was finished (no more waiting),
+     * returns null.
      *
-     * @param location The target's location
-     * @return a Set of all the targets with said location. If there are no targets in it, returns null
+     * @return A set of targets names that are in a waiting state, or null if no target is waiting
      */
-    public Set<Graph.Target> getSetOfTargetsByLocation(Location location) {
-        return g.getSetOfTargetsByLocation(location);
+    public Set<String> getSetOfWaitingTargetsNamesBottomsUp() {
+        return g.getSetOfWaitingTargetsNamesBottomsUp();
     }
-}
 
+    /**
+     * This method gets a target's name and a state (calculated by the UI from the task)
+     * it sets the state for the target, and if it affects other targets sets their state too
+     *
+     * @param targetName  The target's name
+     * @param targetState The given state after the task
+     */
+    public void setFinishedState(String targetName, State targetState) {
+        //if state!=FINISHED, throw exception
+        g.setFinishedState(targetName, targetState);
+    }
+
+}

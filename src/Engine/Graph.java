@@ -244,19 +244,79 @@ public class Graph {
 
     /**
      * This method gets a location, and returns a set of all the targets with said location
+     *
      * @param location The target's location
      * @return a Set of all the targets with said location. If there are no targets in it, returns null
      */
-    public Set<Graph.Target> getSetOfTargetsByLocation(Location location) {
+    private Set<Graph.Target> getSetOfWaitingTargetsByLocation(Location location) {
         Set<Graph.Target> res = new HashSet<>();
         for (Target t : targets.values()) {
             if (t.location.equals(location))
-                res.add(t);
+                if (t.getState().equals(State.WAITING))
+                    res.add(t);
         }
-        if (res.isEmpty()) //no targets were added
-            return null;
-        else return res;
+        return res;
     }
 
+    /**
+     * This method returns a set of targets names if they are in a waiting state,
+     * from independent to roots. If the entire graph was finished (no more waiting),
+     * returns null.
+     *
+     * @return A set of targets names that are in a waiting state, or null if no target is waiting
+     */
+    public Set<String> getSetOfWaitingTargetsNamesBottomsUp() {
+        Set<String> res = new HashSet<>();
+        for (Target t : getSetOfWaitingTargetsByLocation(Location.INDEPENDENT)) {
+            res.add(t.getName());
+        }
+        if (!res.isEmpty()) //there were waiting targets in the independent branch
+            return res;
+        for (Target t : getSetOfWaitingTargetsByLocation(Location.LEAF)) {
+            res.add(t.getName());
+        }
+        if (!res.isEmpty()) //there were waiting targets in the leaves branch
+            return res;
+        for (Target t : getSetOfWaitingTargetsByLocation(Location.MIDDLE)) {
+            res.add(t.getName());
+        }
+        if (!res.isEmpty()) //there were waiting targets in the middle branch
+            return res;
+        for (Target t : getSetOfWaitingTargetsByLocation(Location.ROOT)) {
+            res.add(t.getName());
+        }
+        if (!res.isEmpty()) //there were waiting targets in the root branch
+            return res;
+        return null; //there were no waiting targets in the graph
+    }
 
+    /**
+     * This method gets a target's name and a state (calculated by the UI from the task)
+     * it sets the state for the target, and if it affects other targets sets their state too
+     *
+     * @param targetName  The target's name
+     * @param targetState The given state after the task
+     */
+    public void setFinishedState(String targetName, State targetState) {
+        Target t = targets.get(targetName);
+        t.setState(targetState);
+        if (t.getState().equals(State.FINISHED_FAILURE)) {
+            setAllRequiredTargetsFrozen(t);
+        }
+    }
+
+    /**
+     * This method gets a target and sets all it's requiredFor targets to FROZEN
+     * to be used if target task has failed
+     *
+     * @param t The failed target
+     */
+    private void setAllRequiredTargetsFrozen(Target t) {
+        //if t.state!=failed, throw exception
+        for (Target temp : t.getRequiredFor()) {
+            setAllRequiredTargetsFrozen(temp);
+            if (!temp.getState().equals(State.FROZEN))
+                temp.setState(State.FROZEN);
+        }
+    }
 }
