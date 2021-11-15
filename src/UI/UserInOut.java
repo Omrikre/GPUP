@@ -2,6 +2,7 @@ package UI;
 import Engine.*;
 import Engine.Enums.Location;
 import Engine.Enums.State;
+import Exceptions.*;
 
 import java.sql.Time;
 import java.util.Map;
@@ -40,31 +41,23 @@ public class UserInOut extends Menu {
                         fileIsLoaded = fileLoad();
                         break;
                     case 2:
-                        if (!fileIsLoaded) {
-                            System.out.println(" -- Please load file first -- ");
-                            break;
-                        }
+                        if (!fileIsLoaded)
+                            throw new FileNotLoadedException();
                         generalInfo();
                         break;
                     case 3:
-                        if (!fileIsLoaded) {
-                            System.out.println(" -- Please load file first -- ");
-                            break;
-                        }
+                        if (!fileIsLoaded)
+                            throw new FileNotLoadedException();
                         targetsInfo();
                         break;
                     case 4:
-                        if (!fileIsLoaded) {
-                            System.out.println(" -- Please load file first -- ");
-                            break;
-                        }
+                        if (!fileIsLoaded)
+                            throw new FileNotLoadedException();
                         pathBetweenTargets();
                         break;
                     case 5:
-                        if (!fileIsLoaded) {
-                            System.out.println(" -- Please load file first -- ");
-                            break;
-                        }
+                        if (!fileIsLoaded)
+                            throw new FileNotLoadedException();
                         Simulation();
                         break;
                     case 0:
@@ -75,10 +68,11 @@ public class UserInOut extends Menu {
                         break;
                 }
                 sc.nextLine();
-            } catch (Exception e) {
-                System.out.println(e.toString());
+            } catch (FileNotLoadedException e) {
+                System.out.println(e.getMessage());
                 sc.nextLine();
             }
+            catch (Exception e) {}
         }
         System.out.println(" -- Goodbye! -- \n");
     }
