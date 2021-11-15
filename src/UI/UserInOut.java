@@ -1,16 +1,15 @@
 package UI;
-import Engine.*;
+
+import Engine.Engine;
+import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
-import Exceptions.*;
+import Engine.TargetDTO;
+import Exceptions.FileNotLoadedException;
 
 import java.sql.Time;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
-import static java.lang.Math.random;
 import static java.lang.Thread.sleep;
 
 public class UserInOut extends Menu {
@@ -18,16 +17,10 @@ public class UserInOut extends Menu {
     private static final Engine engine = new Engine();
     private static Location type;
 
-    //private static final Graph graph = new Graph();
-
-
-
-
     public static void runProgram() {
         boolean runProgram = true;
         Scanner sc = new Scanner(System.in);
         int userChoice;
-
 
         System.out.println("\n -- Welcome To G.P.U.P -- ");
 
@@ -137,10 +130,9 @@ public class UserInOut extends Menu {
         String srcTargetName, destTargetName;
         boolean srcTargetExist, destTargetExist, stillTry;
 
-
-        System.out.println("Enter the name of the first target: ");
+        System.out.print("Enter the name of the first target: ");
         srcTargetName = sc.nextLine();
-        System.out.println("Enter the name of the second target: ");
+        System.out.print("Enter the name of the second target: ");
         destTargetName = sc.nextLine();
         srcTargetExist = engine.isTargetInGraphByName(srcTargetName);
         destTargetExist = engine.isTargetInGraphByName(destTargetName);
@@ -149,7 +141,7 @@ public class UserInOut extends Menu {
         while (!srcTargetExist || !destTargetExist) {
 
             if (!srcTargetExist && !destTargetExist) {
-                System.out.print(" -- The targets '" + srcTargetName + "' and '" + destTargetName + "' are NOT exist in the database --\n\n");
+                System.out.print("\n -- The targets '" + srcTargetName + "' and '" + destTargetName + "' are NOT exist in the database --\n\n");
             } else {
                 System.out.print(" -- The target '");
                 if (!srcTargetExist)
@@ -163,17 +155,20 @@ public class UserInOut extends Menu {
             if (!stillTry)
                 return;
 
-            System.out.println("Enter the name of the first target: ");
+            System.out.print("Enter the name of the first target: ");
             srcTargetName = sc.nextLine();
-            System.out.println("Enter the name of the second target: ");
+            System.out.print("Enter the name of the second target: ");
             destTargetName = sc.nextLine();
 
             srcTargetExist = engine.isTargetInGraphByName(srcTargetName);
             destTargetExist = engine.isTargetInGraphByName(destTargetName);
         }
 
-        //TODO fix the type
-        engine.getPathBetweenTargets(srcTargetName, destTargetName, 1);
+        //TODO check if correct prints
+        Set<List<String>> dependsLst = engine.getPathBetweenTargets(srcTargetName, destTargetName, Bond.DEPENDS_ON);
+        Set<List<String>> requiredLst = engine.getPathBetweenTargets(srcTargetName, destTargetName, Bond.REQUIRED_FOR);
+        System.out.println(dependsLst);
+        System.out.println(requiredLst);
     }
 
 
@@ -213,6 +208,26 @@ public class UserInOut extends Menu {
         State targetState;
 
         System.out.println("\n\n -- START SIMULATION -- ");
+        //
+        if (randomRunTime)
+            realRunTime = rand.nextInt(runTime);
+        goToSleep(realRunTime);
+        if (randomRunTime)
+            realRunTime = rand.nextInt(runTime);
+        goToSleep(realRunTime);
+        if (randomRunTime)
+            realRunTime = rand.nextInt(runTime);
+        goToSleep(realRunTime);
+        if (randomRunTime)
+            realRunTime = rand.nextInt(runTime);
+        goToSleep(realRunTime);
+        if (randomRunTime)
+            realRunTime = rand.nextInt(runTime);
+        goToSleep(realRunTime);
+        if (randomRunTime)
+            realRunTime = rand.nextInt(runTime);
+        goToSleep(realRunTime);
+        //
         simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
         while(simTargets != null) {
             simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
@@ -241,18 +256,24 @@ public class UserInOut extends Menu {
     // get how to run the simulation (fixed or random processing time)
     private static int randomRunTime(int runTime) {
         int MenuChoice = -1;
+        printRandomRunTimeMenu(runTime);
         Scanner sc = new Scanner(System.in);
+        MenuChoice = sc.nextInt();
 
         while (!(MenuChoice == 1 || MenuChoice == 2 || MenuChoice == 0)) {
+            System.out.println("\n -- enter num by the menu (1/2/0) --");
+            printRandomRunTimeMenu(runTime);
             sc.nextLine();
-            System.out.println("\n what would you prefer? ");
-            System.out.println(" 1. fixed processing time - " + runTime + " ms per target");
-            System.out.println(" 2. random processing time - up to " + runTime + " ms");
-            System.out.println(" 0. cancel and return to the main menu");
-            System.out.print(" enter your choice: ");
             MenuChoice = sc.nextInt();
         }
         return MenuChoice;
+    }
+    private static void printRandomRunTimeMenu(int runTime) {
+        System.out.println("\n what would you prefer? ");
+        System.out.println(" 1. fixed processing time - " + runTime + " ms per target");
+        System.out.println(" 2. random processing time - up to " + runTime + " ms");
+        System.out.println(" 0. cancel and return to the main menu");
+        System.out.print(" enter your choice: ");
     }
     // get from user the probability to success
     private static float getProbabilityToSuccess() {
@@ -311,17 +332,18 @@ public class UserInOut extends Menu {
         double magicNumber = rand.nextDouble();
         if(success >= magicNumber) {
             magicNumber = rand.nextDouble();
+            //TODO fix here the par
             if (successWithWarnings >= magicNumber) {
-                setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
+                //setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
                 return State.FINISHED_WARNINGS;
             }
             else {
-                setFinishedState(targetName, State.FINISHED_SUCCESS, runTime);
+                //setFinishedState(targetName, State.FINISHED_SUCCESS, runTime);
                 return State.FINISHED_SUCCESS;
             }
         }
         else {
-            setFinishedState(targetName, State.FINISHED_FAILURE, runTime);
+            //setFinishedState(targetName, State.FINISHED_FAILURE, runTime);
             return State.FINISHED_FAILURE;
         }
     }

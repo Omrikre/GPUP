@@ -1,8 +1,5 @@
 package UI;
-
 import java.util.Scanner;
-
-import static java.sql.DriverManager.println;
 
 public class Menu {
 
