@@ -1,29 +1,43 @@
 package Exceptions;
 
+import Engine.Enums.Bond;
+import Engine.Graph;
+
+import java.io.File;
+
 public class FileException extends Exception {
-    int exceptionCode = 0;
-    private String errorMessage;
-    private final String EXCEPTION_MESSAGE = " -- File Error: ";
+    private String errorMessage = "UNKNOWN";
 
 
-    public FileException() { errorMessage = "UNKNOWN"; }
-    public FileException(int exceptionCode) {
+    public FileException() {
+
+    }
+
+    public FileException(int exceptionCode, String t) {
         switch (exceptionCode) {
-            case 0:
-                errorMessage = "UNKNOWN";
             case 1:
-                errorMessage = "is a directory";
+                errorMessage = "the file: " + t + " is not an XML file";
+                break;
             case 2:
-                errorMessage = "file does not exist";
+                errorMessage = "the target' name: " + t + " isn't unique";
+                break;
+        }
+    }
+
+    public FileException(int exceptionCode, String t, Bond bond, String k) {
+        switch (exceptionCode) {
             case 3:
-                errorMessage = "file is NOT a XML file";
+                errorMessage = "the target " + t + " does not exist in the graph, yet " + bond + " target " + k;
+                break;
             case 4:
-                errorMessage = "the XML file isn't match to the schema";
+                errorMessage = "the target " + t + " is listed as " + bond + " target " + k +
+                        ", but the target " + k + " is also listed as " + bond + " target " + k;
+                break;
         }
     }
 
     @Override
     public String getMessage() {
-        return (EXCEPTION_MESSAGE + errorMessage + " --");
+        return (" -- File Error: " + errorMessage + " --");
     }
 }
