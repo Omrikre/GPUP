@@ -3,6 +3,7 @@ package Engine;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
+import Exceptions.FileException;
 
 import java.sql.Time;
 import java.util.*;
@@ -19,24 +20,18 @@ public class Graph {
         private Location location;
         private Set<Target> dependsOn;
         private Set<Target> requiredFor;
-        private String info;
+        private final String info;
         private State state;
         private Time time;
 
-        public Target(String name, String info) {
+        public Target(String name, String info) throws FileException {
             this.name = name;
             dependsOn = new HashSet<>();
             requiredFor = new HashSet<>();
             this.info = info;
-            this.state = State.WAITING;
-            targets.put(name, this);
-        }
-
-        public Target(String name) {
-            this.name = name;
-            dependsOn = new HashSet<>();
-            requiredFor = new HashSet<>();
-            this.state = State.WAITING;
+            this.state = State.FROZEN;
+            if (targets.containsKey(name))
+                throw new FileException();
             targets.put(name, this);
         }
 
@@ -81,22 +76,30 @@ public class Graph {
             this.time = t;
         }
 
-        public void addDependedTarget(Target t) {
+        private void addDependedTarget(Target t) throws FileException {
+            if (t.dependsOn.contains(this))
+                throw new FileException(4, this.getName(), Bond.DEPENDS_ON, t.getName());
             dependsOn.add(t);
             if (!t.requiredFor.contains(this))
                 t.addRequiredTarget(this);
-            //can check for errors in the file here,
-            // if x is dependent on y
-            // then y can't be dependent on x!
         }
 
-        public void addRequiredTarget(Target t) {
+        private void addRequiredTarget(Target t) throws FileException {
+            if (t.requiredFor.contains(this))
+                throw new FileException(4, this.getName(), Bond.REQUIRED_FOR, t.getName());
             requiredFor.add(t);
             if (!t.dependsOn.contains(this))
                 t.addDependedTarget(this);
-            //can check for errors in the file here,
-            // if x is required for y
-            // then y can't be required for x!
+        }
+
+        public void addBondedTarget(Bond b, String t) throws FileException {
+            if (!targets.containsKey(t))
+                throw new FileException(3, t, b, this.getName());
+            if (b.equals(Bond.DEPENDS_ON)) {
+                addDependedTarget(getTargetByName(t));
+            } else if (b.equals(Bond.REQUIRED_FOR)) {
+                addRequiredTarget(getTargetByName(t));
+            }
         }
 
         @Override
@@ -117,6 +120,10 @@ public class Graph {
             return Objects.hash(name);
         }
     } //Target
+
+    public Map<String, Target> getTargets() {
+        return targets;
+    }
 
     /**
      * This method gets a name and return true if a target corresponding to said name is in the graph
@@ -207,11 +214,6 @@ public class Graph {
         singlePath.remove(src.getName()); //if nowhere else to go, we remove everything
         visited.put(src.getName(), false); //and reset the visited block for different paths
     }
-
-    //method that checks if there's a circle for bonus:
-    /*
-                TBD
-     */
 
     /**
      * This method returns the amount of the total targets in the graph.
@@ -340,8 +342,9 @@ public class Graph {
      * @param targetName  The target's name
      * @param targetState The given state after the task
      */
-    public void setFinishedState(String targetName, State targetState) {
+    public void setFinishedState(String targetName, State targetState, Time time) {
         Target t = targets.get(targetName);
+        t.setTime(time);
         t.setState(targetState);
         if (t.getState().equals(State.FINISHED_FAILURE)) {
             setAllRequiredTargetsSkipped(t);
@@ -362,4 +365,11 @@ public class Graph {
                 temp.setState(State.SKIPPED);
         }
     }
+
+
+    /*
+    TODO
+    4 and 5
+    return a set with relevant targets, if non exist then return null
+     */
 }

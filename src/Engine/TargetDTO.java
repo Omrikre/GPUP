@@ -52,4 +52,17 @@ public class TargetDTO {
     public Time getTargetTime() {
         return targetTime;
     }
+
+    @Override
+    public String toString() {
+        return "TargetDTO{" +
+                "targetName='" + targetName + '\'' +
+                ", targetLocation=" + targetLocation +
+                ", targetDependsOn=" + targetDependsOn +
+                ", targetRequiredFor=" + targetRequiredFor +
+                ", targetInfo='" + targetInfo + '\'' +
+                ", targetState=" + targetState +
+                ", targetTime=" + targetTime +
+                '}';
+    }
 }

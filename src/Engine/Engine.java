@@ -3,16 +3,30 @@ package Engine;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
+import Engine.XML.GPUPDescriptor;
+import Engine.XML.GPUPTarget;
+import Engine.XML.GPUPTargetDependencies;
+import Engine.XML.GPUPTargets;
+import Exceptions.FileException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.sql.Time;
+import java.util.*;
+
 
 public class Engine {
+    private final static String JAXB_XML_GAME_PACKAGE_NAME = "Engine.XML";
+
     private Graph g;
 
     public Engine() {
-        g = new Graph();
+
     }
 
 
@@ -98,9 +112,44 @@ public class Engine {
      * @param targetName  The target's name
      * @param targetState The given state after the task
      */
-    public void setFinishedState(String targetName, State targetState) {
+    public void setFinishedState(String targetName, State targetState, Time time) {
         //if state!=FINISHED, throw exception
-        g.setFinishedState(targetName, targetState);
+        g.setFinishedState(targetName, targetState, time);
     }
+
+    private GPUPDescriptor deserializeFrom(InputStream in) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GAME_PACKAGE_NAME);
+        Unmarshaller u = jc.createUnmarshaller();
+        return (GPUPDescriptor) u.unmarshal(in);
+    }
+
+    public void loadFile(String filePath) throws JAXBException, FileNotFoundException, FileException {
+        if (!filePath.endsWith("xml"))
+            throw new FileException(1, filePath);
+        InputStream inputStream = new FileInputStream(filePath);
+        GPUPDescriptor gp = deserializeFrom(inputStream);
+
+        Graph res = new Graph();
+
+        List<GPUPTarget> targetsList = gp.getGPUPTargets().getGPUPTarget();
+        for (GPUPTarget t : targetsList) { //adding all the targets to a graph, if there are two targets with the same name the exception will be thrown from the target constructor
+            res.new Target(t.getName(), t.getGPUPUserData());
+        }
+        for (GPUPTarget t : targetsList) { //adding all the dependencies
+            List<GPUPTargetDependencies.GPUGDependency> dependencies;
+            if (t.getGPUPTargetDependencies() != null) {
+                dependencies = t.getGPUPTargetDependencies().getGPUGDependency();
+                Graph.Target target = res.getTargetByName(t.getName());
+                for (GPUPTargetDependencies.GPUGDependency gpugDependency : dependencies) {
+                    String dependencyType = gpugDependency.getType();
+                    target.addBondedTarget(Bond.valueOf(dependencyType.replaceAll("([A-Z])", "_$1").toUpperCase())
+                            , gpugDependency.getValue());
+                }
+            }
+        }
+        res.setLocationForAllTargets();
+        g = res;
+    }
+
 
 }
