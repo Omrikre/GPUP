@@ -179,4 +179,15 @@ public class Engine {
     public Set<String> getRunnableTargetsNamesFromFinishedTarget(String targetName) {
         return g.getRunnableTargetsNamesFromFinishedTarget(targetName);
     }
+
+    /**
+     * This method gets a target's name and returns a list of all the circles it is in
+     * if the set is empty, the target is not in any circle
+     *
+     * @param name The target's name
+     * @return A set of lists of target names, each list represents a circle that the target is in
+     */
+    public Set<List<String>> isTargetInCircleByName(String name) {
+        return g.isTargetInCircleByName(name);
+    }
 }
