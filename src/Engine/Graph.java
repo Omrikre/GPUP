@@ -416,4 +416,22 @@ public class Graph {
         getSkippedTargetsNamesFromFailedTargetRec(targets.get(targetName), res);
         return res;
     }
+
+    /**
+     * This method gets a target's name and returns a list of all the circles it is in
+     *
+     * @param name The target's name
+     * @return A set of lists of target names, each list represents a circle that the target is in
+     */
+    public Set<List<String>> isTargetInCircleByName(String name) {
+        Target t = targets.get(name);
+        Set<List<String>> res = new HashSet<>();
+        if (t.location.equals(Location.MIDDLE))
+            for (Target temp : t.dependsOn) {
+                res = getPathBetweenTargets(temp.getName(), name, Bond.DEPENDS_ON);
+                if (!res.isEmpty())
+                    return res;
+            }
+        return res;
+    }
 }
