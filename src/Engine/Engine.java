@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.sql.Time;
 import java.util.*;
 
@@ -26,7 +27,7 @@ public class Engine {
     private Graph g;
 
     public Engine() {
-
+        g = new Graph();
     }
 
 
@@ -123,6 +124,14 @@ public class Engine {
         return (GPUPDescriptor) u.unmarshal(in);
     }
 
+    /**
+     * This method gets a filepath, and loads a file from it into the graph.
+     *
+     * @param filePath The file's path
+     * @throws JAXBException         In case the jaxb had a problem
+     * @throws FileNotFoundException In case the file doesn't exist
+     * @throws FileException         In case the file is not valid
+     */
     public void loadFile(String filePath) throws JAXBException, FileNotFoundException, FileException {
         if (!filePath.endsWith("xml"))
             throw new FileException(1, filePath);
@@ -151,5 +160,23 @@ public class Engine {
         g = res;
     }
 
+    /**
+     * This method gets a failed target's name, and returns a set of the names all the targets that are Skipped because it failed.
+     *
+     * @param targetName The failed target's name
+     * @return A set of strings (the names of targets) that are Skipped because the target has failed
+     */
+    public Set<String> getSkippedTargetsNamesFromFailedTarget(String targetName) {
+        return g.getSkippedTargetsNamesFromFailedTarget(targetName);
+    }
 
+    /**
+     * This method gets a finished target's name, and returns a set with the names of all the directs which directly depend on it and are currently waiting to run the task on.
+     *
+     * @param targetName The finished target's name
+     * @return A set of strings (target's names) of the direct dependencies which can now perform the task.
+     */
+    public Set<String> getRunnableTargetsNamesFromFinishedTarget(String targetName) {
+        return g.getRunnableTargetsNamesFromFinishedTarget(targetName);
+    }
 }

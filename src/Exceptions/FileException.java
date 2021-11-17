@@ -19,7 +19,7 @@ public class FileException extends Exception {
                 errorMessage = "the file: " + t + " is not an XML file";
                 break;
             case 2:
-                errorMessage = "the target' name: " + t + " isn't unique";
+                errorMessage = "the target's name: " + t + " isn't unique";
                 break;
         }
     }
