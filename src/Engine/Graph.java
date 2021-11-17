@@ -31,7 +31,7 @@ public class Graph {
             this.info = info;
             this.state = State.FROZEN;
             if (targets.containsKey(name))
-                throw new FileException();
+                throw new FileException(2, name);
             targets.put(name, this);
         }
 
@@ -288,16 +288,16 @@ public class Graph {
 
     /**
      * This method gets a location, and returns a set of all the
-     * waiting targets with said location
+     * frozen targets with said location
      *
      * @param location The target's location
      * @return a Set of all the waiting targets with said location.
      */
-    private Set<Graph.Target> getSetOfWaitingTargetsByLocation(Location location) {
+    private Set<Graph.Target> getSetOfFrozenTargetsByLocation(Location location) {
         Set<Graph.Target> res = new HashSet<>();
         for (Target t : targets.values()) {
             if (t.location.equals(location))
-                if (t.getState().equals(State.WAITING))
+                if (t.getState().equals(State.FROZEN))
                     res.add(t);
         }
         return res;
@@ -312,22 +312,26 @@ public class Graph {
      */
     public Set<String> getSetOfWaitingTargetsNamesBottomsUp() {
         Set<String> res = new HashSet<>();
-        for (Target t : getSetOfWaitingTargetsByLocation(Location.INDEPENDENT)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.INDEPENDENT)) {
+            t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the independent branch
             return res;
-        for (Target t : getSetOfWaitingTargetsByLocation(Location.LEAF)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.LEAF)) {
+            t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the leaves branch
             return res;
-        for (Target t : getSetOfWaitingTargetsByLocation(Location.MIDDLE)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.MIDDLE)) {
+            t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the middle branch
             return res;
-        for (Target t : getSetOfWaitingTargetsByLocation(Location.ROOT)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.ROOT)) {
+            t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the root branch
@@ -366,10 +370,50 @@ public class Graph {
         }
     }
 
-
-    /*
-    TODO
-    4 and 5
-    return a set with relevant targets, if non exist then return null
+    /**
+     * This method gets a finished target's name, and returns a set with the names of all the directs which directly depend on it and are currently waiting to run the task on.
+     *
+     * @param targetName The finished target's name
+     * @return A set of strings (target's names) of the direct dependencies which can now perform the task.
      */
+    public Set<String> getRunnableTargetsNamesFromFinishedTarget(String targetName) {
+        //if targetName not finished throw exception
+        Set<String> res = new HashSet<>();
+        boolean runnable = true;
+        if (!targets.get(targetName).requiredFor.isEmpty()) {
+            for (Target t : targets.get(targetName).requiredFor) {
+                for (Target k : t.dependsOn) {
+                    if (!(k.state.equals(State.FINISHED_FAILURE) || k.state.equals(State.FINISHED_SUCCESS) || k.state.equals(State.FINISHED_WARNINGS))) {
+                        runnable = false;
+                        break;
+                    }
+                }
+                if (runnable)
+                    res.add(t.getName());
+                else runnable = true;
+            }
+        }
+        return res;
+    }
+
+    //inner method to be used
+    private void getSkippedTargetsNamesFromFailedTargetRec(Target t, Set<String> res) {
+        for (Target temp : t.requiredFor) {
+            getSkippedTargetsNamesFromFailedTargetRec(t, res);
+            res.add(temp.getName());
+        }
+    }
+
+    /**
+     * This method gets a failed target's name, and returns a set of the names all the targets that are Skipped because it failed.
+     *
+     * @param targetName The failed target's name
+     * @return A set of strings (the names of targets) that are Skipped because the target has failed
+     */
+    public Set<String> getSkippedTargetsNamesFromFailedTarget(String targetName) {
+        //if not failed throw exception
+        Set<String> res = new HashSet<>();
+        getSkippedTargetsNamesFromFailedTargetRec(targets.get(targetName), res);
+        return res;
+    }
 }
