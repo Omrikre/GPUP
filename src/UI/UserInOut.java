@@ -26,7 +26,9 @@ public class UserInOut extends Menu {
         Scanner sc = new Scanner(System.in);
         int userChoice;
 
-        System.out.println("\n -- Welcome To G.P.U.P -- ");
+        System.out.println("\n\n |------------------------|");
+        System.out.println(" |-- Welcome To G.P.U.P --| ");
+        System.out.println(" |------------------------|");
 
         while (runProgram) {
             try {
@@ -64,20 +66,21 @@ public class UserInOut extends Menu {
                         System.out.println("\n -- Please choose a number from the menu (0-5) --");
                         break;
                 }
-                //sc.nextLine();
-            } catch (FileNotLoadedException e) {
-                System.out.println(e.getMessage());
-                //sc.nextLine();
+            }
+            catch (java.util.InputMismatchException e) {
+                System.out.println("\n -- Bad input: please enter your choice from the menu by the number -- ");
             }
             catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("\n" + e.getMessage());
             }
+            sc.nextLine();
+            System.out.println("\n *****************************************");
         }
         System.out.println(" -- Goodbye! -- \n");
     }
 
     // 1
-    private static boolean fileLoad() throws FileException, JAXBException, FileNotFoundException {
+    private static boolean fileLoad() {
         try {
             String filename, filePath;
             int userChoice = -1;
@@ -85,17 +88,19 @@ public class UserInOut extends Menu {
 
             if (fileIsLoaded) {
                 while (userChoice != 1 && userChoice != 2) {
-                    sc.nextLine();
-                    System.out.println(" there is a file that is loaded in the system");
+                    System.out.println("\n -- There is a file that is loaded in the system --\n");
                     System.out.println(" what would you like to do?");
-                    System.out.println("1. run over the current file and load a new one");
-                    System.out.println("2. stay with the current file and return to the main menu");
+                    System.out.println(" 1. run over the current file and load a new one");
+                    System.out.println(" 2. stay with the current file and return to the main menu");
                     System.out.print(" your choice: ");
                     userChoice = sc.nextInt();
+                    sc.nextLine();
                 }
             }
+            if(userChoice == 2)
+                return true;
 
-            System.out.print("\n enter file path: ");
+            System.out.print(" Enter file path: ");
             filePath = sc.nextLine();
             engine.loadFile(filePath);
 
@@ -105,11 +110,15 @@ public class UserInOut extends Menu {
             if (filePath.contains("\\"))
                 filename = filePath.substring(filePath.lastIndexOf("\\")+1);
 
-            System.out.println(" -- The file '" + filename + "' has been loaded --");
+            System.out.println("\n -- The file '" + filename + "' has been loaded --");
             return true;
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("\n" + e.getMessage());
+            if(fileIsLoaded) {
+                System.out.println(" -- The last valid file entered into the system is still loaded --");
+                return true;
+            }
             return false;
         }
     }
@@ -118,19 +127,20 @@ public class UserInOut extends Menu {
 
         int numOfTargets = engine.getAmountOfTargets();
         Map<Location, Integer> numOfTypes = engine.howManyTargetsInEachLocation();
-
-        System.out.println("There is " + numOfTargets + " targets");
-        System.out.println(numOfTypes.get(type.LEAF) + " leaves");
-        System.out.println(numOfTypes.get(type.MIDDLE) + " middles");
-        System.out.println(numOfTypes.get(type.ROOT) + " roots");
-        System.out.println(numOfTypes.get(type.INDEPENDENT) + " independents");
+        System.out.println("\n --------------------------");
+        System.out.println("|   There is " + numOfTargets + " targets    |");
+        System.out.println("|   "+numOfTypes.get(type.LEAF) + "-> leaves             |");
+        System.out.println("|   "+numOfTypes.get(type.MIDDLE) + "-> middles            |");
+        System.out.println("|   "+numOfTypes.get(type.ROOT) + "-> roots              |");
+        System.out.println("|   "+numOfTypes.get(type.INDEPENDENT) + "-> independents       |");
+        System.out.println(" --------------------------");
     }
     // 3
     private static void targetsInfo() {
         boolean targetInFile;
         Scanner sc = new Scanner(System.in);
 
-        System.out.print(" enter target name: ");
+        System.out.print(" Enter target name: ");
         String targetName = sc.nextLine();
         targetInFile = engine.isTargetInGraphByName(targetName);
 
@@ -146,22 +156,22 @@ public class UserInOut extends Menu {
         }
         TargetDTO dto = engine.getTargetDataTransferObjectByName(targetName);
         //print name and type
-        System.out.println("name: " + targetName);
-        System.out.println("type: " + dto.getTargetLocation().toString());
+        System.out.println(" - name: " + targetName);
+        System.out.println(" - type: " + dto.getTargetLocation().toString());
         //print dependent targets
         if(dto.getTargetDependsOn().isEmpty())
-            System.out.println("depends: no depends");
+            System.out.println(" - depends: no depends");
         else
-            System.out.println("depends: " + dto.getTargetDependsOn().toString());
+            System.out.println(" - depends: " + dto.getTargetDependsOn().toString());
         //print required targets
         if(dto.getTargetRequiredFor().isEmpty())
-            System.out.println("required: no required");
+            System.out.println(" - required: no required");
         else
-            System.out.println("required: " + dto.getTargetRequiredFor().toString());
+            System.out.println(" - required: " + dto.getTargetRequiredFor().toString());
         //print more info about the target
         String targetInfo = dto.getTargetInfo();
         if (targetInfo != null)
-            System.out.println("info: " + targetInfo);
+            System.out.println(" - info: " + targetInfo);
 
     }
     // 4
@@ -172,9 +182,9 @@ public class UserInOut extends Menu {
         int res = 0;
         Set<List<String>> lst;
 
-        System.out.print("Enter the name of the first target: ");
+        System.out.print(" Enter the name of the first target: ");
         srcTargetName = sc.nextLine();
-        System.out.print("Enter the name of the second target: ");
+        System.out.print(" Enter the name of the second target: ");
         destTargetName = sc.nextLine();
         srcTargetExist = engine.isTargetInGraphByName(srcTargetName);
         destTargetExist = engine.isTargetInGraphByName(destTargetName);
@@ -194,12 +204,13 @@ public class UserInOut extends Menu {
             }
 
             stillTry = keepTryingInput();
+            System.out.println(" ");
             if (!stillTry)
                 return;
 
-            System.out.print("Enter the name of the first target: ");
+            System.out.print(" Enter the name of the first target: ");
             srcTargetName = sc.nextLine();
-            System.out.print("Enter the name of the second target: ");
+            System.out.print(" Enter the name of the second target: ");
             destTargetName = sc.nextLine();
 
             srcTargetExist = engine.isTargetInGraphByName(srcTargetName);
@@ -208,10 +219,10 @@ public class UserInOut extends Menu {
 
         // get BOND from user
         while (res !=1 && res !=2) {
-        System.out.println("\n in which bond between the targets to search for?");
+        System.out.println("\n In which bond between the targets to search for?");
         System.out.println(" 1. the target " + srcTargetName + " depends on the target " + destTargetName);
         System.out.println(" 2. the target " + srcTargetName + " required for the target " + destTargetName);
-        System.out.print(" your choice: ");
+        System.out.print(" Your choice: ");
         res = sc.nextInt();
         }
 
@@ -221,19 +232,20 @@ public class UserInOut extends Menu {
             lst = engine.getPathBetweenTargets(srcTargetName, destTargetName, Bond.REQUIRED_FOR);
 
         if(lst.isEmpty()) {
-            System.out.print(" the target " + srcTargetName + " has no ");
+            System.out.print("\n The target " + srcTargetName + " has no ");
             if(res == 1)
-                System.out.print(Bond.DEPENDS_ON.toString());
+                System.out.print(Bond.DEPENDS_ON);
             else
-                System.out.print(Bond.REQUIRED_FOR.toString());
+                System.out.print(Bond.REQUIRED_FOR);
             System.out.println(" path to the target " + destTargetName);
             return;
         }
         boolean firstTarget = true;
         int lineCount = 0;
+        System.out.println(" ");
         for (List<String> line : lst) {
             lineCount++;
-            System.out.print(lineCount + ") ");
+            System.out.print(" " + lineCount + ") ");
             for (String targetName : line) {
                 if(firstTarget) {
                     System.out.print(targetName);
@@ -271,13 +283,18 @@ public class UserInOut extends Menu {
                 randomRunTime = true;
         }
         probabilityForSuccess = getProbabilityToSuccess();
+        if(probabilityForSuccess == 9)
+            return;
         probabilityForSuccessWarnings = getProbabilityToSuccessWarnings();
+        if(probabilityForSuccessWarnings == 9)
+            return;
 
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
        }
     private static void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
         Set<String> simTargets;
-        int realRunTime = runTime;
+        int realRunTime = runTime, sumRunTimeOfAllTargets = 0;
+        int successWithWarningsCounter = 0, successCounter = 0, failedCounter = 0;
         Random rand = new Random();
         Time runningTime = null;
         String targetInfo;
@@ -305,9 +322,19 @@ public class UserInOut extends Menu {
                 targetState = changTargetState(s,success,successWithWarnings, runningTime);
                 System.out.println(" running result: " + targetState.toString() + " \n");
                 printTheTargetsChanges(targetState, s);
+                sumRunTimeOfAllTargets += realRunTime;
+                switch(targetState){
+                    case FINISHED_FAILURE:
+                        failedCounter++;
+                    case FINISHED_SUCCESS:
+                        successCounter++;
+                    case FINISHED_WARNINGS:
+                        successWithWarningsCounter++;
+                }
             }
             simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
         }
+        printSimulationSummary(sumRunTimeOfAllTargets, failedCounter, successCounter, successWithWarningsCounter);
         System.out.println("\n\n -------------------- ");
         System.out.println(" -- END SIMULATION -- ");
         System.out.println(" -------------------- \n");
@@ -320,7 +347,7 @@ public class UserInOut extends Menu {
         MenuChoice = sc.nextInt();
 
         while (!(MenuChoice == 1 || MenuChoice == 2 || MenuChoice == 0)) {
-            System.out.println("\n -- enter num by the menu (1/2/0) --");
+            System.out.println("\n -- Enter number by the menu (1/2/0) --");
             printRandomRunTimeMenu(runTime);
             sc.nextLine();
             MenuChoice = sc.nextInt();
@@ -328,11 +355,11 @@ public class UserInOut extends Menu {
         return MenuChoice;
     }
     private static void printRandomRunTimeMenu(int runTime) {
-        System.out.println("\n what would you prefer? ");
+        System.out.println("\n What would you prefer? ");
         System.out.println(" 1. fixed processing time - " + runTime + " ms per target");
         System.out.println(" 2. random processing time - up to " + runTime + " ms");
         System.out.println(" 0. cancel and return to the main menu");
-        System.out.print(" enter your choice: ");
+        System.out.print(" Enter your choice: ");
     }
     private static float getProbabilityToSuccess() {
         // get from user the probability to success
@@ -340,18 +367,19 @@ public class UserInOut extends Menu {
         float res = -1;
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("\n in what probability to success do you want the simulation to run? ");
+        System.out.println("\n In what probability to success do you want the simulation to run? ");
         System.out.println(" 1   --> all the targets will success");
         System.out.println(" 0.5 --> half will success and half will fail");
         System.out.println(" 0   --> all will fail");
-        System.out.print(" enter any number between 0 to 1: ");
-        res = sc.nextInt();
-        while (res < 0 && res > 1) {
+        System.out.print(" Enter any number between 0 to 1: ");
+        res = sc.nextFloat();
+        while (res < 0 || res > 1) {
             if (res == 9)
                 return 9;
-            System.out.println("\n if you prefer to return to the main menu enter '9'");
-            System.out.println(" the probability to success has to be a number between 0 to 1");
-            System.out.print(" enter your choice: ");
+            System.out.println("\n If you prefer to return to the main menu enter '9'");
+            System.out.println(" The probability to success has to be a number between 0 to 1");
+            System.out.print(" Enter your choice: ");
+            res = sc.nextFloat();
         }
         return res;
 
@@ -361,35 +389,38 @@ public class UserInOut extends Menu {
         float res = -1;
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("\n if the task succeeded, what the probability it's a success with warnings? ");
+        System.out.println("\n If the task succeeded, what the probability it's a success with warnings? ");
         System.out.println(" 1   --> it's a success with warnings");
         System.out.println(" 0   --> it's a success without warnings");
-        System.out.print(" enter any number between 0 to 1: ");
-        res = sc.nextInt();
-        while (res < 0 && res > 1) {
+        System.out.print(" Enter any number between 0 to 1: ");
+        res = sc.nextFloat();
+        while (res < 0 || res > 1) {
             if (res == 9)
                 return 9;
-            System.out.println("\n if you prefer to return to the main menu enter '9'");
-            System.out.println(" the probability to success with warnings has to be a number between 0 to 1");
-            System.out.print(" enter your choice: ");
+            System.out.println("\n If you prefer to return to the main menu enter '9'");
+            System.out.println(" The probability to success with warnings has to be a number between 0 to 1");
+            System.out.print(" Enter your choice: ");
+            res = sc.nextFloat();
         }
         return res;
     }
-    private static void goToSleep(int sleepTime) throws InterruptedException {
+    private static void goToSleep(int sleepTime) {
         // sleep machine
         try {
-        System.out.println(" goes to sleep for " + sleepTime + " ms");
+        System.out.println(" going to sleep for " + sleepTime + " ms");
         System.out.println(" -- layla tov --");
         sleep(sleepTime);
         System.out.println(" -- boker tov --");
          }
-        catch (InterruptedException e) {        }
+        catch (InterruptedException e) {
+            System.out.println(e.getMessage());
+        }
     }
-    private static State changTargetState(String targetName ,double success ,double successWithWarnings, Time runTime) {
+    private static State changTargetState(String targetName ,float success ,float successWithWarnings, Time runTime) {
         Random rand = new Random();
-        double magicNumber = rand.nextDouble();
+        float magicNumber = rand.nextFloat();
         if(success >= magicNumber) {
-            magicNumber = rand.nextDouble();
+            magicNumber = rand.nextFloat();
             if (successWithWarnings >= magicNumber) {
                 engine.setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
                 return State.FINISHED_WARNINGS;
@@ -416,9 +447,9 @@ public class UserInOut extends Menu {
 
         if (!targetChanges.isEmpty()) {
             if (mainTargetSucceed)
-                System.out.println(" the following targets become 'waiting' because the target " + targetName + " succeed");
+                System.out.println(" The following targets become 'waiting' because the target " + targetName + " succeed");
             else
-                System.out.println(" the following targets become 'skipped' because the target " + targetName + " failed");
+                System.out.println(" The following targets become 'skipped' because the target " + targetName + " failed");
 
             for (String target : targetChanges) {
                 if(firstPrint) {
@@ -430,8 +461,20 @@ public class UserInOut extends Menu {
             }
         }
         else
-            System.out.println(" no changes were made to other targets");
-        System.out.println("\n");
+            System.out.println(" No changes were made to other targets");
+        System.out.println(" ");
+    }
+    private static void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
+        int skipped = engine.getAmountOfTargets() - failed - success - successWithWarnings;
+        System.out.println("\n -------------------------------");
+        System.out.println("   There is " + engine.getAmountOfTargets() + " targets    ");
+        System.out.println("   The run time of the simulation took "+ sumRunTime + " ms   ");
+        System.out.println(" -------------------------------");
+        System.out.println("   " + success + " -> succeed            ");
+        System.out.println("   " + successWithWarnings + " -> succeed with warning          ");
+        System.out.println("   " + failed + " -> failed       ");
+        System.out.println("   " + skipped + " -> skipped       ");
+        System.out.println(" -------------------------------");
     }
 }
 

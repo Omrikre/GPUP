@@ -29,8 +29,8 @@ public class Menu {
                 case "Y":
                     return true;
                 default:
-                    System.out.println(" -- enter y to try again OR n to go back to the menu -- ");
-                    System.out.print(" y / n : ");
+                    System.out.println("\n -- enter y to try again OR n to go back to the menu -- ");
+                    System.out.print("    y / n : ");
                     break;
             }
         }
