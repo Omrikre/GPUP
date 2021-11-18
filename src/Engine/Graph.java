@@ -399,7 +399,7 @@ public class Graph {
     //inner method to be used
     private void getSkippedTargetsNamesFromFailedTargetRec(Target t, Set<String> res) {
         for (Target temp : t.requiredFor) {
-            getSkippedTargetsNamesFromFailedTargetRec(t, res);
+            getSkippedTargetsNamesFromFailedTargetRec(temp, res);
             res.add(temp.getName());
         }
     }

@@ -128,7 +128,7 @@ public class UserInOut extends Menu {
         int numOfTargets = engine.getAmountOfTargets();
         Map<Location, Integer> numOfTypes = engine.howManyTargetsInEachLocation();
         System.out.println("\n --------------------------");
-        System.out.println("|   There is " + numOfTargets + " targets    |");
+        System.out.println("|   There are " + numOfTargets + " targets    |");
         System.out.println("|   "+numOfTypes.get(type.LEAF) + "-> leaves             |");
         System.out.println("|   "+numOfTypes.get(type.MIDDLE) + "-> middles            |");
         System.out.println("|   "+numOfTypes.get(type.ROOT) + "-> roots              |");
@@ -467,7 +467,7 @@ public class UserInOut extends Menu {
     private static void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
         int skipped = engine.getAmountOfTargets() - failed - success - successWithWarnings;
         System.out.println("\n -------------------------------");
-        System.out.println("   There is " + engine.getAmountOfTargets() + " targets    ");
+        System.out.println("   There are " + engine.getAmountOfTargets() + " targets    ");
         System.out.println("   The run time of the simulation took "+ sumRunTime + " ms   ");
         System.out.println(" -------------------------------");
         System.out.println("   " + success + " -> succeed            ");
