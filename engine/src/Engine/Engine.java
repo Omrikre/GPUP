@@ -38,7 +38,7 @@ public class Engine {
      * @param name The target's name
      * @return A DTO containing the target's info
      */
-    public TargetDTO getTargetDataTransferObjectByName(String name) {
+    public static TargetDTO getTargetDataTransferObjectByName(String name) {
         if (g.isTargetInGraphByName(name))
             return new TargetDTO(g.getTargetByName(name));
         else
