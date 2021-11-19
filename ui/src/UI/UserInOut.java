@@ -15,7 +15,7 @@ public class UserInOut extends Menu implements UI {
     private static Location type;
 
     // run the UI
-    public static void runProgram() {
+    public void runProgram() {
         boolean runProgram = true;
         Scanner sc = new Scanner(System.in);
         int userChoice;
@@ -56,6 +56,7 @@ public class UserInOut extends Menu implements UI {
                     case 6:
                         if (!fileIsLoaded)
                             throw new FileNotLoadedException();
+                        findCircel();
                         //TODO
                     case 0:
                         runProgram = false;
@@ -262,7 +263,7 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" ");
     }
     // 5
-    private static void Simulation() throws InterruptedException {
+    private void Simulation() throws InterruptedException {
         Scanner sc = new Scanner(System.in);
         int runTime;
         float probabilityForSuccess, probabilityForSuccessWarnings;
@@ -295,7 +296,7 @@ public class UserInOut extends Menu implements UI {
 
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
        }
-    private static int randomRunTime(int runTime) {
+    private int randomRunTime(int runTime) {
         int MenuChoice = -1;
         printRandomRunTimeMenu(runTime);
         Scanner sc = new Scanner(System.in);
@@ -309,14 +310,14 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
-    private static void printRandomRunTimeMenu(int runTime) {
+    private void printRandomRunTimeMenu(int runTime) {
         System.out.println("\n What would you prefer? ");
         System.out.println(" 1. fixed processing time - " + runTime + " ms per target");
         System.out.println(" 2. random processing time - up to " + runTime + " ms");
         System.out.println(" 0. cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
-    private static float getProbabilityToSuccess() {
+    private float getProbabilityToSuccess() {
         // get from user the probability to success
 
         float res = -1;
@@ -339,7 +340,7 @@ public class UserInOut extends Menu implements UI {
         return res;
 
     }
-    private static float getProbabilityToSuccessWarnings() {
+    private float getProbabilityToSuccessWarnings() {
         // get probability it's a success with warnings
         float res = -1;
         Scanner sc = new Scanner(System.in);
@@ -359,7 +360,7 @@ public class UserInOut extends Menu implements UI {
         }
         return res;
     }
-    private static void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
+    private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
         Set<String> simTargets;
         long realRunTime = 0; //TODO
 
@@ -393,12 +394,15 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" -------------------- \n");
 
     }
+    // 6
+    private void findCircel() {
+        engine.isTargetInCircleByName("A");
+    }
 
 
 
 
-
-    private static void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
+    private void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
         int skipped = engine.getAmountOfTargets() - failed - success - successWithWarnings;
         System.out.println("\n -------------------------------");
         System.out.println("   There are " + engine.getAmountOfTargets() + " targets    ");
