@@ -231,11 +231,11 @@ public class Graph {
      */
     public Map<State, Integer> howManyTargetsInEachState() {
         Map<State, Integer> res = new HashMap<>();
-        int frozen = 0, failure = 0, warnings = 0, success = 0;
+        int skipped = 0, failure = 0, warnings = 0, success = 0;
         for (Target t : targets.values()) {
             switch (t.getState()) {
-                case FROZEN:
-                    frozen++;
+                case SKIPPED:
+                    skipped++;
                     break;
                 case FINISHED_FAILURE:
                     failure++;
@@ -248,7 +248,7 @@ public class Graph {
                     break;
             }
         }
-        res.put(State.FROZEN, frozen);
+        res.put(State.SKIPPED, skipped);
         res.put(State.FINISHED_FAILURE, failure);
         res.put(State.FINISHED_SUCCESS, success);
         res.put(State.FINISHED_WARNINGS, warnings);
@@ -287,50 +287,62 @@ public class Graph {
     }
 
     /**
-     * This method gets a location, and returns a set of all the
-     * frozen targets with said location
+     * This method gets a location and a state, and returns a set of all the
+     * targets with the given state in said location
      *
      * @param location The target's location
+     * @param state    The required state
      * @return a Set of all the waiting targets with said location.
      */
-    private Set<Graph.Target> getSetOfFrozenTargetsByLocation(Location location) {
+    private Set<Graph.Target> getSetOfTargetsByLocationAndState(Location location, State state) {
         Set<Graph.Target> res = new HashSet<>();
         for (Target t : targets.values()) {
             if (t.location.equals(location))
-                if (t.getState().equals(State.FROZEN))
+                if (t.getState().equals(state))
                     res.add(t);
         }
         return res;
     }
 
     /**
-     * This method returns a set of targets names if they are in a waiting state,
-     * from independent to roots. If the entire graph was finished (no more waiting),
+     * This method sets all targets to frozen. For starting the task from scratch!
+     */
+    public void setAllTargetsFrozen() {
+        for (Target t : targets.values()) {
+            if (!t.getState().equals(State.FROZEN))
+                t.setState(State.FROZEN);
+        }
+    }
+
+    /**
+     * This method returns a set of targets names if they are in a given state,
+     * from independent to roots. If the entire graph was finished (no more of said state),
      * returns null.
      *
-     * @return A set of targets names that are in a waiting state, or null if no target is waiting
+     * @param state The required target's state
+     * @return A set of targets names that are in a given state, or null if no target is waiting
      */
-    public Set<String> getSetOfWaitingTargetsNamesBottomsUp() {
+    public Set<String> getSetOfTargetsNamesBottomsUpByState(State state) {
         Set<String> res = new HashSet<>();
-        for (Target t : getSetOfFrozenTargetsByLocation(Location.INDEPENDENT)) {
+        for (Target t : getSetOfTargetsByLocationAndState(Location.INDEPENDENT, state)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the independent branch
             return res;
-        for (Target t : getSetOfFrozenTargetsByLocation(Location.LEAF)) {
+        for (Target t : getSetOfTargetsByLocationAndState(Location.LEAF, state)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the leaves branch
             return res;
-        for (Target t : getSetOfFrozenTargetsByLocation(Location.MIDDLE)) {
+        for (Target t : getSetOfTargetsByLocationAndState(Location.MIDDLE, state)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the middle branch
             return res;
-        for (Target t : getSetOfFrozenTargetsByLocation(Location.ROOT)) {
+        for (Target t : getSetOfTargetsByLocationAndState(Location.ROOT, state)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
@@ -434,4 +446,5 @@ public class Graph {
             }
         return res;
     }
+
 }

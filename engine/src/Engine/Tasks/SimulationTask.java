@@ -9,8 +9,10 @@ import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
-public class SimulationTask extends Engine {
-
+public class SimulationTask extends Task {
+    public SimulationTask() {
+        super("Simulation");
+    }
 
     private String SimulationStartInfo(String targetName) {
         String targetInfo;
@@ -23,22 +25,24 @@ public class SimulationTask extends Engine {
         if (targetInfo != null)
             res = res + "\n target info: " + targetInfo;
         else
-           res = res + "\n no additional info for this target";
+            res = res + "\n no additional info for this target";
         return res;
     }
+
     private String SimulationRunAndResult(String targetName, int runTime, boolean randomRunTime, float success, float successWithWarnings) {
         State targetState;
         String res;
 
         goToSleep(runTime);
 
-        targetState = changTargetState(targetName,success,successWithWarnings, makeMStoString(runTime));
+        targetState = changTargetState(targetName, success, successWithWarnings, makeMStoString(runTime));
         res = " running result: " + targetState.toString() + " \n\n";
         res += printTheTargetsChanges(targetState, targetName);
         //setTotalRunTime(getTotalRunTime() + realRunTime); //TODO
 
         return res;
     }
+
     private long getSleepTime(boolean randomRunTime, int runTime) {
         Random rand = new Random();
         if (randomRunTime)
@@ -46,66 +50,65 @@ public class SimulationTask extends Engine {
         else
             return runTime;
     }
+
     private static void goToSleep(long sleepTime) {
         try {
             sleep(sleepTime);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
     }
-    private State changTargetState(String targetName ,float success ,float successWithWarnings, String runTime) {
+
+    private State changTargetState(String targetName, float success, float successWithWarnings, String runTime) {
         Random rand = new Random();
         float magicNumber = rand.nextFloat();
-        if(success >= magicNumber) {
+        if (success >= magicNumber) {
             magicNumber = rand.nextFloat();
             if (successWithWarnings >= magicNumber) {
                 setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
                 return State.FINISHED_WARNINGS;
-            }
-            else {
+            } else {
                 setFinishedState(targetName, State.FINISHED_SUCCESS, runTime);
                 return State.FINISHED_SUCCESS;
             }
-        }
-        else {
+        } else {
             setFinishedState(targetName, State.FINISHED_FAILURE, runTime);
             return State.FINISHED_FAILURE;
         }
     }
+
     private String printTheTargetsChanges(State state, String targetName) {
         Set<String> targetChanges;
         String res;
         boolean firstPrint = true;
         boolean mainTargetSucceed = (state == State.FINISHED_SUCCESS || state == State.FINISHED_WARNINGS);
 
-        if(mainTargetSucceed)
+        if (mainTargetSucceed)
             targetChanges = getRunnableTargetsNamesFromFinishedTarget(targetName);
         else
             targetChanges = getSkippedTargetsNamesFromFailedTarget(targetName);
 
         if (!targetChanges.isEmpty()) {
             if (mainTargetSucceed)
-               res = " The following targets become 'waiting' because the target " + targetName + " succeed \n";
+                res = " The following targets become 'waiting' because the target " + targetName + " succeed \n";
             else
-               res = " The following targets become 'skipped' because the target " + targetName + " failed \n";
+                res = " The following targets become 'skipped' because the target " + targetName + " failed \n";
 
             for (String target : targetChanges) {
-                if(firstPrint) {
+                if (firstPrint) {
                     res += " >> " + target;
                     firstPrint = false;
-                }
-                else
+                } else
                     res += ", " + target;
             }
             res += "\n";
-        }
-        else
+        } else
             res = "\n No changes were made to other targets";
         res += "\n";
 
         return res;
     }
+
     private void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
         int skipped = getAmountOfTargets() - failed - success - successWithWarnings;
         System.out.println("\n -------------------------------");
@@ -118,6 +121,7 @@ public class SimulationTask extends Engine {
         System.out.println("   " + skipped + " -> skipped       ");
         System.out.println(" -------------------------------");
     }
+
     private static String makeMStoString(long time) {
         long millis = time % 1000;
         long second = (time / 1000) % 60;
