@@ -47,20 +47,17 @@ public class SimulationTask extends Task {
         }
     }
 
-    private State changTargetState(String targetName, float success, float successWithWarnings, String runTime) {
+    public State changeTargetState(float success, float successWithWarnings) {
         Random rand = new Random();
         float magicNumber = rand.nextFloat();
         if (success >= magicNumber) {
             magicNumber = rand.nextFloat();
             if (successWithWarnings >= magicNumber) {
-                setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
                 return State.FINISHED_WARNINGS;
             } else {
-                setFinishedState(targetName, State.FINISHED_SUCCESS, runTime);
                 return State.FINISHED_SUCCESS;
             }
         } else {
-            setFinishedState(targetName, State.FINISHED_FAILURE, runTime);
             return State.FINISHED_FAILURE;
         }
     }
