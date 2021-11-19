@@ -3,13 +3,11 @@ package UI;
 import Engine.Engine;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
-import Engine.Enums.State;
+
 import Engine.TargetDTO;
 import Exceptions.FileNotLoadedException;
 
 import java.util.*;
-import static java.lang.Thread.sleep;
-
 
 public class UserInOut extends Menu implements UI {
     private static boolean fileIsLoaded;
@@ -55,6 +53,10 @@ public class UserInOut extends Menu implements UI {
                             throw new FileNotLoadedException();
                         Simulation();
                         break;
+                    case 6:
+                        if (!fileIsLoaded)
+                            throw new FileNotLoadedException();
+                        //TODO
                     case 0:
                         runProgram = false;
                         break;
@@ -357,40 +359,66 @@ public class UserInOut extends Menu implements UI {
         }
         return res;
     }
-
-
-
     private static void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
         Set<String> simTargets;
-        int realRunTime = runTime, sumRunTimeOfAllTargets = 0;
-        int successWithWarningsCounter = 0, successCounter = 0, failedCounter = 0;
-        Random rand = new Random();
-        String targetInfo;
-        TargetDTO dto;
-        State targetState;
+        long realRunTime = 0; //TODO
 
         System.out.println("\n\n ---------------------- ");
         System.out.println(" -- START SIMULATION -- ");
         System.out.println(" ---------------------- \n");
+
         simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
         while(simTargets != null) {
             for (String s : simTargets) {
-                if (randomRunTime)
-                    realRunTime = rand.nextInt(runTime);
-                System.out.println(" target name: " + s);
-                dto = engine.getTargetDataTransferObjectByName(s);
-                targetInfo = dto.getTargetInfo();
-                if (targetInfo != null)
-                    System.out.println(" target info: " + targetInfo);
-                else
-                    System.out.println(" no additional info for this target");
-                goToSleep(realRunTime);
 
-                targetState = changTargetState(s,success,successWithWarnings, makeMStoString(realRunTime));
-                System.out.println(" running result: " + targetState.toString() + " \n");
-                printTheTargetsChanges(targetState, s);
-                sumRunTimeOfAllTargets += realRunTime;
-                switch(targetState){
+                //TODO
+                //method 1 - SimulationStartInfo
+                //print 1
+                //realRunTime = method 2 - getSleepTime
+                System.out.println(" going to sleep for " + realRunTime);
+                System.out.println(" -- layla tov --");
+                //method 3 - SimulationRunAndResult
+                System.out.println(" -- boker tov --");
+                //print 3
+
+                System.out.println(" - - - - - - - - - - - - \n");
+            }
+            simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
+        }
+
+        //printSimulationSummary(); //TODO
+
+        System.out.println("\n\n -------------------- ");
+        System.out.println(" -- END SIMULATION -- ");
+        System.out.println(" -------------------- \n");
+
+    }
+
+
+
+
+
+    private static void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
+        int skipped = engine.getAmountOfTargets() - failed - success - successWithWarnings;
+        System.out.println("\n -------------------------------");
+        System.out.println("   There are " + engine.getAmountOfTargets() + " targets    ");
+        System.out.println("   The run time of the simulation took "); //TODO -  + engine.makeMStoString(sumRunTime)
+        System.out.println(" -------------------------------");
+        System.out.println("   " + success + " -> succeed            ");
+        System.out.println("   " + successWithWarnings + " -> succeed with warning          ");
+        System.out.println("   " + failed + " -> failed       ");
+        System.out.println("   " + skipped + " -> skipped       ");
+        System.out.println(" -------------------------------");
+    }
+
+
+
+
+
+    /*
+
+
+                    switch(targetState){
                     case FINISHED_FAILURE:
                         failedCounter++;
                         break;
@@ -401,17 +429,11 @@ public class UserInOut extends Menu implements UI {
                         successWithWarningsCounter++;
                         break;
                 }
-                System.out.println(" - - - - - - - - - - - - \n");
-            }
-            simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
-        }
-        printSimulationSummary(sumRunTimeOfAllTargets, failedCounter, successCounter, successWithWarningsCounter);
-        System.out.println("\n\n -------------------- ");
-        System.out.println(" -- END SIMULATION -- ");
-        System.out.println(" -------------------- \n");
 
-    }
-    private static void goToSleep(long sleepTime) {
+
+
+
+        private static void goToSleep(long sleepTime) {
         try {
             System.out.println(" going to sleep for " + makeMStoString(sleepTime));
             System.out.println(" -- layla tov --");
@@ -471,25 +493,7 @@ public class UserInOut extends Menu implements UI {
             System.out.println(" No changes were made to other targets");
         System.out.println(" ");
     }
-    private static void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
-        int skipped = engine.getAmountOfTargets() - failed - success - successWithWarnings;
-        System.out.println("\n -------------------------------");
-        System.out.println("   There are " + engine.getAmountOfTargets() + " targets    ");
-        System.out.println("   The run time of the simulation took " + makeMStoString(sumRunTime));
-        System.out.println(" -------------------------------");
-        System.out.println("   " + success + " -> succeed            ");
-        System.out.println("   " + successWithWarnings + " -> succeed with warning          ");
-        System.out.println("   " + failed + " -> failed       ");
-        System.out.println("   " + skipped + " -> skipped       ");
-        System.out.println(" -------------------------------");
-    }
-    private static String makeMStoString(long time) {
-        long millis = time % 1000;
-        long second = (time / 1000) % 60;
-        long minute = (time / (1000 * 60)) % 60;
-        long hour = (time / (1000 * 60 * 60)) % 24;
-        return String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
-    }
+     */
 }
 
 

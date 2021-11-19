@@ -1,5 +1,6 @@
 package Engine.Tasks;
 
+import Engine.Engine;
 import Engine.Enums.State;
 import Engine.TargetDTO;
 
@@ -8,123 +9,107 @@ import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
-public class SimulationTask {
-    private static void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
-        Set<String> simTargets;
-        int realRunTime = runTime, sumRunTimeOfAllTargets = 0;
-        int successWithWarningsCounter = 0, successCounter = 0, failedCounter = 0;
-        Random rand = new Random();
+public class SimulationTask extends Engine {
+
+
+    private String SimulationStartInfo(String targetName) {
         String targetInfo;
         TargetDTO dto;
-        State targetState;
+        String res;
 
-        System.out.println("\n\n ---------------------- ");
-        System.out.println(" -- START SIMULATION -- ");
-        System.out.println(" ---------------------- \n");
-        simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
-        while(simTargets != null) {
-            for (String s : simTargets) {
-                if (randomRunTime)
-                    realRunTime = rand.nextInt(runTime);
-                System.out.println(" target name: " + s);
-                dto = engine.getTargetDataTransferObjectByName(s);
-                targetInfo = dto.getTargetInfo();
-                if (targetInfo != null)
-                    System.out.println(" target info: " + targetInfo);
-                else
-                    System.out.println(" no additional info for this target");
-                goToSleep(realRunTime);
-
-                targetState = changTargetState(s,success,successWithWarnings, makeMStoString(realRunTime));
-                System.out.println(" running result: " + targetState.toString() + " \n");
-                printTheTargetsChanges(targetState, s);
-                sumRunTimeOfAllTargets += realRunTime;
-                switch(targetState){
-                    case FINISHED_FAILURE:
-                        failedCounter++;
-                        break;
-                    case FINISHED_SUCCESS:
-                        successCounter++;
-                        break;
-                    case FINISHED_WARNINGS:
-                        successWithWarningsCounter++;
-                        break;
-                }
-                System.out.println(" - - - - - - - - - - - - \n");
-            }
-            simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
-        }
-        printSimulationSummary(sumRunTimeOfAllTargets, failedCounter, successCounter, successWithWarningsCounter);
-        System.out.println("\n\n -------------------- ");
-        System.out.println(" -- END SIMULATION -- ");
-        System.out.println(" -------------------- \n");
-
+        res = " target name: " + targetName;
+        dto = getTargetDataTransferObjectByName(targetName);
+        targetInfo = dto.getTargetInfo();
+        if (targetInfo != null)
+            res = res + "\n target info: " + targetInfo;
+        else
+           res = res + "\n no additional info for this target";
+        return res;
     }
+    private String SimulationRunAndResult(String targetName, int runTime, boolean randomRunTime, float success, float successWithWarnings) {
+        State targetState;
+        String res;
 
+        goToSleep(runTime);
+
+        targetState = changTargetState(targetName,success,successWithWarnings, makeMStoString(runTime));
+        res = " running result: " + targetState.toString() + " \n\n";
+        res += printTheTargetsChanges(targetState, targetName);
+        //setTotalRunTime(getTotalRunTime() + realRunTime); //TODO
+
+        return res;
+    }
+    private long getSleepTime(boolean randomRunTime, int runTime) {
+        Random rand = new Random();
+        if (randomRunTime)
+            return rand.nextInt(runTime);
+        else
+            return runTime;
+    }
     private static void goToSleep(long sleepTime) {
         try {
-            System.out.println(" going to sleep for " + makeMStoString(sleepTime));
-            System.out.println(" -- layla tov --");
             sleep(sleepTime);
-            System.out.println(" -- boker tov --");
         }
         catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
     }
-    private static State changTargetState(String targetName ,float success ,float successWithWarnings, String runTime) {
+    private State changTargetState(String targetName ,float success ,float successWithWarnings, String runTime) {
         Random rand = new Random();
         float magicNumber = rand.nextFloat();
         if(success >= magicNumber) {
             magicNumber = rand.nextFloat();
             if (successWithWarnings >= magicNumber) {
-                engine.setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
+                setFinishedState(targetName, State.FINISHED_WARNINGS, runTime);
                 return State.FINISHED_WARNINGS;
             }
             else {
-                engine.setFinishedState(targetName, State.FINISHED_SUCCESS, runTime);
+                setFinishedState(targetName, State.FINISHED_SUCCESS, runTime);
                 return State.FINISHED_SUCCESS;
             }
         }
         else {
-            engine.setFinishedState(targetName, State.FINISHED_FAILURE, runTime);
+            setFinishedState(targetName, State.FINISHED_FAILURE, runTime);
             return State.FINISHED_FAILURE;
         }
     }
-    private static void printTheTargetsChanges(State state, String targetName) {
+    private String printTheTargetsChanges(State state, String targetName) {
         Set<String> targetChanges;
+        String res;
         boolean firstPrint = true;
         boolean mainTargetSucceed = (state == State.FINISHED_SUCCESS || state == State.FINISHED_WARNINGS);
 
         if(mainTargetSucceed)
-            targetChanges = engine.getRunnableTargetsNamesFromFinishedTarget(targetName);
+            targetChanges = getRunnableTargetsNamesFromFinishedTarget(targetName);
         else
-            targetChanges = engine.getSkippedTargetsNamesFromFailedTarget(targetName);
+            targetChanges = getSkippedTargetsNamesFromFailedTarget(targetName);
 
         if (!targetChanges.isEmpty()) {
             if (mainTargetSucceed)
-                System.out.println(" The following targets become 'waiting' because the target " + targetName + " succeed");
+               res = " The following targets become 'waiting' because the target " + targetName + " succeed \n";
             else
-                System.out.println(" The following targets become 'skipped' because the target " + targetName + " failed");
+               res = " The following targets become 'skipped' because the target " + targetName + " failed \n";
 
             for (String target : targetChanges) {
                 if(firstPrint) {
-                    System.out.print(" >> " + target);
+                    res += " >> " + target;
                     firstPrint = false;
                 }
                 else
-                    System.out.print(", " + target);
+                    res += ", " + target;
             }
-            System.out.println(" ");
+            res += "\n";
         }
         else
-            System.out.println(" No changes were made to other targets");
-        System.out.println(" ");
+            res = "\n No changes were made to other targets";
+        res += "\n";
+
+        return res;
     }
-    private static void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
-        int skipped = engine.getAmountOfTargets() - failed - success - successWithWarnings;
+    private void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
+        int skipped = getAmountOfTargets() - failed - success - successWithWarnings;
         System.out.println("\n -------------------------------");
-        System.out.println("   There are " + engine.getAmountOfTargets() + " targets    ");
+        System.out.println("   There are " + getAmountOfTargets() + " targets    ");
         System.out.println("   The run time of the simulation took " + makeMStoString(sumRunTime));
         System.out.println(" -------------------------------");
         System.out.println("   " + success + " -> succeed            ");
