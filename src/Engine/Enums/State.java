@@ -1,11 +1,34 @@
 package Engine.Enums;
 
 public enum State {
-    FROZEN, SKIPPED, WAITING, IN_PROCESS, FINISHED_SUCCESS, FINISHED_FAILURE, FINISHED_WARNINGS;
+    FROZEN {
+        @Override
+        public String toString() {
+            return "frozen";
+        }
+    },
+    SKIPPED, WAITING, IN_PROCESS,
+    FINISHED_SUCCESS{
+        @Override
+        public String toString() {
+            return "success";
+        }
+    }, FINISHED_FAILURE{
+        @Override
+        public String toString() {
+            return "failure";
+        }
+    }, FINISHED_WARNINGS{
+        @Override
+        public String toString() {
+            return "success with warnings";
+        }
+    };
 
 
-    @Override
+   @Override
     public String toString() {
+
         String s = super.toString().substring(0, 1).toUpperCase() +
                 super.toString().substring(1).toLowerCase();
         if (s.contains("_"))

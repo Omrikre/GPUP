@@ -5,12 +5,8 @@ import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
 import Engine.TargetDTO;
-import Exceptions.FileException;
 import Exceptions.FileNotLoadedException;
 
-import javax.xml.bind.JAXBException;
-import java.io.FileNotFoundException;
-import java.sql.Time;
 import java.util.*;
 import static java.lang.Thread.sleep;
 
@@ -285,9 +281,15 @@ public class UserInOut extends Menu {
         probabilityForSuccess = getProbabilityToSuccess();
         if(probabilityForSuccess == 9)
             return;
-        probabilityForSuccessWarnings = getProbabilityToSuccessWarnings();
-        if(probabilityForSuccessWarnings == 9)
-            return;
+        if (probabilityForSuccess != 0) {
+            probabilityForSuccessWarnings = getProbabilityToSuccessWarnings();
+            if(probabilityForSuccessWarnings == 9)
+                return;
+        }
+        else {
+            probabilityForSuccessWarnings = 0;
+        }
+
 
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
        }
@@ -296,7 +298,6 @@ public class UserInOut extends Menu {
         int realRunTime = runTime, sumRunTimeOfAllTargets = 0;
         int successWithWarningsCounter = 0, successCounter = 0, failedCounter = 0;
         Random rand = new Random();
-        Time runningTime = null;
         String targetInfo;
         TargetDTO dto;
         State targetState;
@@ -318,19 +319,22 @@ public class UserInOut extends Menu {
                     System.out.println(" no additional info for this target");
                 goToSleep(realRunTime);
 
-                runningTime = new Time(realRunTime);
-                targetState = changTargetState(s,success,successWithWarnings, runningTime);
+                targetState = changTargetState(s,success,successWithWarnings, makeMStoString(realRunTime));
                 System.out.println(" running result: " + targetState.toString() + " \n");
                 printTheTargetsChanges(targetState, s);
                 sumRunTimeOfAllTargets += realRunTime;
                 switch(targetState){
                     case FINISHED_FAILURE:
                         failedCounter++;
+                        break;
                     case FINISHED_SUCCESS:
                         successCounter++;
+                        break;
                     case FINISHED_WARNINGS:
                         successWithWarningsCounter++;
+                        break;
                 }
+                System.out.println(" - - - - - - - - - - - - \n");
             }
             simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
         }
@@ -404,10 +408,9 @@ public class UserInOut extends Menu {
         }
         return res;
     }
-    private static void goToSleep(int sleepTime) {
-        // sleep machine
+    private static void goToSleep(long sleepTime) {
         try {
-        System.out.println(" going to sleep for " + sleepTime + " ms");
+        System.out.println(" going to sleep for " + makeMStoString(sleepTime));
         System.out.println(" -- layla tov --");
         sleep(sleepTime);
         System.out.println(" -- boker tov --");
@@ -416,7 +419,7 @@ public class UserInOut extends Menu {
             System.out.println(e.getMessage());
         }
     }
-    private static State changTargetState(String targetName ,float success ,float successWithWarnings, Time runTime) {
+    private static State changTargetState(String targetName ,float success ,float successWithWarnings, String runTime) {
         Random rand = new Random();
         float magicNumber = rand.nextFloat();
         if(success >= magicNumber) {
@@ -459,6 +462,7 @@ public class UserInOut extends Menu {
                 else
                     System.out.print(", " + target);
             }
+            System.out.println(" ");
         }
         else
             System.out.println(" No changes were made to other targets");
@@ -468,13 +472,20 @@ public class UserInOut extends Menu {
         int skipped = engine.getAmountOfTargets() - failed - success - successWithWarnings;
         System.out.println("\n -------------------------------");
         System.out.println("   There are " + engine.getAmountOfTargets() + " targets    ");
-        System.out.println("   The run time of the simulation took "+ sumRunTime + " ms   ");
+        System.out.println("   The run time of the simulation took " + makeMStoString(sumRunTime));
         System.out.println(" -------------------------------");
         System.out.println("   " + success + " -> succeed            ");
         System.out.println("   " + successWithWarnings + " -> succeed with warning          ");
         System.out.println("   " + failed + " -> failed       ");
         System.out.println("   " + skipped + " -> skipped       ");
         System.out.println(" -------------------------------");
+    }
+    private static String makeMStoString(long time) {
+        long millis = time % 1000;
+        long second = (time / 1000) % 60;
+        long minute = (time / (1000 * 60)) % 60;
+        long hour = (time / (1000 * 60 * 60)) % 24;
+        return String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
     }
 }
 

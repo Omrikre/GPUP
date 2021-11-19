@@ -113,7 +113,7 @@ public class Engine {
      * @param targetName  The target's name
      * @param targetState The given state after the task
      */
-    public void setFinishedState(String targetName, State targetState, Time time) {
+    public void setFinishedState(String targetName, State targetState, String time) {
         //if state!=FINISHED, throw exception
         g.setFinishedState(targetName, targetState, time);
     }

@@ -22,7 +22,7 @@ public class Graph {
         private Set<Target> requiredFor;
         private final String info;
         private State state;
-        private Time time;
+        private String time;
 
         public Target(String name, String info) throws FileException {
             this.name = name;
@@ -59,7 +59,7 @@ public class Graph {
             return state;
         }
 
-        public Time getTime() {
+        public String getTime() {
             return time;
         }
 
@@ -72,7 +72,7 @@ public class Graph {
             this.state = s;
         }
 
-        public void setTime(Time t) {
+        public void setTime(String t) {
             this.time = t;
         }
 
@@ -346,7 +346,7 @@ public class Graph {
      * @param targetName  The target's name
      * @param targetState The given state after the task
      */
-    public void setFinishedState(String targetName, State targetState, Time time) {
+    public void setFinishedState(String targetName, State targetState, String time) {
         Target t = targets.get(targetName);
         t.setTime(time);
         t.setState(targetState);

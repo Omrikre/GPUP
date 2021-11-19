@@ -13,7 +13,7 @@ public class TargetDTO {
     private final Set<Graph.Target> targetRequiredFor;
     private final String targetInfo;
     private final State targetState;
-    private final Time targetTime;
+    private final String targetTime;
 
     public TargetDTO(Graph.Target t) {
         this.targetName = t.getName();
@@ -49,7 +49,7 @@ public class TargetDTO {
         return targetState;
     }
 
-    public Time getTargetTime() {
+    public String getTargetTime() {
         return targetTime;
     }
 
