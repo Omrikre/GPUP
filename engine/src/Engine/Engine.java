@@ -1,12 +1,14 @@
 package Engine;
 
+import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
+import Engine.Tasks.SimulationTask;
+import Engine.Tasks.Task;
 import Engine.XML.GPUPDescriptor;
 import Engine.XML.GPUPTarget;
 import Engine.XML.GPUPTargetDependencies;
-import Engine.XML.GPUPTargets;
 import Exceptions.FileException;
 
 import javax.xml.bind.JAXBContext;
@@ -16,8 +18,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.sql.Time;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 
@@ -25,11 +30,16 @@ public class Engine {
     private final static String JAXB_XML_GAME_PACKAGE_NAME = "Engine.XML";
 
     private Graph g;
+    private Task task;
+    private String filePath;
 
     public Engine() {
         g = new Graph();
     }
 
+    public long getTotalRuntime() {
+        return task.getTotalRuntime();
+    }
 
     /**
      * This method gets a target name, and returns its data as a TargetDTO object if it exists.
@@ -96,14 +106,15 @@ public class Engine {
     }
 
     /**
-     * This method returns a set of targets names if they are in a waiting state,
-     * from independent to roots. If the entire graph was finished (no more waiting),
+     * This method returns a set of targets names if they are in a given state,
+     * from independent to roots. If the entire graph was finished (no more of said state),
      * returns null.
      *
-     * @return A set of targets names that are in a waiting state, or null if no target is waiting
+     * @param state The required target's state
+     * @return A set of targets names that are in a given state, or null if no target is waiting
      */
-    public Set<String> getSetOfWaitingTargetsNamesBottomsUp() {
-        return g.getSetOfWaitingTargetsNamesBottomsUp();
+    public Set<String> getSetOfTargetsNamesBottomsUpByState(State state) {
+        return g.getSetOfTargetsNamesBottomsUpByState(state);
     }
 
     /**
@@ -135,6 +146,7 @@ public class Engine {
     public void loadFile(String filePath) throws JAXBException, FileNotFoundException, FileException {
         if (!filePath.endsWith("xml"))
             throw new FileException(1, filePath);
+        this.filePath = filePath;
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
 
@@ -190,4 +202,15 @@ public class Engine {
     public Set<List<String>> isTargetInCircleByName(String name) {
         return g.isTargetInCircleByName(name);
     }
+
+    private void saveTargetToFileByName(String name) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+        Path p=Paths.get(filePath);
+
+        filePath = filePath.substring(0, filePath.lastIndexOf('\\')) + task.getName() + dtf.format(task.getExecutionDate()) + name + ".log";
+        File targetInfoFile = new File(filePath);
+
+    }
+
+
 }
