@@ -11,7 +11,7 @@ import java.util.*;
 import static java.lang.Thread.sleep;
 
 
-public class UserInOut extends Menu {
+public class UserInOut extends Menu implements UI {
     private static boolean fileIsLoaded;
     private static final Engine engine = new Engine();
     private static Location type;
@@ -293,57 +293,6 @@ public class UserInOut extends Menu {
 
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
        }
-    private static void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
-        Set<String> simTargets;
-        int realRunTime = runTime, sumRunTimeOfAllTargets = 0;
-        int successWithWarningsCounter = 0, successCounter = 0, failedCounter = 0;
-        Random rand = new Random();
-        String targetInfo;
-        TargetDTO dto;
-        State targetState;
-
-        System.out.println("\n\n ---------------------- ");
-        System.out.println(" -- START SIMULATION -- ");
-        System.out.println(" ---------------------- \n");
-        simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
-        while(simTargets != null) {
-            for (String s : simTargets) {
-                if (randomRunTime)
-                    realRunTime = rand.nextInt(runTime);
-                System.out.println(" target name: " + s);
-                dto = engine.getTargetDataTransferObjectByName(s);
-                targetInfo = dto.getTargetInfo();
-                if (targetInfo != null)
-                    System.out.println(" target info: " + targetInfo);
-                else
-                    System.out.println(" no additional info for this target");
-                goToSleep(realRunTime);
-
-                targetState = changTargetState(s,success,successWithWarnings, makeMStoString(realRunTime));
-                System.out.println(" running result: " + targetState.toString() + " \n");
-                printTheTargetsChanges(targetState, s);
-                sumRunTimeOfAllTargets += realRunTime;
-                switch(targetState){
-                    case FINISHED_FAILURE:
-                        failedCounter++;
-                        break;
-                    case FINISHED_SUCCESS:
-                        successCounter++;
-                        break;
-                    case FINISHED_WARNINGS:
-                        successWithWarningsCounter++;
-                        break;
-                }
-                System.out.println(" - - - - - - - - - - - - \n");
-            }
-            simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
-        }
-        printSimulationSummary(sumRunTimeOfAllTargets, failedCounter, successCounter, successWithWarningsCounter);
-        System.out.println("\n\n -------------------- ");
-        System.out.println(" -- END SIMULATION -- ");
-        System.out.println(" -------------------- \n");
-
-    }
     private static int randomRunTime(int runTime) {
         int MenuChoice = -1;
         printRandomRunTimeMenu(runTime);
@@ -408,13 +357,67 @@ public class UserInOut extends Menu {
         }
         return res;
     }
+
+
+
+    private static void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
+        Set<String> simTargets;
+        int realRunTime = runTime, sumRunTimeOfAllTargets = 0;
+        int successWithWarningsCounter = 0, successCounter = 0, failedCounter = 0;
+        Random rand = new Random();
+        String targetInfo;
+        TargetDTO dto;
+        State targetState;
+
+        System.out.println("\n\n ---------------------- ");
+        System.out.println(" -- START SIMULATION -- ");
+        System.out.println(" ---------------------- \n");
+        simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
+        while(simTargets != null) {
+            for (String s : simTargets) {
+                if (randomRunTime)
+                    realRunTime = rand.nextInt(runTime);
+                System.out.println(" target name: " + s);
+                dto = engine.getTargetDataTransferObjectByName(s);
+                targetInfo = dto.getTargetInfo();
+                if (targetInfo != null)
+                    System.out.println(" target info: " + targetInfo);
+                else
+                    System.out.println(" no additional info for this target");
+                goToSleep(realRunTime);
+
+                targetState = changTargetState(s,success,successWithWarnings, makeMStoString(realRunTime));
+                System.out.println(" running result: " + targetState.toString() + " \n");
+                printTheTargetsChanges(targetState, s);
+                sumRunTimeOfAllTargets += realRunTime;
+                switch(targetState){
+                    case FINISHED_FAILURE:
+                        failedCounter++;
+                        break;
+                    case FINISHED_SUCCESS:
+                        successCounter++;
+                        break;
+                    case FINISHED_WARNINGS:
+                        successWithWarningsCounter++;
+                        break;
+                }
+                System.out.println(" - - - - - - - - - - - - \n");
+            }
+            simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
+        }
+        printSimulationSummary(sumRunTimeOfAllTargets, failedCounter, successCounter, successWithWarningsCounter);
+        System.out.println("\n\n -------------------- ");
+        System.out.println(" -- END SIMULATION -- ");
+        System.out.println(" -------------------- \n");
+
+    }
     private static void goToSleep(long sleepTime) {
         try {
-        System.out.println(" going to sleep for " + makeMStoString(sleepTime));
-        System.out.println(" -- layla tov --");
-        sleep(sleepTime);
-        System.out.println(" -- boker tov --");
-         }
+            System.out.println(" going to sleep for " + makeMStoString(sleepTime));
+            System.out.println(" -- layla tov --");
+            sleep(sleepTime);
+            System.out.println(" -- boker tov --");
+        }
         catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
