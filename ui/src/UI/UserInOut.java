@@ -5,9 +5,10 @@ import Engine.Enums.Bond;
 import Engine.Enums.Location;
 
 import Engine.Enums.State;
-import Engine.TargetDTO;
+import Engine.DTO.TargetDTO;
 import Exceptions.FileNotLoadedException;
 
+import java.io.IOException;
 import java.util.*;
 
 public class UserInOut extends Menu implements UI {
@@ -265,7 +266,7 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" ");
     }
     // 5
-    private void Simulation() throws InterruptedException {
+    private void Simulation() throws InterruptedException, IOException {
         Scanner sc = new Scanner(System.in);
         int runTime;
         float probabilityForSuccess, probabilityForSuccessWarnings;
@@ -364,7 +365,7 @@ public class UserInOut extends Menu implements UI {
         }
         return res;
     }
-    private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException {
+    private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException, IOException {
         Set<String> simTargets;
         long realRunTime = 0; //TODO
 

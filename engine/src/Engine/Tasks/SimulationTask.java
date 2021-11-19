@@ -1,20 +1,21 @@
 package Engine.Tasks;
 
 import Engine.Enums.State;
-import Engine.TargetDTO;
+import Engine.DTO.TargetDTO;
 
 import java.util.Random;
 import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
-public class SimulationTask {
-    private long totalRunTime = 0;
+public class SimulationTask extends Task {
+    public SimulationTask() {
+        super("Simulation");
+    }
 
-    private String SimulationStartInfo(TargetDTO target) {
+    public String simulationStartInfo(TargetDTO target) {
         String targetInfo;
         String res;
-
         res = " target name: " + target.getTargetName();
         targetInfo = target.getTargetInfo();
         if (targetInfo != null)
@@ -24,26 +25,21 @@ public class SimulationTask {
         return res;
     }
 
-    private String SimulationRunAndResult(String targetName, int runTime, float success, float successWithWarnings) {
-        State targetState;
+    public String simulationRunAndResult(String targetChanges, String targetName, State state, long runTime) {
         String res;
-
         goToSleep(runTime);
-
-        targetState = changTargetState(targetName, success, successWithWarnings, makeMStoString(runTime));
-        res = " running result: " + targetState.toString() + " \n\n";
-        res += printTheTargetsChanges(targetState, targetName);
-        //setTotalRunTime(getTotalRunTime() + realRunTime); //TODO
-
+        res = " running result: " + state.toString() + " \n\n";
+        res += targetChanges;
+        super.addTotalRuntime(runTime);
         return res;
     }
 
-    private long getSleepTime(int runTime) {
+    public int getSleepTime(int runTime) {
         Random rand = new Random();
         return rand.nextInt(runTime);
     }
 
-    private static void goToSleep(long sleepTime) {
+    private void goToSleep(long sleepTime) {
         try {
             sleep(sleepTime);
         } catch (InterruptedException e) {
@@ -69,17 +65,9 @@ public class SimulationTask {
         }
     }
 
-    private String printTheTargetsChanges(State state, String targetName) {
-        Set<String> targetChanges;
+    public String getTargetChanges(boolean mainTargetSucceed, Set<String> targetChanges, String targetName) {
         String res;
         boolean firstPrint = true;
-        boolean mainTargetSucceed = (state == State.FINISHED_SUCCESS || state == State.FINISHED_WARNINGS);
-
-        if (mainTargetSucceed)
-            targetChanges = getRunnableTargetsNamesFromFinishedTarget(targetName);
-        else
-            targetChanges = getSkippedTargetsNamesFromFailedTarget(targetName);
-
         if (!targetChanges.isEmpty()) {
             if (mainTargetSucceed)
                 res = " The following targets become 'waiting' because the target " + targetName + " succeed \n";
@@ -99,27 +87,6 @@ public class SimulationTask {
         res += "\n";
 
         return res;
-    }
-
-    private void printSimulationSummary(int sumRunTime, int failed, int success, int successWithWarnings) {
-        int skipped = getAmountOfTargets() - failed - success - successWithWarnings;
-        System.out.println("\n -------------------------------");
-        System.out.println("   There are " + getAmountOfTargets() + " targets    ");
-        System.out.println("   The run time of the simulation took " + makeMStoString(sumRunTime));
-        System.out.println(" -------------------------------");
-        System.out.println("   " + success + " -> succeed            ");
-        System.out.println("   " + successWithWarnings + " -> succeed with warning          ");
-        System.out.println("   " + failed + " -> failed       ");
-        System.out.println("   " + skipped + " -> skipped       ");
-        System.out.println(" -------------------------------");
-    }
-
-    private static String makeMStoString(long time) {
-        long millis = time % 1000;
-        long second = (time / 1000) % 60;
-        long minute = (time / (1000 * 60)) % 60;
-        long hour = (time / (1000 * 60 * 60)) % 24;
-        return String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
     }
 
 }

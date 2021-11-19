@@ -14,15 +14,10 @@ import Exceptions.FileException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 
@@ -31,14 +26,11 @@ public class Engine {
 
     private Graph g;
     private Task task;
-    private String filePath;
+    private Path XMLfilePath;
+    private String targetFilePath;
 
     public Engine() {
         g = new Graph();
-    }
-
-    public long getTotalRuntime() {
-        return task.getTotalRuntime();
     }
 
     /**
@@ -48,11 +40,11 @@ public class Engine {
      * @param name The target's name
      * @return A DTO containing the target's info
      */
-    public static TargetDTO getTargetDataTransferObjectByName(String name) {
+    public TargetDTO getTargetDataTransferObjectByName(String name) {
         if (g.isTargetInGraphByName(name))
             return new TargetDTO(g.getTargetByName(name));
         else
-            return null;
+            return null; //exception?
     }
 
     /**
@@ -110,11 +102,10 @@ public class Engine {
      * from independent to roots. If the entire graph was finished (no more of said state),
      * returns null.
      *
-     * @param state The required target's state
      * @return A set of targets names that are in a given state, or null if no target is waiting
      */
-    public Set<String> getSetOfTargetsNamesBottomsUpByState(State state) {
-        return g.getSetOfTargetsNamesBottomsUpByState(state);
+    public Set<String> getSetOfWaitingTargetsNamesBottomsUp() {
+        return g.getSetOfWaitingTargetsNamesBottomsUp();
     }
 
     /**
@@ -146,7 +137,7 @@ public class Engine {
     public void loadFile(String filePath) throws JAXBException, FileNotFoundException, FileException {
         if (!filePath.endsWith("xml"))
             throw new FileException(1, filePath);
-        this.filePath = filePath;
+        XMLfilePath = Paths.get(filePath);
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
 
@@ -203,14 +194,83 @@ public class Engine {
         return g.isTargetInCircleByName(name);
     }
 
-    private void saveTargetToFileByName(String name) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
-        Path p=Paths.get(filePath);
+    private void createTargetFileByName(String name) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss");
+        String c;
+        if (XMLfilePath.toString().contains("\\"))
+            c = "\\";
+        else c = "/";
+        targetFilePath = (XMLfilePath.subpath(0, XMLfilePath.getNameCount() - 1) + c + task.getName() + " - " + dtf.format(task.getExecutionDate()) + c + name + ".log");
+    }
 
-        filePath = filePath.substring(0, filePath.lastIndexOf('\\')) + task.getName() + dtf.format(task.getExecutionDate()) + name + ".log";
-        File targetInfoFile = new File(filePath);
+    private void saveTargetInfoToFile(String info) throws IOException {
+        Writer out;
+        out = new BufferedWriter(
+                new OutputStreamWriter(
+                        new FileOutputStream(targetFilePath)));
+        out.write(info);
+    }
 
+    public String simulationStartInfo(String name) throws IOException {
+        task = new SimulationTask();
+        TargetDTO targetDTO = getTargetDataTransferObjectByName(name);
+        //if null exception
+        createTargetFileByName(name); //creating the target's file because its the first time
+        String info = ((SimulationTask) task).simulationStartInfo(targetDTO);
+        saveTargetInfoToFile(info);
+        return info;
+    }
+
+    public int getSleepTime(int runTime) throws IOException {
+        int info = ((SimulationTask) task).getSleepTime(runTime);
+        saveTargetInfoToFile(String.valueOf(info));
+        return info;
     }
 
 
+    public String simulationRunAndResult(String targetName, long runTime, float success, float successWithWarnings) throws IOException {
+        State state = ((SimulationTask) task).changeTargetState(success, successWithWarnings);
+        String targetChanges = getTargetChanges(targetName, state);
+        String info = ((SimulationTask) task).simulationRunAndResult(targetChanges, targetName, state, runTime);
+        saveTargetInfoToFile(info);
+        return info;
+    }
+
+    private String getTargetChanges(String targetName, State state) {
+        boolean mainTargetSucceed = (state == State.FINISHED_SUCCESS || state == State.FINISHED_WARNINGS);
+        Set<String> targetChanges;
+        if (mainTargetSucceed)
+            targetChanges = getRunnableTargetsNamesFromFinishedTarget(targetName);
+        else
+            targetChanges = getSkippedTargetsNamesFromFailedTarget(targetName);
+        return ((SimulationTask) task).getTargetChanges(mainTargetSucceed, targetChanges, targetName);
+
+    }
+
+    public static String makeMStoString(long time) {
+        long millis = time % 1000;
+        long second = (time / 1000) % 60;
+        long minute = (time / (1000 * 60)) % 60;
+        long hour = (time / (1000 * 60 * 60)) % 24;
+        return String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
+    }
+
+    public String getTotalRuntime() {
+        task.setTotalRuntime(0);
+        return makeMStoString(task.getTotalRuntime());
+    }
+
+    /**
+     * This method sets all failed (and skipped) targets to frozen. For starting the task again!
+     */
+    public void setAllFailedAndSkippedTargetsFrozen() {
+        g.setAllFailedAndSkippedTargetsFrozen();
+    }
+
+    /**
+     * This method sets all targets to frozen. For starting the task from scratch!
+     */
+    public void setAllTargetsFrozen() {
+        g.setAllTargetsFrozen();
+    }
 }

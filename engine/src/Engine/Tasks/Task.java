@@ -14,6 +14,7 @@ public abstract class Task {
     public Task(String name) {
         this.name = name;
         this.executionDate = LocalDateTime.now();
+        totalRuntime = 0;
     }
 
     public String getName() {
@@ -26,5 +27,13 @@ public abstract class Task {
 
     public LocalDateTime getExecutionDate() {
         return executionDate;
+    }
+
+    public void setTotalRuntime(long totalRuntime) {
+        this.totalRuntime = totalRuntime;
+    }
+
+    public void addTotalRuntime(long runTime) {
+        this.totalRuntime += runTime;
     }
 }

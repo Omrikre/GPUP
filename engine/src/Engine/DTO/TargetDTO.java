@@ -1,7 +1,8 @@
-package Engine;
+package Engine.DTO;
 
 import Engine.Enums.Location;
 import Engine.Enums.State;
+import Engine.Graph;
 
 import java.sql.Time;
 import java.util.Set;

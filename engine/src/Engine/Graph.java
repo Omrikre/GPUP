@@ -287,21 +287,30 @@ public class Graph {
     }
 
     /**
-     * This method gets a location and a state, and returns a set of all the
-     * targets with the given state in said location
+     * This method gets a location, and returns a set of all the frozen
+     * targets in said location
      *
      * @param location The target's location
-     * @param state    The required state
-     * @return a Set of all the waiting targets with said location.
+     * @return a Set of all the frozen targets with said location.
      */
-    private Set<Graph.Target> getSetOfTargetsByLocationAndState(Location location, State state) {
+    private Set<Graph.Target> getSetOfFrozenTargetsByLocation(Location location) {
         Set<Graph.Target> res = new HashSet<>();
         for (Target t : targets.values()) {
             if (t.location.equals(location))
-                if (t.getState().equals(state))
+                if (t.getState().equals(State.FROZEN))
                     res.add(t);
         }
         return res;
+    }
+
+    /**
+     * This method sets all failed (and skipped) targets to frozen. For starting the task again!
+     */
+    public void setAllFailedAndSkippedTargetsFrozen() {
+        for (Target t : targets.values()) {
+            if (t.getState().equals(State.FINISHED_FAILURE) || t.getState().equals((State.SKIPPED)))
+                t.setState(State.FROZEN);
+        }
     }
 
     /**
@@ -315,34 +324,33 @@ public class Graph {
     }
 
     /**
-     * This method returns a set of targets names if they are in a given state,
-     * from independent to roots. If the entire graph was finished (no more of said state),
+     * This method returns a set of waiting targets names,
+     * from independent to roots. If the entire graph was finished (no more waiting),
      * returns null.
      *
-     * @param state The required target's state
-     * @return A set of targets names that are in a given state, or null if no target is waiting
+     * @return A set of targets names that are waiting, or null if no target is waiting
      */
-    public Set<String> getSetOfTargetsNamesBottomsUpByState(State state) {
+    public Set<String> getSetOfWaitingTargetsNamesBottomsUp() {
         Set<String> res = new HashSet<>();
-        for (Target t : getSetOfTargetsByLocationAndState(Location.INDEPENDENT, state)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.INDEPENDENT)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the independent branch
             return res;
-        for (Target t : getSetOfTargetsByLocationAndState(Location.LEAF, state)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.LEAF)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the leaves branch
             return res;
-        for (Target t : getSetOfTargetsByLocationAndState(Location.MIDDLE, state)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.MIDDLE)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
         if (!res.isEmpty()) //there were waiting targets in the middle branch
             return res;
-        for (Target t : getSetOfTargetsByLocationAndState(Location.ROOT, state)) {
+        for (Target t : getSetOfFrozenTargetsByLocation(Location.ROOT)) {
             t.setState(State.WAITING);
             res.add(t.getName());
         }
