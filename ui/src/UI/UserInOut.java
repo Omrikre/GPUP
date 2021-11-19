@@ -4,6 +4,7 @@ import Engine.Engine;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
 
+import Engine.Enums.State;
 import Engine.TargetDTO;
 import Exceptions.FileNotLoadedException;
 
@@ -13,6 +14,7 @@ public class UserInOut extends Menu implements UI {
     private static boolean fileIsLoaded;
     private static final Engine engine = new Engine();
     private static Location type;
+    private boolean firstSmulationHappend = false;
 
     // run the UI
     public void runProgram() {
@@ -269,6 +271,8 @@ public class UserInOut extends Menu implements UI {
         float probabilityForSuccess, probabilityForSuccessWarnings;
         boolean randomRunTime = false;
 
+        if()
+
         // get simulation time per target
         System.out.print(" enter the simulation time per target (in ms): ");
         runTime = sc.nextInt();
@@ -368,14 +372,14 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" -- START SIMULATION -- ");
         System.out.println(" ---------------------- \n");
 
-        simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
+        simTargets = engine.getSetOfTargetsNamesBottomsUpByState(State.WAITING);
         while(simTargets != null) {
             for (String s : simTargets) {
 
                 //TODO
                 //method 1 - SimulationStartInfo
                 //print 1
-                //realRunTime = method 2 - getSleepTime
+                //realRunTime = engine.getSleepTime();
                 System.out.println(" going to sleep for " + realRunTime);
                 System.out.println(" -- layla tov --");
                 //method 3 - SimulationRunAndResult
@@ -384,8 +388,9 @@ public class UserInOut extends Menu implements UI {
 
                 System.out.println(" - - - - - - - - - - - - \n");
             }
-            simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
+            simTargets = engine.getSetOfTargetsNamesBottomsUpByState(State.WAITING);
         }
+        firstSmulationHappend = true;
 
         //printSimulationSummary(); //TODO
 

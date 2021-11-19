@@ -1,6 +1,5 @@
 package Engine.Tasks;
 
-import Engine.Engine;
 import Engine.Enums.State;
 import Engine.TargetDTO;
 
@@ -9,19 +8,15 @@ import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
-public class SimulationTask extends Task {
-    public SimulationTask() {
-        super("Simulation");
-    }
+public class SimulationTask {
+    private long totalRunTime = 0;
 
-    private String SimulationStartInfo(String targetName) {
+    private String SimulationStartInfo(TargetDTO target) {
         String targetInfo;
-        TargetDTO dto;
         String res;
 
-        res = " target name: " + targetName;
-        dto = getTargetDataTransferObjectByName(targetName);
-        targetInfo = dto.getTargetInfo();
+        res = " target name: " + target.getTargetName();
+        targetInfo = target.getTargetInfo();
         if (targetInfo != null)
             res = res + "\n target info: " + targetInfo;
         else
@@ -29,7 +24,7 @@ public class SimulationTask extends Task {
         return res;
     }
 
-    private String SimulationRunAndResult(String targetName, int runTime, boolean randomRunTime, float success, float successWithWarnings) {
+    private String SimulationRunAndResult(String targetName, int runTime, float success, float successWithWarnings) {
         State targetState;
         String res;
 
@@ -43,12 +38,9 @@ public class SimulationTask extends Task {
         return res;
     }
 
-    private long getSleepTime(boolean randomRunTime, int runTime) {
+    private long getSleepTime(int runTime) {
         Random rand = new Random();
-        if (randomRunTime)
-            return rand.nextInt(runTime);
-        else
-            return runTime;
+        return rand.nextInt(runTime);
     }
 
     private static void goToSleep(long sleepTime) {
