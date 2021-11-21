@@ -23,9 +23,7 @@ public class UserInOut extends Menu implements UI {
         Scanner sc = new Scanner(System.in);
         int userChoice;
 
-        System.out.println("\n\n |------------------------|");
-        System.out.println(" |-- Welcome To G.P.U.P --| ");
-        System.out.println(" |------------------------|");
+        printHeader();
 
         while (runProgram) {
             try {
@@ -59,8 +57,8 @@ public class UserInOut extends Menu implements UI {
                     case 6:
                         if (!fileIsLoaded)
                             throw new FileNotLoadedException();
-                        findCircle();
-                        //TODO
+                        findCycle();
+                        break;
                     case 0:
                         runProgram = false;
                         break;
@@ -123,16 +121,15 @@ public class UserInOut extends Menu implements UI {
     }
 
     // 2
-    private static void generalInfo() {
-
+    private void generalInfo() {
         int numOfTargets = engine.getAmountOfTargets();
         Map<Location, Integer> numOfTypes = engine.howManyTargetsInEachLocation();
         System.out.println("\n --------------------------");
-        System.out.println("|   There are " + numOfTargets + " targets    |");
-        System.out.println("|   " + numOfTypes.get(type.LEAF) + "-> leaves             |");
-        System.out.println("|   " + numOfTypes.get(type.MIDDLE) + "-> middles            |");
-        System.out.println("|   " + numOfTypes.get(type.ROOT) + "-> roots              |");
-        System.out.println("|   " + numOfTypes.get(type.INDEPENDENT) + "-> independents       |");
+        System.out.println("|   There are " + numOfTargets + " targets   |");
+        System.out.println("|   " + numOfTypes.get(Location.LEAF) + "-> leaves             |");
+        System.out.println("|   " + numOfTypes.get(Location.MIDDLE) + "-> middles            |");
+        System.out.println("|   " + numOfTypes.get(Location.ROOT) + "-> roots              |");
+        System.out.println("|   " + numOfTypes.get(Location.INDEPENDENT) + "-> independents       |");
         System.out.println(" --------------------------");
     }
 
@@ -146,11 +143,11 @@ public class UserInOut extends Menu implements UI {
         targetInFile = engine.isTargetInGraphByName(targetName);
 
         while (!targetInFile) {
-            System.out.println(" -- The target you entered is not in the database --");
+            System.out.println("\n -- The target you entered is not in the database --");
             if (!keepTryingInput()) {
                 return;
             } else {
-                System.out.println(" enter target name: ");
+                System.out.print(" enter target name: ");
                 targetName = sc.nextLine();
                 targetInFile = engine.isTargetInGraphByName(targetName);
             }
@@ -177,7 +174,7 @@ public class UserInOut extends Menu implements UI {
     }
 
     // 4
-    private static void pathBetweenTargets() {
+    private void pathBetweenTargets() {
         Scanner sc = new Scanner(System.in);
         String srcTargetName, destTargetName;
         boolean srcTargetExist, destTargetExist, stillTry;
@@ -242,31 +239,11 @@ public class UserInOut extends Menu implements UI {
             System.out.println(" path to the target " + destTargetName);
             return;
         }
-        boolean firstTarget = true;
-        int lineCount = 0;
-        System.out.println(" ");
-        for (List<String> line : lst) {
-            lineCount++;
-            System.out.print(" " + lineCount + ") ");
-            for (String targetName : line) {
-                if (firstTarget) {
-                    System.out.print(targetName);
-                    firstTarget = false;
-                } else {
-                    if (res == 1)
-                        System.out.print(" >> " + targetName);
-                    else
-                        System.out.print(" << " + targetName);
-                }
-            }
-            firstTarget = true;
-            System.out.println(" ");
-        }
-        System.out.println(" ");
+        printListOfTargets(lst, res);
     }
 
     // 5
-    private void Simulation() throws InterruptedException, IOException {
+    private void Simulation() throws IOException {
         Scanner sc = new Scanner(System.in);
         int runTime;
         float probabilityForSuccess, probabilityForSuccessWarnings;
@@ -275,7 +252,7 @@ public class UserInOut extends Menu implements UI {
 
         if (firstSmulationHappend) {
             switch (newSimulateOrContinue()) {
-            case 9:
+            case 0:
                 return;
             case 1:
                 engine.setAllFailedAndSkippedTargetsFrozen();
@@ -292,12 +269,13 @@ public class UserInOut extends Menu implements UI {
         runTime = sc.nextInt();
 
         switch (randomRunTime(runTime)) {
-            case 9:
+            case 0:
                 return;
             case 1:
-                randomRunTime = false;
+                break;
             case 2:
                 randomRunTime = true;
+                break;
         }
         probabilityForSuccess = getProbabilityToSuccess();
         if (probabilityForSuccess == 9)
@@ -315,7 +293,7 @@ public class UserInOut extends Menu implements UI {
         firstSmulationHappend = true;
     }
     private int randomRunTime(int runTime) {
-        int MenuChoice = -1;
+        int MenuChoice;
         printRandomRunTimeMenu(runTime);
         Scanner sc = new Scanner(System.in);
         MenuChoice = sc.nextInt();
@@ -345,7 +323,7 @@ public class UserInOut extends Menu implements UI {
     private float getProbabilityToSuccess() {
         // get from user the probability to success
 
-        float res = -1;
+        float res;
         Scanner sc = new Scanner(System.in);
 
         System.out.println("\n In what probability to success do you want the simulation to run? ");
@@ -367,7 +345,7 @@ public class UserInOut extends Menu implements UI {
     }
     private float getProbabilityToSuccessWarnings() {
         // get probability it's a success with warnings
-        float res = -1;
+        float res;
         Scanner sc = new Scanner(System.in);
 
         System.out.println("\n If the task succeeded, what the probability it's a success with warnings? ");
@@ -385,9 +363,9 @@ public class UserInOut extends Menu implements UI {
         }
         return res;
     }
-    private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws InterruptedException, IOException {
+    private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws IOException {
         Set<String> simTargets;
-        long realRunTime = 0; //TODO
+        long realRunTime;
         String runStringRes;
 
         System.out.println("\n\n ---------------------- ");
@@ -419,7 +397,7 @@ public class UserInOut extends Menu implements UI {
 
     }
     private int newSimulateOrContinue() {
-        int MenuChoice = -1;
+        int MenuChoice;
         printNewSimulateOrContinueMenu();
         Scanner sc = new Scanner(System.in);
         MenuChoice = sc.nextInt();
@@ -447,11 +425,56 @@ public class UserInOut extends Menu implements UI {
     }
 
     // 6
-    private void findCircle() {
-        //TODO
+    private void findCycle() {
+        boolean targetInFile;
+        Scanner sc = new Scanner(System.in);
 
+        System.out.print(" To check if a goal is part of a circle\n" +
+                " Please enter the name of the target: ");
+        String targetName = sc.nextLine();
+        targetInFile = engine.isTargetInGraphByName(targetName);
 
-        engine.isTargetInCircleByName("A");
+        while (!targetInFile) {
+            System.out.println(" -- The target you entered is not in the database --");
+            if (!keepTryingInput()) {
+                return;
+            } else {
+                System.out.println(" Please enter the target name again: ");
+                targetName = sc.nextLine();
+                targetInFile = engine.isTargetInGraphByName(targetName);
+            }
+        }
+        Set<List<String>> res = engine.isTargetInCircleByName(targetName);
+        if(res.size() == 0) {
+            System.out.println("\n -- The target '" + targetName + "' is NOT part of a cycle -- ");
+        }
+        else {
+            System.out.println("\n -- The target '" + targetName + "' is part of a cycle -- ");
+            printListOfTargets(res, 1);
+        }
+    }
+    private void printListOfTargets(Set<List<String>> lst, int whichWay) {
+        boolean firstTarget = true;
+        int lineCount = 0;
+        System.out.println(" ");
+        for (List<String> line : lst) {
+            lineCount++;
+            System.out.print(" " + lineCount + ") ");
+            for (String targetName : line) {
+                if (firstTarget) {
+                    System.out.print(targetName);
+                    firstTarget = false;
+                } else {
+                    if (whichWay == 1)
+                        System.out.print(" >> " + targetName);
+                    else
+                        System.out.print(" << " + targetName);
+                }
+            }
+            firstTarget = true;
+            System.out.println(" ");
+        }
+        System.out.println(" ");
     }
 
 
