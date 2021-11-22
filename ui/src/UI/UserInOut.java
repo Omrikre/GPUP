@@ -15,7 +15,7 @@ public class UserInOut extends Menu implements UI {
     private static boolean fileIsLoaded;
     private static final Engine engine = new Engine();
     private static Location type;
-    private boolean firstSmulationHappend = false;
+    private boolean firstSimulationHappened = false;
 
     // run the UI
     public void runProgram() {
@@ -74,7 +74,7 @@ public class UserInOut extends Menu implements UI {
             sc.nextLine();
             System.out.println("\n *****************************************");
         }
-        System.out.println(" -- Goodbye! -- \n");
+        System.out.println("\n             -- Goodbye! -- \n");
     }
 
     // 1
@@ -250,16 +250,21 @@ public class UserInOut extends Menu implements UI {
         boolean randomRunTime = false;
 
 
-        if (firstSmulationHappend) {
+        if (firstSimulationHappened) {
             switch (newSimulateOrContinue()) {
                 case 0:
                     return;
                 case 1:
                     engine.setAllFailedAndSkippedTargetsFrozen();
+                    System.out.println("\n -- CONTINUES SIMULATION --\n");
+                    break;
                 case 2:
                     engine.setAllTargetsFrozen();
+                    System.out.println("\n -- SIMULATION FROM SCRATCH --\n");
+                    break;
             }
         } else {
+            System.out.println("\n -- SIMULATION FROM SCRATCH --\n");
             engine.setAllTargetsFrozen();
         }
 
@@ -289,7 +294,7 @@ public class UserInOut extends Menu implements UI {
 
 
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
-        firstSmulationHappend = true;
+        firstSimulationHappened = true;
     }
 
     private int randomRunTime(int runTime) {
@@ -315,13 +320,6 @@ public class UserInOut extends Menu implements UI {
         System.out.print(" Enter your choice: ");
     }
 
-    private void printNewSimulateOrContinueMenu() {
-        System.out.println("\n What would you prefer? ");
-        System.out.println(" 1. fixed processing time - ms per target");
-        System.out.println(" 2. random processing time - up to ms");
-        System.out.println(" 0. cancel and return to the main menu");
-        System.out.print(" Enter your choice: ");
-    }
 
     private float getProbabilityToSuccess() {
         // get from user the probability to success
@@ -382,8 +380,11 @@ public class UserInOut extends Menu implements UI {
             for (String s : simTargets) {
 
                 System.out.println(engine.simulationStartInfo(s));
-                realRunTime = engine.getSleepTime(runTime);
-                System.out.println(" going to sleep for " + realRunTime);
+                if(randomRunTime)
+                    realRunTime = engine.getSleepTime(runTime);
+                else
+                    realRunTime = runTime;
+                System.out.println(" going to sleep for " + Engine.makeMStoString(realRunTime));
                 System.out.println(" -- layla tov --");
                 runStringRes = engine.simulationRunAndResult(s, realRunTime, success, successWithWarnings);
                 System.out.println(" -- boker tov --");
@@ -393,7 +394,7 @@ public class UserInOut extends Menu implements UI {
             }
             simTargets = engine.getSetOfWaitingTargetsNamesBottomsUp();
         }
-        firstSmulationHappend = true;
+        firstSimulationHappened = true;
         printSimulationSummary();
 
         System.out.println("\n\n -------------------- ");
@@ -404,6 +405,7 @@ public class UserInOut extends Menu implements UI {
 
     private int newSimulateOrContinue() {
         int MenuChoice;
+
         printNewSimulateOrContinueMenu();
         Scanner sc = new Scanner(System.in);
         MenuChoice = sc.nextInt();

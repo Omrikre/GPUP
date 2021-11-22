@@ -55,6 +55,14 @@ public class Menu {
                 "                                   \n");
 
     }
+    public void printNewSimulateOrContinueMenu() {
+        System.out.println("\n The system has detected that a simulation has already been performed on this graph ");
+        System.out.println(" What would you like to do?");
+        System.out.println(" 1. Continue the simulation from the last run (incremental)");
+        System.out.println(" 2. Reset previous simulations and run a new one (from scratch)");
+        System.out.println(" 0. cancel and return to the main menu");
+        System.out.print(" Enter your choice: ");
+    }
 
 }
 

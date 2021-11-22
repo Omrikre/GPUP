@@ -78,9 +78,8 @@ public class SimulationTask extends Task {
                 } else
                     res += ", " + target;
             }
-            res += "\n";
         } else
-            res = "\n No changes were made to other targets";
+            res = " No changes were made to other targets";
         res += "\n";
 
         return res;
