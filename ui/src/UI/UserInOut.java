@@ -251,17 +251,28 @@ public class UserInOut extends Menu implements UI {
 
 
         if (firstSimulationHappened) {
-            switch (newSimulateOrContinue()) {
-                case 0:
-                    return;
-                case 1:
-                    engine.setAllFailedAndSkippedTargetsFrozen();
-                    System.out.println("\n -- CONTINUES SIMULATION --\n");
-                    break;
-                case 2:
-                    engine.setAllTargetsFrozen();
-                    System.out.println("\n -- SIMULATION FROM SCRATCH --\n");
-                    break;
+            if(!engine.isGraphFinishedSuccessfully()) {
+                switch (newSimulateOrContinue()) {
+                    case 0:
+                        return;
+                    case 1:
+                        engine.setAllFailedAndSkippedTargetsFrozen();
+                        System.out.println("\n -- CONTINUES SIMULATION --\n");
+                        break;
+                    case 2:
+                        engine.setAllTargetsFrozen();
+                        System.out.println("\n -- SIMULATION FROM SCRATCH --\n");
+                        break;
+                }
+            } else {
+                switch(allGraphIsSuccessReSimOrReturn()) {
+                    case 0:
+                        return;
+                    case 1:
+                        engine.setAllTargetsFrozen();
+                        System.out.println("\n -- SIMULATION FROM SCRATCH --\n");
+                        break;
+                }
             }
         } else {
             System.out.println("\n -- SIMULATION FROM SCRATCH --\n");
@@ -319,7 +330,6 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" 0. cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
-
 
     private float getProbabilityToSuccess() {
         // get from user the probability to success
@@ -419,6 +429,22 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
+    private int allGraphIsSuccessReSimOrReturn() {
+        int MenuChoice;
+
+        printNewSimulateOrReturnMenu();
+        Scanner sc = new Scanner(System.in);
+        MenuChoice = sc.nextInt();
+
+        while (!(MenuChoice == 1 || MenuChoice == 0)) {
+            System.out.println("\n -- Enter number by the menu ( 1 / 0 ) --");
+
+            printNewSimulateOrReturnMenu();
+            sc.nextLine();
+            MenuChoice = sc.nextInt();
+        }
+        return MenuChoice;
+    }
 
     private void printSimulationSummary() {
         Map<State, Integer> stateMap = engine.howManyTargetsInEachState();
@@ -430,7 +456,17 @@ public class UserInOut extends Menu implements UI {
         System.out.println("   " + stateMap.get(State.FINISHED_WARNINGS) + " -> succeed with warning          ");
         System.out.println("   " + stateMap.get(State.FINISHED_FAILURE) + " -> failed       ");
         System.out.println("   " + stateMap.get(State.SKIPPED) + " -> skipped       ");
-        System.out.println(" -------------------------------");
+        System.out.println(" -------------------------------\n");
+
+        List<TargetDTO> lst = engine.getListOfAllTargetsDTOsInGraph();
+        for(TargetDTO dto : lst) {
+            System.out.print(" "  + dto.getTargetName() + " -> " + dto.getTargetState() + " ");
+            if (dto.getTargetState() == State.FINISHED_WARNINGS ||  dto.getTargetState() == State.FINISHED_SUCCESS || dto.getTargetState() == State.FINISHED_FAILURE)
+                System.out.println(Engine.makeMStoString(dto.getTargetTime()));
+            else
+                System.out.println(" ");
+        }
+
     }
 
     // 6
