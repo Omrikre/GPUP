@@ -15,6 +15,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
@@ -26,11 +28,13 @@ public class Engine {
 
     private Graph g;
     private Task task;
+    private String directoryPath, targetFilePath;
     private Path XMLfilePath;
-    private String targetFilePath;
+    private boolean firstRun;
 
     public Engine() {
         g = new Graph();
+        firstRun = true;
     }
 
     /**
@@ -194,31 +198,46 @@ public class Engine {
         return g.isTargetInCircleByName(name);
     }
 
-    private void createTargetFileByName(String name) {
+    private void createTaskFolder(Path XMLfilePath) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss");
         String c;
         if (XMLfilePath.toString().contains("\\"))
             c = "\\";
         else c = "/";
-        targetFilePath = (XMLfilePath.subpath(0, XMLfilePath.getNameCount() - 1) + c + task.getName() + " - " + dtf.format(task.getExecutionDate()) + c + name + ".log");
+        directoryPath = XMLfilePath.getRoot() + (XMLfilePath.subpath(0, XMLfilePath.getNameCount() - 1) + c + task.getName() + " - " + dtf.format(task.getExecutionDate()));
+        File dir = new File(directoryPath);
+        dir.mkdir();
     }
 
     private void saveTargetInfoToFile(String info) throws IOException {
-        Writer out;
-        out = new BufferedWriter(
+        try (Writer out = new BufferedWriter(
                 new OutputStreamWriter(
-                        new FileOutputStream(targetFilePath)));
-        out.write(info);
+                        new FileOutputStream(targetFilePath)))) {
+            out.write(info);
+        }
     }
 
     public String simulationStartInfo(String name) throws IOException {
         task = new SimulationTask();
+        if (firstRun) {
+            createTaskFolder(XMLfilePath);
+            firstRun = false;
+        }
         TargetDTO targetDTO = getTargetDataTransferObjectByName(name);
         //if null exception
         createTargetFileByName(name); //creating the target's file because its the first time
         String info = ((SimulationTask) task).simulationStartInfo(targetDTO);
         saveTargetInfoToFile(info);
         return info;
+    }
+
+    private void createTargetFileByName(String name) {
+        String c;
+        if (directoryPath.contains("\\"))
+            c = "\\";
+        else c = "/";
+        targetFilePath = (directoryPath + c + name + ".log");
+
     }
 
     public int getSleepTime(int runTime) throws IOException {
@@ -228,7 +247,8 @@ public class Engine {
     }
 
 
-    public String simulationRunAndResult(String targetName, long runTime, float success, float successWithWarnings) throws IOException {
+    public String simulationRunAndResult(String targetName, long runTime, float success, float successWithWarnings) throws
+            IOException {
         State state = ((SimulationTask) task).changeTargetState(success, successWithWarnings);
         String targetChanges = getTargetChanges(targetName, state);
         String info = ((SimulationTask) task).simulationRunAndResult(targetChanges, targetName, state, runTime);
