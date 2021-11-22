@@ -201,6 +201,15 @@ public class Engine {
     }
 
     /**
+     * This method checks if all targets finished their task successfully
+     *
+     * @return True or False
+     */
+    public boolean isGraphFinishedSuccessfully() {
+        return g.isFinishedSuccessfully();
+    }
+
+    /**
      * This method gets a target's name and returns a list of all the circles it is in
      * if the set is empty, the target is not in any circle
      *

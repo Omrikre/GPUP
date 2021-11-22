@@ -315,6 +315,19 @@ public class Graph {
     }
 
     /**
+     * This method checks if all targets finished their task successfully
+     *
+     * @return True or False
+     */
+    public boolean isFinishedSuccessfully() {
+        for (Target t : targets.values()) {
+            if (!((t.state.equals(State.FINISHED_SUCCESS)) || (t.state.equals(State.FINISHED_WARNINGS))))
+                return false;
+        }
+        return true;
+    }
+
+    /**
      * This method sets all targets to frozen. For starting the task from scratch!
      */
     public void setAllTargetsFrozen() {
