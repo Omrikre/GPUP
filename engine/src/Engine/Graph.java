@@ -1,5 +1,6 @@
 package Engine;
 
+import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
@@ -22,7 +23,7 @@ public class Graph {
         private Set<Target> requiredFor;
         private final String info;
         private State state;
-        private String time;
+        private long time;
 
         public Target(String name, String info) throws FileException {
             this.name = name;
@@ -59,8 +60,12 @@ public class Graph {
             return state;
         }
 
-        public String getTime() {
+        public long getTime() {
             return time;
+        }
+
+        public void setTime(long time) {
+            this.time = time;
         }
 
         //used only in the function that automatically sets a location to all the targets in the graph

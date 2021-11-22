@@ -110,6 +110,7 @@ public class Engine {
         return g.getSetOfWaitingTargetsNamesBottomsUp();
     }
 
+
     /**
      * This method gets a target's name and a state (calculated by the UI from the task)
      * it sets the state for the target, and if it affects other targets sets their state too
@@ -166,6 +167,20 @@ public class Engine {
     }
 
     /**
+     * This method returns a list of all targets as DTOs
+     *
+     * @return A list of target DTOs
+     */
+    public List<TargetDTO> getListOfAllTargetsDTOsInGraph() {
+        List<TargetDTO> res = new ArrayList<>();
+        for (Graph.Target t : g.getTargets().values()) {
+            res.add(getTargetDataTransferObjectByName(t.getName()));
+        }
+        res.sort(Comparator.comparing(TargetDTO::getTargetName));
+        return res;
+    }
+
+    /**
      * This method gets a failed target's name, and returns a set of the names all the targets that are Skipped because it failed.
      *
      * @param targetName The failed target's name
@@ -204,7 +219,7 @@ public class Engine {
         else c = "/";
         directoryPath = XMLfilePath.getRoot() + (XMLfilePath.subpath(0, XMLfilePath.getNameCount() - 1) + c + task.getName() + " - " + dtf.format(task.getExecutionDate()));
         File dir = new File(directoryPath);
-        dir.mkdir();
+        dir.mkdir(); //if false throw exception?
     }
 
     private void saveTargetInfoToFile(String info) throws IOException {
@@ -223,7 +238,7 @@ public class Engine {
         }
         TargetDTO targetDTO = getTargetDataTransferObjectByName(name);
         //if null exception
-        createTargetFileByName(name); //creating the target's file because its the first time
+        createTargetFileByName(name); //creating the target's file because it's the first time
         String info = ((SimulationTask) task).simulationStartInfo(targetDTO);
         saveTargetInfoToFile(info);
         return info;
@@ -248,7 +263,9 @@ public class Engine {
     public String simulationRunAndResult(String targetName, long runTime, float success, float successWithWarnings) throws
             IOException {
         State state = ((SimulationTask) task).changeTargetState(success, successWithWarnings);
+        //save info to target as well
         setFinishedState(targetName, state);
+        g.getTargetByName(targetName).setTime(runTime);
         String targetChanges = getTargetChanges(targetName, state);
         String info = ((SimulationTask) task).simulationRunAndResult(targetChanges, state, runTime);
         saveTargetInfoToFile(info);
