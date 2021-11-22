@@ -15,8 +15,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
@@ -30,11 +28,11 @@ public class Engine {
     private Task task;
     private String directoryPath, targetFilePath;
     private Path XMLfilePath;
-    private boolean firstRun;
+    private boolean newRun;
 
     public Engine() {
         g = new Graph();
-        firstRun = true;
+        newRun = true;
     }
 
     /**
@@ -119,9 +117,9 @@ public class Engine {
      * @param targetName  The target's name
      * @param targetState The given state after the task
      */
-    public void setFinishedState(String targetName, State targetState, String time) {
+    public void setFinishedState(String targetName, State targetState) {
         //if state!=FINISHED, throw exception
-        g.setFinishedState(targetName, targetState, time);
+        g.setFinishedState(targetName, targetState);
     }
 
     private GPUPDescriptor deserializeFrom(InputStream in) throws JAXBException {
@@ -218,10 +216,10 @@ public class Engine {
     }
 
     public String simulationStartInfo(String name) throws IOException {
-        task = new SimulationTask();
-        if (firstRun) {
+        if (newRun) {
+            task = new SimulationTask();
             createTaskFolder(XMLfilePath);
-            firstRun = false;
+            newRun = false;
         }
         TargetDTO targetDTO = getTargetDataTransferObjectByName(name);
         //if null exception
@@ -250,8 +248,9 @@ public class Engine {
     public String simulationRunAndResult(String targetName, long runTime, float success, float successWithWarnings) throws
             IOException {
         State state = ((SimulationTask) task).changeTargetState(success, successWithWarnings);
+        setFinishedState(targetName, state);
         String targetChanges = getTargetChanges(targetName, state);
-        String info = ((SimulationTask) task).simulationRunAndResult(targetChanges, targetName, state, runTime);
+        String info = ((SimulationTask) task).simulationRunAndResult(targetChanges, state, runTime);
         saveTargetInfoToFile(info);
         return info;
     }
@@ -276,7 +275,7 @@ public class Engine {
     }
 
     public String getTotalRuntime() {
-        task.setTotalRuntime(0);
+        newRun = true; //TEMPORARY, FIX!!
         return makeMStoString(task.getTotalRuntime());
     }
 

@@ -72,10 +72,6 @@ public class Graph {
             this.state = s;
         }
 
-        public void setTime(String t) {
-            this.time = t;
-        }
-
         private void addDependedTarget(Target t) throws FileException {
             if (t.dependsOn.contains(this))
                 throw new FileException(4, this.getName(), Bond.DEPENDS_ON, t.getName());
@@ -366,9 +362,8 @@ public class Graph {
      * @param targetName  The target's name
      * @param targetState The given state after the task
      */
-    public void setFinishedState(String targetName, State targetState, String time) {
+    public void setFinishedState(String targetName, State targetState) {
         Target t = targets.get(targetName);
-        t.setTime(time);
         t.setState(targetState);
         if (t.getState().equals(State.FINISHED_FAILURE)) {
             setAllRequiredTargetsSkipped(t);

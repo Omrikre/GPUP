@@ -14,7 +14,6 @@ public class TargetDTO {
     private final Set<Graph.Target> targetRequiredFor;
     private final String targetInfo;
     private final State targetState;
-    private final String targetTime;
 
     public TargetDTO(Graph.Target t) {
         this.targetName = t.getName();
@@ -23,7 +22,6 @@ public class TargetDTO {
         this.targetRequiredFor = t.getRequiredFor();
         this.targetInfo = t.getInfo();
         this.targetState = t.getState();
-        this.targetTime = t.getTime();
     }
 
     public String getTargetName() {
@@ -50,10 +48,6 @@ public class TargetDTO {
         return targetState;
     }
 
-    public String getTargetTime() {
-        return targetTime;
-    }
-
     @Override
     public String toString() {
         return "TargetDTO{" +
@@ -63,7 +57,7 @@ public class TargetDTO {
                 ", targetRequiredFor=" + targetRequiredFor +
                 ", targetInfo='" + targetInfo + '\'' +
                 ", targetState=" + targetState +
-                ", targetTime=" + targetTime +
+                ", targetTime=" +
                 '}';
     }
 }

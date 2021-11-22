@@ -25,7 +25,7 @@ public class SimulationTask extends Task {
         return res;
     }
 
-    public String simulationRunAndResult(String targetChanges, String targetName, State state, long runTime) {
+    public String simulationRunAndResult(String targetChanges, State state, long runTime) {
         String res;
         goToSleep(runTime);
         res = " running result: " + state.toString() + " \n\n";

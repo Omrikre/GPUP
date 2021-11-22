@@ -252,15 +252,14 @@ public class UserInOut extends Menu implements UI {
 
         if (firstSmulationHappend) {
             switch (newSimulateOrContinue()) {
-            case 0:
-                return;
-            case 1:
-                engine.setAllFailedAndSkippedTargetsFrozen();
-            case 2:
-                engine.setAllTargetsFrozen();
+                case 0:
+                    return;
+                case 1:
+                    engine.setAllFailedAndSkippedTargetsFrozen();
+                case 2:
+                    engine.setAllTargetsFrozen();
             }
-        }
-        else {
+        } else {
             engine.setAllTargetsFrozen();
         }
 
@@ -292,6 +291,7 @@ public class UserInOut extends Menu implements UI {
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
         firstSmulationHappend = true;
     }
+
     private int randomRunTime(int runTime) {
         int MenuChoice;
         printRandomRunTimeMenu(runTime);
@@ -306,6 +306,7 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
+
     private void printRandomRunTimeMenu(int runTime) {
         System.out.println("\n What would you prefer? ");
         System.out.println(" 1. fixed processing time - " + runTime + " ms per target");
@@ -313,6 +314,7 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" 0. cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
+
     private void printNewSimulateOrContinueMenu() {
         System.out.println("\n What would you prefer? ");
         System.out.println(" 1. fixed processing time - ms per target");
@@ -320,6 +322,7 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" 0. cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
+
     private float getProbabilityToSuccess() {
         // get from user the probability to success
 
@@ -343,6 +346,7 @@ public class UserInOut extends Menu implements UI {
         return res;
 
     }
+
     private float getProbabilityToSuccessWarnings() {
         // get probability it's a success with warnings
         float res;
@@ -363,6 +367,7 @@ public class UserInOut extends Menu implements UI {
         }
         return res;
     }
+
     private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws IOException {
         Set<String> simTargets;
         long realRunTime;
@@ -396,6 +401,7 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" -------------------- \n");
 
     }
+
     private int newSimulateOrContinue() {
         int MenuChoice;
         printNewSimulateOrContinueMenu();
@@ -411,6 +417,7 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
+
     private void printSimulationSummary() {
         Map<State, Integer> stateMap = engine.howManyTargetsInEachState();
         System.out.println("\n -------------------------------");
@@ -419,8 +426,8 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" -------------------------------");
         System.out.println("   " + stateMap.get(State.FINISHED_SUCCESS) + " -> succeed            ");
         System.out.println("   " + stateMap.get(State.FINISHED_WARNINGS) + " -> succeed with warning          ");
-        System.out.println("   " + stateMap.get(State.SKIPPED) + " -> failed       ");
-        System.out.println("   " + stateMap.get(State.FINISHED_SUCCESS) + " -> skipped       ");
+        System.out.println("   " + stateMap.get(State.FINISHED_FAILURE) + " -> failed       ");
+        System.out.println("   " + stateMap.get(State.SKIPPED) + " -> skipped       ");
         System.out.println(" -------------------------------");
     }
 
@@ -445,14 +452,14 @@ public class UserInOut extends Menu implements UI {
             }
         }
         Set<List<String>> res = engine.isTargetInCircleByName(targetName);
-        if(res.size() == 0) {
+        if (res.size() == 0) {
             System.out.println("\n -- The target '" + targetName + "' is NOT part of a cycle -- ");
-        }
-        else {
+        } else {
             System.out.println("\n -- The target '" + targetName + "' is part of a cycle -- ");
             printListOfTargets(res, 1);
         }
     }
+
     private void printListOfTargets(Set<List<String>> lst, int whichWay) {
         boolean firstTarget = true;
         int lineCount = 0;
@@ -476,7 +483,6 @@ public class UserInOut extends Menu implements UI {
         }
         System.out.println(" ");
     }
-
 
 
 }

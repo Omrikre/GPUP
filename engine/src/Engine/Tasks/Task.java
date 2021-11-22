@@ -29,10 +29,6 @@ public abstract class Task {
         return executionDate;
     }
 
-    public void setTotalRuntime(long totalRuntime) {
-        this.totalRuntime = totalRuntime;
-    }
-
     public void addTotalRuntime(long runTime) {
         this.totalRuntime += runTime;
     }
