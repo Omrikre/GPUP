@@ -234,8 +234,8 @@ public class Engine {
     private void saveTargetInfoToFile(String info) throws IOException {
         try (Writer out = new BufferedWriter(
                 new OutputStreamWriter(
-                        new FileOutputStream(targetFilePath)))) {
-            out.write(info);
+                        new FileOutputStream(targetFilePath, true)))) {
+            out.write(info + "\n");
         }
     }
 
@@ -264,7 +264,7 @@ public class Engine {
 
     public int getSleepTime(int runTime) throws IOException {
         int info = ((SimulationTask) task).getSleepTime(runTime);
-        saveTargetInfoToFile(String.valueOf(info));
+        saveTargetInfoToFile("The target slept for: " + makeMStoString(info));
         return info;
     }
 
