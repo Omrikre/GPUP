@@ -334,15 +334,20 @@ public class Engine {
 
     /**
      * This method gets a file name, and saves the current state of the graph to it.
+     * Returns true or false if the state could be saved or not (the graph was empty)
      *
      * @param fileName String, the file's name.
+     * @return True if the graph exists, false if there was nothing to save
      * @throws IOException
      */
-    public void saveCurrentStateToFile(String fileName) throws IOException {
+    public boolean saveCurrentStateToFile(String fileName) throws IOException {
+        if (g.getTargets().isEmpty())
+            return false; //no graph to save
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName + systemStateFileEnding))) {
             out.writeUTF(XMLfilePath.toString()); //filepath for simulations if no graph was loaded
             out.writeInt(g.getTargets().size()); //size of the graph
             out.writeObject(g);
+            return true;
         }
     }
 
