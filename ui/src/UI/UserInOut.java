@@ -11,7 +11,7 @@ import Exceptions.FileNotLoadedException;
 import java.io.IOException;
 import java.util.*;
 
-public class UserInOut extends Menu implements UI {
+public class UserInOut extends Menu {
     private static boolean fileIsLoaded;
     private static final Engine engine = new Engine();
     private static Location type;
@@ -59,11 +59,19 @@ public class UserInOut extends Menu implements UI {
                             throw new FileNotLoadedException();
                         findCycle();
                         break;
+                    case 7:
+                        fileIsLoaded = loadGraphAndSimulation();
+                        break;
+                    case 8:
+                        if (!fileIsLoaded)
+                            throw new FileNotLoadedException();
+                        saveGraphAndSimulation();
+                        break;
                     case 0:
                         runProgram = false;
                         break;
                     default:
-                        System.out.println("\n -- Please choose a number from the menu (0-5) --");
+                        System.out.println("\n -- Please choose a number from the menu (0-8) --");
                         break;
                 }
             } catch (java.util.InputMismatchException e) {
@@ -78,31 +86,21 @@ public class UserInOut extends Menu implements UI {
     }
 
     // 1
-    private static boolean fileLoad() {
+    private boolean fileLoad() {
         try {
-            String filename, filePath;
-            int userChoice = -1;
+            String filename = " ", filePath;
             Scanner sc = new Scanner(System.in);
 
             if (fileIsLoaded) {
-                while (userChoice != 1 && userChoice != 2) {
-                    System.out.println("\n -- There is a file that is loaded into the system --\n");
-                    System.out.println(" What would you like to do?");
-                    System.out.println(" 1. Run over the current file and load a new one");
-                    System.out.println(" 2. Stay with the current file and return to the main menu");
-                    System.out.print(" Your choice: ");
-                    userChoice = sc.nextInt();
-                    sc.nextLine();
-                }
+                int userChoice = fileIsLoadedWhatToDo();
+                if (userChoice == 2)
+                    return true;
             }
-            if (userChoice == 2)
-                return true;
 
             System.out.print(" Enter file path: ");
             filePath = sc.nextLine();
             engine.loadFile(filePath);
 
-            filename = "--TODO--";
             if (filePath.contains("/"))
                 filename = filePath.substring(filePath.lastIndexOf("/") + 1);
             if (filePath.contains("\\"))
@@ -170,7 +168,6 @@ public class UserInOut extends Menu implements UI {
         String targetInfo = dto.getTargetInfo();
         if (targetInfo != null)
             System.out.println(" - Info: " + targetInfo);
-
     }
 
     // 4
@@ -307,7 +304,6 @@ public class UserInOut extends Menu implements UI {
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
         firstSimulationHappened = true;
     }
-
     private int randomRunTime(int runTime) {
         int MenuChoice;
         printRandomRunTimeMenu(runTime);
@@ -322,7 +318,6 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
-
     private void printRandomRunTimeMenu(int runTime) {
         System.out.println("\n What would you prefer? ");
         System.out.println(" 1. Fixed processing time - " + runTime + " ms per target");
@@ -330,7 +325,6 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" 0. Cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
-
     private float getProbabilityToSuccess() {
         // get from user the probability to success
 
@@ -354,7 +348,6 @@ public class UserInOut extends Menu implements UI {
         return res;
 
     }
-
     private float getProbabilityToSuccessWarnings() {
         // get probability it's a success with warnings
         float res;
@@ -375,7 +368,6 @@ public class UserInOut extends Menu implements UI {
         }
         return res;
     }
-
     private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws IOException {
         Set<String> simTargets;
         long realRunTime;
@@ -412,7 +404,6 @@ public class UserInOut extends Menu implements UI {
         System.out.println(" -------------------- \n");
 
     }
-
     private int newSimulateOrContinue() {
         int MenuChoice;
 
@@ -429,7 +420,6 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
-
     private int allGraphIsSuccessReSimOrReturn() {
         int MenuChoice;
 
@@ -446,7 +436,6 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
-
     private void printSimulationSummary() {
         Map<State, Integer> stateMap = engine.howManyTargetsInEachState();
         System.out.println("\n -------------------------------");
@@ -498,7 +487,6 @@ public class UserInOut extends Menu implements UI {
             printListOfTargets(res, 1);
         }
     }
-
     private void printListOfTargets(Set<List<String>> lst, int whichWay) {
         boolean firstTarget = true;
         int lineCount = 0;
@@ -522,6 +510,72 @@ public class UserInOut extends Menu implements UI {
         }
         System.out.println(" ");
     }
+
+    // 7
+    private boolean loadGraphAndSimulation() {
+        try {
+            String fileName;
+            Scanner sc = new Scanner(System.in);
+
+            if (fileIsLoaded) {
+                int userChoice = fileIsLoadedWhatToDo();
+                if (userChoice == 2)
+                    return true;
+            }
+
+            System.out.print(" Enter the path of the saved file that you want to load: ");
+            fileName = sc.nextLine();
+            while(fileName.length() == 0) {
+                System.out.println("\n -- the path of the file must contains at least 1 character --");
+                System.out.print(" Enter the path: ");
+                fileName = sc.nextLine();
+            }
+
+            engine.loadCurrentStateFromFile(fileName);
+
+            if(engine.getAmountOfTargets() == engine.howManyTargetsInEachState().get(State.FROZEN))
+                firstSimulationHappened = false;
+            else
+                firstSimulationHappened = true;
+
+            System.out.println("\n -- The file '" + fileName + "' has been loaded --");
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("\n" + e.getMessage());
+            if (fileIsLoaded)
+                System.out.println(" -- The last valid file entered into the system is still loaded --");
+            else
+                System.out.println(" -- No file is loaded to the system --");
+            return false;
+        }
+    }
+
+    // 8
+    private void saveGraphAndSimulation() {
+        try {
+            String fileName;
+            Scanner sc = new Scanner(System.in);
+
+            System.out.print(" Enter the path to the file that you want to save: ");
+            fileName = sc.nextLine();
+            while(fileName.length() == 0) {
+                System.out.println("\n -- the path must contains at least 1 character --");
+                System.out.print(" Enter the path: ");
+                fileName = sc.nextLine();
+            }
+
+            engine.saveCurrentStateToFile(fileName);
+
+            System.out.println("\n -- The graph and simulation has been saved to the file '" + fileName + "' --");
+        }
+        catch (Exception e) {
+            System.out.println("\n" + e.getMessage());
+            System.out.println(" -- The graph is not saved to the file --");
+        }
+    }
+
+
 
 
 }

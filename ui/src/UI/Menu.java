@@ -11,6 +11,8 @@ public class Menu {
         System.out.println(" 4. Find route between two targets");
         System.out.println(" 5. Run simulation");
         System.out.println(" 6. Find if a target is part of a cycle");
+        System.out.println(" 7. Load saved graph and simulation");
+        System.out.println(" 8. Save graph and simulation");
         System.out.println(" 0. Exit\n");
         System.out.print(" Your choice: ");
     }
@@ -71,6 +73,19 @@ public class Menu {
         System.out.println(" 0. cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
-
+    public int fileIsLoadedWhatToDo() {
+        int userChoice = -1;
+        Scanner sc = new Scanner(System.in);
+        while (userChoice != 1 && userChoice != 2) {
+            System.out.println("\n -- There is a file that is loaded into the system --\n");
+            System.out.println(" What would you like to do?");
+            System.out.println(" 1. Run over the current file and load a new one");
+            System.out.println(" 2. Stay with the current file and return to the main menu");
+            System.out.print(" Your choice: ");
+            userChoice = sc.nextInt();
+            sc.nextLine();
+        }
+        return userChoice;
+    }
 }
 
