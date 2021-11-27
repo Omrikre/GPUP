@@ -67,7 +67,7 @@ public class UserInOut extends Menu implements UI {
                         break;
                 }
             } catch (java.util.InputMismatchException e) {
-                System.out.println("\n -- Bad input: please enter your choice from the menu by the number -- ");
+                System.out.println("\n -- Bad input: Please enter your choice from the menu by a number -- ");
             } catch (Exception e) {
                 System.out.println("\n" + e.getMessage());
             }
@@ -86,11 +86,11 @@ public class UserInOut extends Menu implements UI {
 
             if (fileIsLoaded) {
                 while (userChoice != 1 && userChoice != 2) {
-                    System.out.println("\n -- There is a file that is loaded in the system --\n");
-                    System.out.println(" what would you like to do?");
-                    System.out.println(" 1. run over the current file and load a new one");
-                    System.out.println(" 2. stay with the current file and return to the main menu");
-                    System.out.print(" your choice: ");
+                    System.out.println("\n -- There is a file that is loaded into the system --\n");
+                    System.out.println(" What would you like to do?");
+                    System.out.println(" 1. Run over the current file and load a new one");
+                    System.out.println(" 2. Stay with the current file and return to the main menu");
+                    System.out.print(" Your choice: ");
                     userChoice = sc.nextInt();
                     sc.nextLine();
                 }
@@ -138,7 +138,7 @@ public class UserInOut extends Menu implements UI {
         boolean targetInFile;
         Scanner sc = new Scanner(System.in);
 
-        System.out.print(" Enter target name: ");
+        System.out.print(" Enter the target's name: ");
         String targetName = sc.nextLine();
         targetInFile = engine.isTargetInGraphByName(targetName);
 
@@ -147,29 +147,29 @@ public class UserInOut extends Menu implements UI {
             if (!keepTryingInput()) {
                 return;
             } else {
-                System.out.print(" enter target name: ");
+                System.out.print(" Enter the target's name: ");
                 targetName = sc.nextLine();
                 targetInFile = engine.isTargetInGraphByName(targetName);
             }
         }
         TargetDTO dto = engine.getTargetDataTransferObjectByName(targetName);
         //print name and type
-        System.out.println(" - name: " + targetName);
-        System.out.println(" - type: " + dto.getTargetLocation().toString());
+        System.out.println(" - Name: " + targetName);
+        System.out.println(" - Type: " + dto.getTargetLocation().toString());
         //print dependent targets
         if (dto.getTargetDependsOn().isEmpty())
-            System.out.println(" - depends: no depends");
+            System.out.println(" - Depends on no target");
         else
-            System.out.println(" - depends: " + dto.getTargetDependsOn().toString());
+            System.out.println(" - Depends on: " + dto.getTargetDependsOn().toString());
         //print required targets
         if (dto.getTargetRequiredFor().isEmpty())
-            System.out.println(" - required: no required");
+            System.out.println(" - Required by no target");
         else
-            System.out.println(" - required: " + dto.getTargetRequiredFor().toString());
+            System.out.println(" - Required by: " + dto.getTargetRequiredFor().toString());
         //print more info about the target
         String targetInfo = dto.getTargetInfo();
         if (targetInfo != null)
-            System.out.println(" - info: " + targetInfo);
+            System.out.println(" - Info: " + targetInfo);
 
     }
 
@@ -192,14 +192,14 @@ public class UserInOut extends Menu implements UI {
         while (!srcTargetExist || !destTargetExist) {
 
             if (!srcTargetExist && !destTargetExist) {
-                System.out.print("\n -- The targets '" + srcTargetName + "' and '" + destTargetName + "' are NOT exist in the database --\n\n");
+                System.out.print("\n -- The targets '" + srcTargetName + "' and '" + destTargetName + "' do NOT exist in the database --\n\n");
             } else {
                 System.out.print(" -- The target '");
                 if (!srcTargetExist)
                     System.out.print(srcTargetName);
                 if (!destTargetExist)
                     System.out.print(destTargetName);
-                System.out.print("' is NOT exist in the database --\n\n");
+                System.out.print("' does NOT exist in the database --\n\n");
             }
 
             stillTry = keepTryingInput();
@@ -219,8 +219,8 @@ public class UserInOut extends Menu implements UI {
         // get BOND from user
         while (res != 1 && res != 2) {
             System.out.println("\n In which bond between the targets to search for?");
-            System.out.println(" 1. the target " + srcTargetName + " depends on the target " + destTargetName);
-            System.out.println(" 2. the target " + srcTargetName + " required for the target " + destTargetName);
+            System.out.println(" 1. The target " + srcTargetName + " depends on the target " + destTargetName);
+            System.out.println(" 2. The target " + srcTargetName + " required for the target " + destTargetName);
             System.out.print(" Your choice: ");
             res = sc.nextInt();
         }
@@ -251,7 +251,7 @@ public class UserInOut extends Menu implements UI {
 
 
         if (firstSimulationHappened) {
-            if(!engine.isGraphFinishedSuccessfully()) {
+            if (!engine.isGraphFinishedSuccessfully()) {
                 switch (newSimulateOrContinue()) {
                     case 0:
                         return;
@@ -265,7 +265,7 @@ public class UserInOut extends Menu implements UI {
                         break;
                 }
             } else {
-                switch(allGraphIsSuccessReSimOrReturn()) {
+                switch (allGraphIsSuccessReSimOrReturn()) {
                     case 0:
                         return;
                     case 1:
@@ -280,7 +280,7 @@ public class UserInOut extends Menu implements UI {
         }
 
         // get simulation time per target
-        System.out.print(" enter the simulation time per target (in ms): ");
+        System.out.print(" Enter the simulation time per target (in ms): ");
         runTime = sc.nextInt();
 
         switch (randomRunTime(runTime)) {
@@ -315,7 +315,7 @@ public class UserInOut extends Menu implements UI {
         MenuChoice = sc.nextInt();
 
         while (!(MenuChoice == 1 || MenuChoice == 2 || MenuChoice == 0)) {
-            System.out.println("\n -- Enter number by the menu (1/2/0) --");
+            System.out.println("\n -- Enter a number that the menu requires (1/2/0) --");
             printRandomRunTimeMenu(runTime);
             sc.nextLine();
             MenuChoice = sc.nextInt();
@@ -325,9 +325,9 @@ public class UserInOut extends Menu implements UI {
 
     private void printRandomRunTimeMenu(int runTime) {
         System.out.println("\n What would you prefer? ");
-        System.out.println(" 1. fixed processing time - " + runTime + " ms per target");
-        System.out.println(" 2. random processing time - up to " + runTime + " ms");
-        System.out.println(" 0. cancel and return to the main menu");
+        System.out.println(" 1. Fixed processing time - " + runTime + " ms per target");
+        System.out.println(" 2. Random processing time - up to " + runTime + " ms");
+        System.out.println(" 0. Cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
 
@@ -337,17 +337,17 @@ public class UserInOut extends Menu implements UI {
         float res;
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("\n In what probability to success do you want the simulation to run? ");
-        System.out.println(" 1   --> all the targets will success");
-        System.out.println(" 0.5 --> half will success and half will fail");
-        System.out.println(" 0   --> all will fail");
+        System.out.println("\n In what probability of success do you want the simulation to run? ");
+        System.out.println(" 1   --> All the targets will succeed");
+        System.out.println(" 0.5 --> Half the targets will succeed and half will fail");
+        System.out.println(" 0   --> All the targets will fail");
         System.out.print(" Enter any number between 0 to 1: ");
         res = sc.nextFloat();
         while (res < 0 || res > 1) {
             if (res == 9)
                 return 9;
             System.out.println("\n If you prefer to return to the main menu enter '9'");
-            System.out.println(" The probability to success has to be a number between 0 to 1");
+            System.out.println(" The probability to succeed has to be a number between 0 to 1");
             System.out.print(" Enter your choice: ");
             res = sc.nextFloat();
         }
@@ -360,16 +360,16 @@ public class UserInOut extends Menu implements UI {
         float res;
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("\n If the task succeeded, what the probability it's a success with warnings? ");
-        System.out.println(" 1   --> it's a success with warnings");
-        System.out.println(" 0   --> it's a success without warnings");
+        System.out.println("\n If the task succeeded, what is the probability that it succeeded with warnings? ");
+        System.out.println(" 1   --> It'll succeed with warnings");
+        System.out.println(" 0   --> It'll succeed without warnings");
         System.out.print(" Enter any number between 0 to 1: ");
         res = sc.nextFloat();
         while (res < 0 || res > 1) {
             if (res == 9)
                 return 9;
             System.out.println("\n If you prefer to return to the main menu enter '9'");
-            System.out.println(" The probability to success with warnings has to be a number between 0 to 1");
+            System.out.println(" The probability to succeed with warnings has to be a number between 0 and 1");
             System.out.print(" Enter your choice: ");
             res = sc.nextFloat();
         }
@@ -390,11 +390,11 @@ public class UserInOut extends Menu implements UI {
             for (String s : simTargets) {
 
                 System.out.println(engine.simulationStartInfo(s));
-                if(randomRunTime)
+                if (randomRunTime)
                     realRunTime = engine.getSleepTime(runTime);
                 else
                     realRunTime = runTime;
-                System.out.println(" going to sleep for " + Engine.makeMStoString(realRunTime));
+                System.out.println(" Going to sleep for " + Engine.makeMStoString(realRunTime));
                 System.out.println(" -- layla tov --");
                 runStringRes = engine.simulationRunAndResult(s, realRunTime, success, successWithWarnings);
                 System.out.println(" -- boker tov --");
@@ -421,7 +421,7 @@ public class UserInOut extends Menu implements UI {
         MenuChoice = sc.nextInt();
 
         while (!(MenuChoice == 1 || MenuChoice == 2 || MenuChoice == 0)) {
-            System.out.println("\n -- Enter number by the menu (1/2/0) --");
+            System.out.println("\n -- Enter a number that the menu requires (1/2/0) --");
 
             printNewSimulateOrContinueMenu();
             sc.nextLine();
@@ -429,6 +429,7 @@ public class UserInOut extends Menu implements UI {
         }
         return MenuChoice;
     }
+
     private int allGraphIsSuccessReSimOrReturn() {
         int MenuChoice;
 
@@ -437,7 +438,7 @@ public class UserInOut extends Menu implements UI {
         MenuChoice = sc.nextInt();
 
         while (!(MenuChoice == 1 || MenuChoice == 0)) {
-            System.out.println("\n -- Enter number by the menu ( 1 / 0 ) --");
+            System.out.println("\n -- Enter a number that the menu requires ( 1 / 0 ) --");
 
             printNewSimulateOrReturnMenu();
             sc.nextLine();
@@ -450,18 +451,18 @@ public class UserInOut extends Menu implements UI {
         Map<State, Integer> stateMap = engine.howManyTargetsInEachState();
         System.out.println("\n -------------------------------");
         System.out.println("   There are " + engine.getAmountOfTargets() + " targets    ");
-        System.out.println("   The run time of the simulation took " + engine.getTotalRuntime());
+        System.out.println("   The total run time of the simulation is " + engine.getTotalRuntime());
         System.out.println(" -------------------------------");
-        System.out.println("   " + stateMap.get(State.FINISHED_SUCCESS) + " -> succeed            ");
-        System.out.println("   " + stateMap.get(State.FINISHED_WARNINGS) + " -> succeed with warning          ");
+        System.out.println("   " + stateMap.get(State.FINISHED_SUCCESS) + " -> succeeded            ");
+        System.out.println("   " + stateMap.get(State.FINISHED_WARNINGS) + " -> succeeded with warnings          ");
         System.out.println("   " + stateMap.get(State.FINISHED_FAILURE) + " -> failed       ");
         System.out.println("   " + stateMap.get(State.SKIPPED) + " -> skipped       ");
         System.out.println(" -------------------------------\n");
 
         List<TargetDTO> lst = engine.getListOfAllTargetsDTOsInGraph();
-        for(TargetDTO dto : lst) {
-            System.out.print(" "  + dto.getTargetName() + " -> " + dto.getTargetState() + " ");
-            if (dto.getTargetState() == State.FINISHED_WARNINGS ||  dto.getTargetState() == State.FINISHED_SUCCESS || dto.getTargetState() == State.FINISHED_FAILURE)
+        for (TargetDTO dto : lst) {
+            System.out.print(" " + dto.getTargetName() + " -> " + dto.getTargetState() + " ");
+            if (dto.getTargetState() == State.FINISHED_WARNINGS || dto.getTargetState() == State.FINISHED_SUCCESS || dto.getTargetState() == State.FINISHED_FAILURE)
                 System.out.println(Engine.makeMStoString(dto.getTargetTime()));
             else
                 System.out.println(" ");
@@ -474,7 +475,7 @@ public class UserInOut extends Menu implements UI {
         boolean targetInFile;
         Scanner sc = new Scanner(System.in);
 
-        System.out.print(" To check if a goal is part of a circle\n" +
+        System.out.print(" To check if a target is part of a circle\n" +
                 " Please enter the name of the target: ");
         String targetName = sc.nextLine();
         targetInFile = engine.isTargetInGraphByName(targetName);
@@ -484,7 +485,7 @@ public class UserInOut extends Menu implements UI {
             if (!keepTryingInput()) {
                 return;
             } else {
-                System.out.println(" Please enter the target name again: ");
+                System.out.println(" Please enter the target's name again: ");
                 targetName = sc.nextLine();
                 targetInFile = engine.isTargetInGraphByName(targetName);
             }

@@ -6,24 +6,29 @@ import Engine.Enums.Location;
 import Engine.Enums.State;
 import Exceptions.FileException;
 
+import java.io.*;
 import java.sql.Time;
 import java.util.*;
 
-public class Graph {
+public class Graph implements Serializable {
     private Map<String, Target> targets; //database that can find a target by its name
 
     public Graph() {
         targets = new HashMap<>();
     }
 
-    public class Target {
-        private final String name;
+    public class Target implements Serializable {
+        private String name;
         private Location location;
-        private Set<Target> dependsOn;
-        private Set<Target> requiredFor;
-        private final String info;
+        private Set<String> dependsOn;
+        private Set<String> requiredFor;
+        private String info;
         private State state;
         private long time;
+
+        public Target() {
+
+        }
 
         public Target(String name, String info) throws FileException {
             this.name = name;
@@ -44,11 +49,11 @@ public class Graph {
             return location;
         }
 
-        public Set<Target> getDependsOn() {
+        public Set<String> getDependsOn() {
             return dependsOn;
         }
 
-        public Set<Target> getRequiredFor() {
+        public Set<String> getRequiredFor() {
             return requiredFor;
         }
 
@@ -78,18 +83,18 @@ public class Graph {
         }
 
         private void addDependedTarget(Target t) throws FileException {
-            if (t.dependsOn.contains(this))
+            if (t.dependsOn.contains(this.getName()))
                 throw new FileException(4, this.getName(), Bond.DEPENDS_ON, t.getName());
-            dependsOn.add(t);
-            if (!t.requiredFor.contains(this))
+            dependsOn.add(t.getName());
+            if (!t.requiredFor.contains(this.getName()))
                 t.addRequiredTarget(this);
         }
 
         private void addRequiredTarget(Target t) throws FileException {
-            if (t.requiredFor.contains(this))
+            if (t.requiredFor.contains(this.getName()))
                 throw new FileException(4, this.getName(), Bond.REQUIRED_FOR, t.getName());
-            requiredFor.add(t);
-            if (!t.dependsOn.contains(this))
+            requiredFor.add(t.getName());
+            if (!t.dependsOn.contains(this.getName()))
                 t.addDependedTarget(this);
         }
 
@@ -205,12 +210,12 @@ public class Graph {
             return;
         }
         if (bond.equals(Bond.DEPENDS_ON))
-            for (Target t : src.dependsOn) {
-                getPathBetweenTargetsRec(visited, allPaths, singlePath, t, dest, bond);
+            for (String t : src.dependsOn) {
+                getPathBetweenTargetsRec(visited, allPaths, singlePath, targets.get(t), dest, bond);
             }
         else if (bond.equals(Bond.REQUIRED_FOR))
-            for (Target t : src.requiredFor) {
-                getPathBetweenTargetsRec(visited, allPaths, singlePath, t, dest, bond);
+            for (String t : src.requiredFor) {
+                getPathBetweenTargetsRec(visited, allPaths, singlePath, targets.get(t), dest, bond);
             }
         singlePath.remove(src.getName()); //if nowhere else to go, we remove everything
         visited.put(src.getName(), false); //and reset the visited block for different paths
@@ -396,10 +401,10 @@ public class Graph {
      */
     private void setAllRequiredTargetsSkipped(Target t) {
         //if t.state!=failed, throw exception
-        for (Target temp : t.getRequiredFor()) {
-            setAllRequiredTargetsSkipped(temp);
-            if (!temp.getState().equals(State.SKIPPED))
-                temp.setState(State.SKIPPED);
+        for (String temp : t.getRequiredFor()) {
+            setAllRequiredTargetsSkipped(targets.get(temp));
+            if (!targets.get(temp).getState().equals(State.SKIPPED))
+                targets.get(temp).setState(State.SKIPPED);
         }
     }
 
@@ -414,15 +419,15 @@ public class Graph {
         Set<String> res = new HashSet<>();
         boolean runnable = true;
         if (!targets.get(targetName).requiredFor.isEmpty()) {
-            for (Target t : targets.get(targetName).requiredFor) {
-                for (Target k : t.dependsOn) {
-                    if (!(k.state.equals(State.FINISHED_FAILURE) || k.state.equals(State.FINISHED_SUCCESS) || k.state.equals(State.FINISHED_WARNINGS))) {
+            for (String t : targets.get(targetName).requiredFor) {
+                for (String k : targets.get(t).dependsOn) {
+                    if (!(targets.get(k).state.equals(State.FINISHED_FAILURE) || targets.get(k).state.equals(State.FINISHED_SUCCESS) || targets.get(k).state.equals(State.FINISHED_WARNINGS))) {
                         runnable = false;
                         break;
                     }
                 }
                 if (runnable)
-                    res.add(t.getName());
+                    res.add(t);
                 else runnable = true;
             }
         }
@@ -431,9 +436,9 @@ public class Graph {
 
     //inner method to be used
     private void getSkippedTargetsNamesFromFailedTargetRec(Target t, Set<String> res) {
-        for (Target temp : t.requiredFor) {
-            getSkippedTargetsNamesFromFailedTargetRec(temp, res);
-            res.add(temp.getName());
+        for (String temp : t.requiredFor) {
+            getSkippedTargetsNamesFromFailedTargetRec(targets.get(temp), res);
+            res.add(temp);
         }
     }
 
@@ -460,8 +465,8 @@ public class Graph {
         Target t = targets.get(name);
         Set<List<String>> res = new HashSet<>();
         if (t.location.equals(Location.MIDDLE))
-            for (Target temp : t.dependsOn) {
-                res = getPathBetweenTargets(temp.getName(), name, Bond.DEPENDS_ON);
+            for (String temp : t.dependsOn) {
+                res = getPathBetweenTargets(temp, name, Bond.DEPENDS_ON);
                 if (!res.isEmpty())
                     return res;
             }

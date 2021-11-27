@@ -1,5 +1,7 @@
 package Engine.Enums;
 
+import java.io.Serializable;
+
 public enum Location {
     LEAF, MIDDLE, ROOT, INDEPENDENT;
 

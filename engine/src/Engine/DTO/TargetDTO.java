@@ -9,8 +9,8 @@ import java.util.Set;
 public class TargetDTO {
     private final String targetName;
     private final Location targetLocation;
-    private final Set<Graph.Target> targetDependsOn;
-    private final Set<Graph.Target> targetRequiredFor;
+    private final Set<String> targetDependsOn;
+    private final Set<String> targetRequiredFor;
     private final String targetInfo;
     private final State targetState;
     private final long targetTime;
@@ -33,11 +33,11 @@ public class TargetDTO {
         return targetLocation;
     }
 
-    public Set<Graph.Target> getTargetDependsOn() {
+    public Set<String> getTargetDependsOn() {
         return targetDependsOn;
     }
 
-    public Set<Graph.Target> getTargetRequiredFor() {
+    public Set<String> getTargetRequiredFor() {
         return targetRequiredFor;
     }
 

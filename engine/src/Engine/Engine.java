@@ -26,7 +26,7 @@ public class Engine {
 
     private Graph g;
     private Task task;
-    private String directoryPath, targetFilePath;
+    private String directoryPath, targetFilePath, slash;
     private Path XMLfilePath;
     private boolean newRun;
 
@@ -138,12 +138,15 @@ public class Engine {
      * @throws FileException         In case the file is not valid
      */
     public void loadFile(String filePath) throws JAXBException, FileNotFoundException, FileException {
-        if (!filePath.endsWith("xml"))
+        if (!filePath.endsWith(".xml"))
             throw new FileException(1, filePath);
-        XMLfilePath = Paths.get(filePath);
+
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
-
+        XMLfilePath = Paths.get(gp.getGPUPConfiguration().getGPUPWorkingDirectory());
+        if (XMLfilePath.toString().contains("\\"))
+            slash = "\\";
+        else slash = "/";
         Graph res = new Graph();
 
         List<GPUPTarget> targetsList = gp.getGPUPTargets().getGPUPTarget();
@@ -220,17 +223,24 @@ public class Engine {
         return g.isTargetInCircleByName(name);
     }
 
+    /**
+     * This method gets a path and creates a folder for the simulation for it.
+     *
+     * @param XMLfilePath The XML path
+     */
     private void createTaskFolder(Path XMLfilePath) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss");
-        String c;
-        if (XMLfilePath.toString().contains("\\"))
-            c = "\\";
-        else c = "/";
-        directoryPath = XMLfilePath.getRoot() + (XMLfilePath.subpath(0, XMLfilePath.getNameCount() - 1) + c + task.getName() + " - " + dtf.format(task.getExecutionDate()));
+        directoryPath = XMLfilePath + slash + task.getName() + " - " + dtf.format(task.getExecutionDate());
         File dir = new File(directoryPath);
         dir.mkdir(); //if false throw exception?
     }
 
+    /**
+     * This method gets an info as a string, and saves it to a file of the current target.
+     *
+     * @param info String, the info.
+     * @throws IOException
+     */
     private void saveTargetInfoToFile(String info) throws IOException {
         try (Writer out = new BufferedWriter(
                 new OutputStreamWriter(
@@ -253,12 +263,13 @@ public class Engine {
         return info;
     }
 
+    /**
+     * This method gets a target's name and creates a log file for it
+     *
+     * @param name String, the target's name.
+     */
     private void createTargetFileByName(String name) {
-        String c;
-        if (directoryPath.contains("\\"))
-            c = "\\";
-        else c = "/";
-        targetFilePath = (directoryPath + c + name + ".log");
+        targetFilePath = (directoryPath + slash + name + ".log");
 
     }
 
@@ -318,4 +329,42 @@ public class Engine {
     public void setAllTargetsFrozen() {
         g.setAllTargetsFrozen();
     }
+
+
+    /**
+     * This method gets a file name, and saves the current state of the graph to it.
+     *
+     * @param fileName String, the file's name.
+     * @throws IOException
+     */
+    public void saveCurrentStateToFile(String fileName) throws IOException {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+            out.writeUTF(XMLfilePath.toString()); //filepath for simulations if no graph was loaded
+            out.writeInt(g.getTargets().size()); //size of the graph
+            out.writeObject(g);
+        }
+    }
+
+    /**
+     * This method gets a file name, and loads the previously saved state of the graph from it.
+     *
+     * @param fileName String, the file's name.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public void loadCurrentStateFromFile(String fileName) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) { //TODO read without extension?!
+            XMLfilePath = Paths.get(in.readUTF());
+            if (XMLfilePath.toString().contains("\\"))
+                slash = "\\";
+            else slash = "/";
+            int size = in.readInt();
+            for (int i = 0; i < size; i++) { //reading the size
+                g.new Target(); //creating targets in g for the file to read into
+            }
+            g = (Graph) in.readObject();
+        }
+    }
+
+
 }
