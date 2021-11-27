@@ -29,6 +29,7 @@ public class Engine {
     private String directoryPath, targetFilePath, slash;
     private Path XMLfilePath;
     private boolean newRun;
+    private final String systemStateFileEnding = ".bin";
 
     public Engine() {
         g = new Graph();
@@ -338,7 +339,7 @@ public class Engine {
      * @throws IOException
      */
     public void saveCurrentStateToFile(String fileName) throws IOException {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName + systemStateFileEnding))) {
             out.writeUTF(XMLfilePath.toString()); //filepath for simulations if no graph was loaded
             out.writeInt(g.getTargets().size()); //size of the graph
             out.writeObject(g);
@@ -353,7 +354,7 @@ public class Engine {
      * @throws ClassNotFoundException
      */
     public void loadCurrentStateFromFile(String fileName) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName))) { //TODO read without extension?!
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName + systemStateFileEnding))) {
             XMLfilePath = Paths.get(in.readUTF());
             if (XMLfilePath.toString().contains("\\"))
                 slash = "\\";
