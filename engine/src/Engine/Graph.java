@@ -237,9 +237,12 @@ public class Graph implements Serializable {
      */
     public Map<State, Integer> howManyTargetsInEachState() {
         Map<State, Integer> res = new HashMap<>();
-        int skipped = 0, failure = 0, warnings = 0, success = 0;
+        int frozen = 0, skipped = 0, failure = 0, warnings = 0, success = 0;
         for (Target t : targets.values()) {
             switch (t.getState()) {
+                case FROZEN:
+                    frozen++;
+                    break;
                 case SKIPPED:
                     skipped++;
                     break;
@@ -254,6 +257,7 @@ public class Graph implements Serializable {
                     break;
             }
         }
+        res.put(State.FROZEN, frozen);
         res.put(State.SKIPPED, skipped);
         res.put(State.FINISHED_FAILURE, failure);
         res.put(State.FINISHED_SUCCESS, success);

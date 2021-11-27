@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
@@ -138,13 +139,15 @@ public class Engine {
      * @throws FileNotFoundException In case the file doesn't exist
      * @throws FileException         In case the file is not valid
      */
-    public void loadFile(String filePath) throws JAXBException, FileNotFoundException, FileException {
+    public void loadFile(String filePath) throws JAXBException, IOException, FileException {
         if (!filePath.endsWith(".xml"))
             throw new FileException(1, filePath);
 
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
         XMLfilePath = Paths.get(gp.getGPUPConfiguration().getGPUPWorkingDirectory());
+        if (!Files.isDirectory(XMLfilePath))
+            Files.createDirectory(XMLfilePath);
         if (XMLfilePath.toString().contains("\\"))
             slash = "\\";
         else slash = "/";
@@ -337,17 +340,13 @@ public class Engine {
      * Returns true or false if the state could be saved or not (the graph was empty)
      *
      * @param fileName String, the file's name.
-     * @return True if the graph exists, false if there was nothing to save
      * @throws IOException
      */
-    public boolean saveCurrentStateToFile(String fileName) throws IOException {
-        if (g.getTargets().isEmpty())
-            return false; //no graph to save
+    public void saveCurrentStateToFile(String fileName) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName + systemStateFileEnding))) {
             out.writeUTF(XMLfilePath.toString()); //filepath for simulations if no graph was loaded
             out.writeInt(g.getTargets().size()); //size of the graph
             out.writeObject(g);
-            return true;
         }
     }
 
