@@ -304,6 +304,7 @@ public class UserInOut extends Menu {
         runSimulation(runTime, randomRunTime, probabilityForSuccess, probabilityForSuccessWarnings);
         firstSimulationHappened = true;
     }
+
     private int randomRunTime(int runTime) {
         int MenuChoice;
         printRandomRunTimeMenu(runTime);
@@ -318,6 +319,7 @@ public class UserInOut extends Menu {
         }
         return MenuChoice;
     }
+
     private void printRandomRunTimeMenu(int runTime) {
         System.out.println("\n What would you prefer? ");
         System.out.println(" 1. Fixed processing time - " + runTime + " ms per target");
@@ -325,6 +327,7 @@ public class UserInOut extends Menu {
         System.out.println(" 0. Cancel and return to the main menu");
         System.out.print(" Enter your choice: ");
     }
+
     private float getProbabilityToSuccess() {
         // get from user the probability to success
 
@@ -348,6 +351,7 @@ public class UserInOut extends Menu {
         return res;
 
     }
+
     private float getProbabilityToSuccessWarnings() {
         // get probability it's a success with warnings
         float res;
@@ -368,6 +372,7 @@ public class UserInOut extends Menu {
         }
         return res;
     }
+
     private void runSimulation(int runTime, boolean randomRunTime, float success, float successWithWarnings) throws IOException {
         Set<String> simTargets;
         long realRunTime;
@@ -404,6 +409,7 @@ public class UserInOut extends Menu {
         System.out.println(" -------------------- \n");
 
     }
+
     private int newSimulateOrContinue() {
         int MenuChoice;
 
@@ -420,6 +426,7 @@ public class UserInOut extends Menu {
         }
         return MenuChoice;
     }
+
     private int allGraphIsSuccessReSimOrReturn() {
         int MenuChoice;
 
@@ -436,6 +443,7 @@ public class UserInOut extends Menu {
         }
         return MenuChoice;
     }
+
     private void printSimulationSummary() {
         Map<State, Integer> stateMap = engine.howManyTargetsInEachState();
         System.out.println("\n -------------------------------");
@@ -487,6 +495,7 @@ public class UserInOut extends Menu {
             printListOfTargets(res, 1);
         }
     }
+
     private void printListOfTargets(Set<List<String>> lst, int whichWay) {
         boolean firstTarget = true;
         int lineCount = 0;
@@ -525,7 +534,7 @@ public class UserInOut extends Menu {
 
             System.out.print(" Enter the path of the saved file that you want to load: ");
             fileName = sc.nextLine();
-            while(fileName.length() == 0) {
+            while (fileName.length() == 0) {
                 System.out.println("\n -- the path of the file must contains at least 1 character --");
                 System.out.print(" Enter the path: ");
                 fileName = sc.nextLine();
@@ -533,7 +542,7 @@ public class UserInOut extends Menu {
 
             engine.loadCurrentStateFromFile(fileName);
 
-            if(engine.getAmountOfTargets() == engine.howManyTargetsInEachState().get(State.FROZEN))
+            if (engine.getAmountOfTargets() == engine.howManyTargetsInEachState().get(State.FROZEN))
                 firstSimulationHappened = false;
             else
                 firstSimulationHappened = true;
@@ -559,7 +568,7 @@ public class UserInOut extends Menu {
 
             System.out.print(" Enter the path to the file that you want to save: ");
             fileName = sc.nextLine();
-            while(fileName.length() == 0) {
+            while (fileName.length() == 0) {
                 System.out.println("\n -- the path must contains at least 1 character --");
                 System.out.print(" Enter the path: ");
                 fileName = sc.nextLine();
@@ -568,14 +577,11 @@ public class UserInOut extends Menu {
             engine.saveCurrentStateToFile(fileName);
 
             System.out.println("\n -- The graph and simulation has been saved to the file '" + fileName + "' --");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("\n" + e.getMessage());
             System.out.println(" -- The graph is not saved to the file --");
         }
     }
-
-
 
 
 }
