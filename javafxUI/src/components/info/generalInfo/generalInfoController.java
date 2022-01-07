@@ -8,34 +8,61 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.GridPane;
 
 import java.util.Map;
 
 public class generalInfoController {
 
-    @FXML private GridPane generalInfoPane;
-    @FXML private TableColumn<targetsInfoBox, String> typeCol;
-    @FXML private TableColumn<targetsInfoBox, Integer> quantityCol;
-    @FXML private Label numOfTargets;
-    @FXML private TableView<targetsInfoBox> tableViewMain;
+    @FXML private TableView<targetsInfoBox> targetsTypeTV;
+    @FXML private TableColumn<targetsInfoBox, String> AtargetTypeCol;
+    @FXML private TableColumn<targetsInfoBox, Integer> AquantityCol;
+
+    @FXML    private TableView<?> serialSetTV;
+    @FXML    private TableColumn<?, ?> BsetNameCol;
+    @FXML    private TableColumn<?, ?> BquantityCol;
+    @FXML    private TableColumn<?, ?> BtargetsNamesCol;
+
+    @FXML private Label numOfSetsLabel;
+    @FXML private Label fileNameLabel;
+    @FXML private Label numOfTargetsLabel;
+    @FXML private Label containsCycleLabel;
 
     ObservableList<targetsInfoBox> lst;
 
-
     @FXML private void initialize() {
-        numOfTargets.setText("-");
-        typeCol.setStyle( "-fx-alignment: CENTER;");
-        quantityCol.setStyle( "-fx-alignment: CENTER;");
+        numOfSetsLabel.setText("-");
+        fileNameLabel.setText("-");
+        numOfTargetsLabel.setText("-");
+        containsCycleLabel.setText("-");
+
+        AtargetTypeCol.setStyle( "-fx-alignment: CENTER;");
+        AquantityCol.setStyle( "-fx-alignment: CENTER;");
+
+        BquantityCol.setStyle( "-fx-alignment: CENTER;");
+        BtargetsNamesCol.setStyle( "-fx-alignment: CENTER;");
+        BsetNameCol.setStyle( "-fx-alignment: CENTER;");
     }
 
 
-    public void setNumOfTargets(int numOfTargets) {
-        String numInString = String.valueOf(numOfTargets);
-        this.numOfTargets.setText(numInString);
+    public void setupData(Map<Location, Integer> TV_A_Map, int numOfTargets, boolean containsCycle) {
+        setTableA(TV_A_Map);
+        //TODO - setTableB(); - need serialSet info
+        setLabels(numOfTargets, containsCycle);
     }
 
-    public void setTable(Map<Location, Integer> infoMap) {
+    private void setLabels(int numOfTargets, boolean containsCycle) {
+        numOfTargetsLabel.setText(String.valueOf(numOfTargets));
+        //TODO - num of sets, file name
+        //numOfSetsLabel.setText();
+        //fileNameLabel.setText();
+        String cycle = "no";
+        if(containsCycle)
+            cycle = "yes";
+        containsCycleLabel.setText(cycle);
+    }
+
+
+    private void setTableA(Map<Location, Integer> infoMap) {
 
         lst = FXCollections.observableArrayList(
                 new targetsInfoBox("leafs",(int)infoMap.get(Location.LEAF)),
@@ -43,10 +70,16 @@ public class generalInfoController {
                 new targetsInfoBox("roots",(int)infoMap.get(Location.ROOT)),
                 new targetsInfoBox("independents",(int)infoMap.get(Location.INDEPENDENT))
         );
-        typeCol.setCellValueFactory(new PropertyValueFactory<targetsInfoBox, String>("type"));
-        quantityCol.setCellValueFactory(new PropertyValueFactory<targetsInfoBox, Integer>("quantity"));
+        AtargetTypeCol.setCellValueFactory(new PropertyValueFactory<targetsInfoBox, String>("type"));
+        AquantityCol.setCellValueFactory(new PropertyValueFactory<targetsInfoBox, Integer>("quantity"));
 
-        tableViewMain.setItems(lst);
+        targetsTypeTV.setItems(lst);
 
     }
+
+    //TODO setTableB - get all serial set info
+    //private void setTableA(Map<Location, Integer> infoMap)
 }
+
+
+

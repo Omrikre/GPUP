@@ -2,27 +2,29 @@ package components.info;
 
 import Engine.DTO.TargetDTO;
 import components.app.AppController;
-import components.header.HeaderButtonsController;
 import components.info.generalInfo.generalInfoController;
 import components.info.targetInfo.targetInfoController;
-import javafx.event.ActionEvent;
+import components.info.treeViewInfo.treeViewController;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-import static components.app.CommonResourcesPaths.*;
 
 public class InfoController {
 
     @FXML private Tab generalInfoTab;
     @FXML private Tab infoByTargetTab;
+    @FXML private Tab treeViewTab;
 
-    @FXML private GridPane generalInfoGP;
+
+    @FXML private HBox generalInfoGP;
     @FXML private generalInfoController generalInfoGPController;
-    @FXML private GridPane infoByTargetGP;
+    @FXML private VBox infoByTargetGP;
     @FXML private targetInfoController infoByTargetGPController;
+    @FXML private BorderPane treeViewBP;
+    @FXML private treeViewController treeViewBPController;
 
     private AppController mainController;
 
@@ -31,29 +33,28 @@ public class InfoController {
         this.mainController = mainController;
     }
     @FXML public void initialize() {
-    }
-    private void setMainInSubComponents() {
-        if (generalInfoGPController != null) {
-        }
+        treeViewBPController.setParentController(this);
+        infoByTargetGPController.setParentController(this);
     }
 
     public void setupData() {
         if(generalInfoGPController != null) {
-            generalInfoGPController.setNumOfTargets(mainController.getNumOfTargets());
-            generalInfoGPController.setTable(mainController.getGeneralInfoTable());
-        }
-        else {
-            System.out.println("null fuck 1");
-        }
+            generalInfoGPController.setupData(mainController.getGeneralInfoTable(), mainController.getNumOfTargets(), mainController.getGraphContainsCycle());
+        } else System.out.println("null fuck 1");
         if(infoByTargetGPController != null) {
             infoByTargetGPController.setChoiceTargetBox(mainController.getTargetList());
-        }
-        else {
-            System.out.println("null fuck 2");
-        }
-    }
-    public void getTargetDTO(String targetName) {
-        TargetDTO dto = mainController.getTargetDTO(targetName);
+        } else System.out.println("null fuck 2");
+        if(treeViewBPController != null) {
+            if (!mainController.getGraphContainsCycle()) {
+                treeViewBPController.setTrees(mainController.getTargetList());
+                treeViewTab.setDisable(false);
+            }
+            else {
+                treeViewTab.setDisable(true);
+            }
+        } else System.out.println("null fuck 2");
 
     }
+    public TargetDTO getTargetDTO(String targetName) { return mainController.getTargetDTO(targetName); }
+
 }

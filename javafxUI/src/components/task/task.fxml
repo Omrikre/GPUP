@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -12,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.0" prefWidth="991.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.task.taskController">
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="639.0" prefWidth="991.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.task.taskController">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="10.0" />
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="736.0" minWidth="10.0" prefWidth="736.0" />
@@ -25,21 +26,6 @@
     <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <TableView fx:id="targetDataTable" prefHeight="590.0" prefWidth="624.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-        <columns>
-          <TableColumn maxWidth="100.0" minWidth="30.0" prefWidth="100.0" text="CB" />
-          <TableColumn maxWidth="30.0" minWidth="30.0" prefWidth="30.0" text="No." />
-            <TableColumn maxWidth="300.0" minWidth="100.0" prefWidth="100.0" text="Target name" />
-            <TableColumn maxWidth="100.0" minWidth="50.0" prefWidth="50.0" text="Dep. on" />
-            <TableColumn maxWidth="100.0" minWidth="50.0" prefWidth="50.0" text="Req. for" />
-            <TableColumn maxWidth="60.0" minWidth="60.0" prefWidth="60.0" text="Serial set " />
-            <TableColumn prefWidth="75.0" text="Target info" />
-            <TableColumn prefWidth="75.0" text="Column X" />
-        </columns>
-         <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-         </columnResizePolicy>
-      </TableView>
       <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
          <children>
             <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Task Preferences" textAlignment="CENTER">
@@ -83,5 +69,24 @@
             </BorderPane>
          </children>
       </VBox>
+      <ScrollPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <content>
+            <TableView fx:id="targetDataTable" prefHeight="617.0" prefWidth="734.0">
+              <columns>
+                <TableColumn fx:id="checkBoxCOL" editable="false" maxWidth="100.0" minWidth="30.0" prefWidth="100.0" text="CB" />
+                  <TableColumn fx:id="targetNameCOL" editable="false" maxWidth="300.0" minWidth="100.0" prefWidth="100.0" text="Target name" />
+                  <TableColumn fx:id="targetTypeCOL" maxWidth="100.0" minWidth="90.0" prefWidth="90.0" text="Target type" />
+                  <TableColumn fx:id="depOnCOL" editable="false" maxWidth="100.0" minWidth="50.0" prefWidth="50.0" text="Dep. on" />
+                  <TableColumn fx:id="reqForCOL" editable="false" maxWidth="100.0" minWidth="50.0" prefWidth="50.0" text="Req. for" />
+                  <TableColumn fx:id="serialSetCOL" editable="false" maxWidth="60.0" minWidth="60.0" prefWidth="60.0" text="Serial set " />
+                  <TableColumn fx:id="targetInfoCOL" editable="false" prefWidth="75.0" text="Target info" />
+                  <TableColumn fx:id="statusCOL" editable="false" prefWidth="75.0" text="Status" />
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </content>
+      </ScrollPane>
    </children>
 </GridPane>

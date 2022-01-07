@@ -187,7 +187,6 @@ public class UserInOut extends Menu {
         System.out.println(" ");
 
         while (!srcTargetExist || !destTargetExist) {
-
             if (!srcTargetExist && !destTargetExist) {
                 System.out.print("\n -- The targets '" + srcTargetName + "' and '" + destTargetName + "' do NOT exist in the database --\n\n");
             } else {

@@ -1,6 +1,7 @@
 package components.info.targetInfo;
 
 import Engine.DTO.TargetDTO;
+import components.info.InfoController;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -19,8 +20,14 @@ public class targetInfoController {
     @FXML private Label dependsNamesLabel;
     @FXML private Label requiredNumLabel;
     @FXML private Label requiredNamesLabel;
+    @FXML private Label serialSetNameLabel;
+    @FXML private Label serialSetTargetsLabel;
 
     private List<TargetDTO> targetDTOList;
+    private InfoController parentController;
+
+    public void setParentController(InfoController parentController) { this.parentController = parentController;    }
+
 
     @FXML private void initialize() {
         nameLabel.setText(" - ");
@@ -30,6 +37,10 @@ public class targetInfoController {
         dependsNamesLabel.setText(" - ");
         requiredNumLabel.setText(" - ");
         requiredNamesLabel.setText(" - ");
+        serialSetNameLabel.setText(" - ");
+        serialSetTargetsLabel.setText(" - ");
+
+
     }
 
     public void setChoiceTargetBox(List<TargetDTO> targetDTOS) {
@@ -37,10 +48,11 @@ public class targetInfoController {
         for(TargetDTO target :  targetDTOS) {
             choiceTargetBox.getItems().add(target.getTargetName());
         }
-    }
-
-    @FXML void choiceTargetBoxGetChoice(ContextMenuEvent event) {
-        event.toString();
+        choiceTargetBox.setOnAction((event) -> {
+            String selectedItem = choiceTargetBox.getSelectionModel().getSelectedItem();
+            //TEST System.out.println("Selection target: " + selectedItem);
+            setDataInLabels(parentController.getTargetDTO(selectedItem));
+        });
     }
 
 
@@ -52,6 +64,10 @@ public class targetInfoController {
         dependsNamesLabel.setText(targetInfo.getTargetDependsOn().toString());
         requiredNumLabel.setText(String.valueOf(targetInfo.getTargetRequiredFor().size()));
         requiredNamesLabel.setText(targetInfo.getTargetRequiredFor().toString());
-
+        //TODO - the 2 methods below (in TargetDTO)
+        /*
+        serialSetNameLabel.setText(String.valueOf(targetInfo.getTargetSerialSet().size()));
+        serialSetTargetsLabel.setText(targetInfo.getTargetSerialSet().toString()));
+         */
     }
 }

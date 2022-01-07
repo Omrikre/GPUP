@@ -38,7 +38,7 @@ public class HeaderButtonsController {
     @FXML void infoPr(ActionEvent event) { mainController.showInfoPane(); }
     @FXML void settingsPr(ActionEvent event) { mainController.showSettingsPane(); }
     @FXML void taskPr(ActionEvent event) {  mainController.showTaskPane(); }
-    @FXML void pathPr(ActionEvent event) { }
+    @FXML void pathPr(ActionEvent event) { mainController.showTablePane(); }
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;

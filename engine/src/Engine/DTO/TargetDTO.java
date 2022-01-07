@@ -3,20 +3,29 @@ package Engine.DTO;
 import Engine.Enums.Location;
 import Engine.Enums.State;
 import Engine.Graph;
+import javafx.scene.control.CheckBox;
 
 import java.util.Set;
 
 public class TargetDTO {
     // members
-    private String targetName;
+    private String targetName; // +
     private Location targetLocation;
+    private String targetLocationString; // +
     private Set<String> targetDependsOn;
+    private int targetDependsOnNum; // +
     private Set<String> targetRequiredFor;
-    private String targetInfo;
+    private int targetRequiredForNum; // +
+    private String targetInfo; // +
     private State targetState;
+    private String targetStateString; // +
     private long targetTime;
+    private CheckBox selectedState;
 
-    // c'tor
+
+
+
+    // constructor
     public TargetDTO(Graph.Target t) {
         this.targetName = t.getName();
         this.targetLocation = t.getLocation();
@@ -25,6 +34,13 @@ public class TargetDTO {
         this.targetInfo = t.getInfo();
         this.targetState = t.getState();
         this.targetTime = t.getTime();
+
+        // stupid verbs for javaFX tables
+        this.targetLocationString = targetLocation.toString();
+        this.targetDependsOnNum = targetDependsOn.size();
+        this.targetRequiredForNum = targetRequiredFor.size();
+        this.targetStateString = targetState.toString();
+        this.selectedState = null;
     }
 
     // getters
@@ -49,6 +65,11 @@ public class TargetDTO {
     public long getTargetTime() {
         return targetTime;
     }
+    public String getTargetLocationString() { return targetLocationString; }
+    public int getTargetDependsOnNum() { return targetDependsOnNum; }
+    public int getTargetRequiredForNum() { return targetRequiredForNum; }
+    public String getTargetStateString() { return targetStateString; }
+    public CheckBox getSelectedState() { return selectedState; }
 
     // setters
     public void setTargetName(String targetName) { this.targetName = targetName; }
@@ -58,10 +79,14 @@ public class TargetDTO {
     public void setTargetInfo(String targetInfo) { this.targetInfo = targetInfo; }
     public void setTargetState(State targetState) { this.targetState = targetState; }
     public void setTargetTime(long targetTime) { this.targetTime = targetTime; }
+    public void setTargetLocationString(String targetLocationString) { this.targetLocationString = targetLocationString; }
+    public void setTargetDependsOnNum(int targetDependsOnNum) { this.targetDependsOnNum = targetDependsOnNum; }
+    public void setTargetRequiredForNum(int targetRequiredForNum) { this.targetRequiredForNum = targetRequiredForNum; }
+    public void setTargetStateString(String targetStateString) { this.targetStateString = targetStateString; }
+    public void setSelectedState(CheckBox selectedState) { this.selectedState = selectedState; }
 
-    // toString
-    @Override
-    public String toString() {
+    // methods
+    @Override public String toString() {
         return "TargetDTO{" +
                 "targetName='" + targetName + '\'' +
                 ", targetLocation=" + targetLocation +
@@ -72,4 +97,8 @@ public class TargetDTO {
                 ", targetTime=" + targetTime +
                 '}';
     }
+    public boolean isRoot() { return targetLocation == Location.ROOT; }
+    public boolean isLeaf() { return targetLocation == Location.LEAF; }
+    public boolean isIndependent() { return targetLocation == Location.INDEPENDENT; }
+
 }
