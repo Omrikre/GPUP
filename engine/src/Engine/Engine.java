@@ -27,7 +27,7 @@ public class Engine {
 
     private Graph g;
     private Task task;
-    private String directoryPath, targetFilePath, slash;
+    private String directoryPath, targetFilePath, slash, fileName;
     private Path XMLFilePath;
     private boolean newRun;
     private final String systemStateFileEnding = ".bin";
@@ -143,7 +143,7 @@ public class Engine {
     public void loadFile(String filePath) throws JAXBException, IOException, FileException {
         if (!filePath.endsWith(".xml"))
             throw new FileException(1, filePath);
-
+        fileName = Paths.get(filePath).getFileName().toString();
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
         XMLFilePath = Paths.get(gp.getGPUPConfiguration().getGPUPWorkingDirectory());
@@ -157,15 +157,16 @@ public class Engine {
         List<GPUPTarget> targetsList = gp.getGPUPTargets().getGPUPTarget();
         Set<String> serialSetsNames = new HashSet<>();
         Set<GPUPDescriptor.GPUPSerialSets.GPUPSerialSet> serialSets = new HashSet<>();
-        for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet ss : gp.getGPUPSerialSets().getGPUPSerialSet()) { //checking if the serial sets are fine and adding them to a set
-            if (serialSetsNames.contains(ss.getName()))
-                //exception
-                throw new FileException(3, ss.getName());
-            else {
-                serialSetsNames.add(ss.getName());
-                serialSets.add(ss);
+        if (gp.getGPUPSerialSets()!=null)
+            for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet ss : gp.getGPUPSerialSets().getGPUPSerialSet()) { //checking if the serial sets are fine and adding them to a set
+                if (serialSetsNames.contains(ss.getName()))
+                    //exception
+                    throw new FileException(3, ss.getName());
+                else {
+                    serialSetsNames.add(ss.getName());
+                    serialSets.add(ss);
+                }
             }
-        }
         for (GPUPTarget t : targetsList) { //adding all the targets to a graph, if there are two targets with the same name the exception will be thrown from the target constructor
             res.new Target(t.getName(), t.getGPUPUserData());
         }
@@ -448,7 +449,7 @@ public class Engine {
      * @return The file's name
      */
     public String getFileName() {
-        return XMLFilePath.getFileName().toString();
+        return fileName;
     }
 
     /**
@@ -476,4 +477,9 @@ public class Engine {
 
     }
 
+    void runSimulation(ArrayList<String> targets, int runTime, boolean randomRunTime, int success, int successWithWarnings, int threadsNum) {
+
+    }
+
+    //TODO progress bar - add counter to target when it progresses
 }
