@@ -12,11 +12,11 @@ import java.util.*;
 
 public class Graph implements Serializable {
     private Map<String, Target> targets; //database that can find a target by its name
-    private Set<Map<String, Set<String>>> serialSets; //a collection of all the serial sets in the graph, each set containing target names and has a name
+    private Map<String, Set<String>> serialSets; //a collection of all the serial sets in the graph, each set containing target names and has a name
 
     public Graph() {
         targets = new HashMap<>();
-        serialSets = new HashSet<>();
+        serialSets = new HashMap<>();
     }
 
     public class Target implements Serializable {
@@ -146,7 +146,7 @@ public class Graph implements Serializable {
         return targets;
     }
 
-    public Set<Map<String, Set<String>>> getSerialSets() {
+    public Map<String, Set<String>> getSerialSets() {
         return serialSets;
     }
 
