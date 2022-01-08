@@ -1,3 +1,4 @@
+/*
 package UI;
 
 import java.io.IOException;
@@ -8,3 +9,4 @@ public class Main {
         ui.runProgram();
     }
 }
+*/
