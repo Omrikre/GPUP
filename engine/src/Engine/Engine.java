@@ -176,23 +176,23 @@ public class Engine {
                     throw new FileException(4, str);
                 else {
                     res.getTargetByName(str).addTargetToSerialSet();
-                    //check if serial set exists, if not make a new one and add to the set in the graph
-                    for (Map<String, Set<String>> m : res.getSerialSets()) {
-                        if (!m.containsKey(s.getName())) {
-                            Map<String, Set<String>> serSet = new HashMap<>();
-                            Set<String> names = new HashSet<>();
-                            names.add(str);
-                            serSet.put(s.getName(), names);
-                            res.getSerialSets().add(serSet);
-                        } else {
-                            m.get(s.getName()).add(str);
-                        }
+                    if (res.getSerialSets().isEmpty() || !res.getSerialSets().containsKey(s.getName())) { //serial set doesnt exist
+                        Set<String> names = new HashSet<>();
+                        names.add(str);
+                        res.getSerialSets().put(s.getName(), names);
+                    } else { //serial set exists
+                        res.getSerialSets().get(s.getName()).add(str);
                     }
                 }
             }
         }
-        maxThreads = gp.getGPUPConfiguration().getGPUPMaxParallelism();
-        for (GPUPTarget t : targetsList) { //adding all the dependencies
+
+
+        maxThreads = gp.getGPUPConfiguration().
+
+                getGPUPMaxParallelism();
+        for (
+                GPUPTarget t : targetsList) { //adding all the dependencies
             List<GPUPTargetDependencies.GPUGDependency> dependencies;
             if (t.getGPUPTargetDependencies() != null) {
                 dependencies = t.getGPUPTargetDependencies().getGPUGDependency();
@@ -406,7 +406,7 @@ public class Engine {
         }
     }
 
-    //part 2:
+//part 2:
 
     /**
      * this method gets a target's name and a bond type, and returns a set of all targets names connect to it by said bond
@@ -419,7 +419,61 @@ public class Engine {
         return g.getSetOfAllAffectedTargetsByBond(name, bond);
     }
 
-    //TODO: threads
-    
+    /**
+     * This method checks if the graph contains a cycle
+     *
+     * @return True if it contains a cycle, false if not
+     */
+    public boolean checkIfTheGraphContainsCycle() {
+        for (String s : g.getTargets().keySet()) {
+            Set<List<String>> temp = isTargetInCircleByName(s);
+            if (!temp.isEmpty())
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * This method returns the max numbers of usable threads for the graph
+     *
+     * @return The max number of usable threads
+     */
+    public int getMaxThreads() {
+        return maxThreads;
+    }
+
+    /**
+     * This method returns the file name
+     *
+     * @return The file's name
+     */
+    public String getFileName() {
+        return XMLFilePath.getFileName().toString();
+    }
+
+    /**
+     * This method returns all the serial sets the graph has
+     *
+     * @return All the serial sets the graph has. Each map is a serial set with a name and a list of targets
+     */
+    public Map<String, Set<String>> getSerialSets() {
+        return g.getSerialSets();
+    }
+
+    /**
+     * This method gets a target name and returns all the serial sets the target belongs to.
+     *
+     * @param t The target's name
+     * @return All serial sets it belongs to
+     */
+    public Map<String, Set<String>> getSerialSetsByTargetName(String t) {
+        Map<String, Set<String>> res = new HashMap<>();
+        for (String s : g.getSerialSets().keySet()) {
+            if (g.getSerialSets().get(s).contains(t))
+                res.put(s, g.getSerialSets().get(s));
+        }
+        return res;
+
+    }
 
 }
