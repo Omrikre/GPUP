@@ -123,6 +123,10 @@ public class Graph implements Serializable {
             return serialSetsBelongs;
         }
 
+        public int getNumberOfBonds(Bond bond) {
+            return getSetOfAllAffectedTargetsByBond(this.name, bond).size();
+        }
+
         @Override
         public String toString() {
             return name;

@@ -10,6 +10,7 @@ public abstract class Task {
     private final String name;
     private final LocalDateTime executionDate;
     private long totalRuntime; //the total runtime of all targets
+    private int progress;
 
     public Task(String name) {
         this.name = name;
