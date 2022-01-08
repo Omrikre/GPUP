@@ -14,23 +14,23 @@ public class HeaderButtonsController {
 
     @FXML private Button homeBt;
     @FXML private Button infoBt;
-    @FXML private Button graphBr;
-    @FXML private Button taskBT;
+    @FXML private Button graphBt;
+    @FXML private Button taskBt;
     @FXML private Button settingsBt;
-    @FXML private Button pathBt;
+    @FXML private Button tableBt;
 
     @FXML public void initialize() {
         homeBt.setDefaultButton(true);
         infoBt.setDisable(true);
-        graphBr.setDisable(true);
-        taskBT.setDisable(true);
-        pathBt.setDisable(true);
+        graphBt.setDisable(true);
+        taskBt.setDisable(true);
+        tableBt.setDisable(true);
     }
     public void makeAllButtonsAble() {
         infoBt.setDisable(false);
-        graphBr.setDisable(false);
-        taskBT.setDisable(false);
-        pathBt.setDisable(false);
+        graphBt.setDisable(false);
+        taskBt.setDisable(false);
+        tableBt.setDisable(false);
     }
 
     @FXML void graphPr(ActionEvent event) { }

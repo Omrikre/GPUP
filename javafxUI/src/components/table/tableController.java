@@ -105,7 +105,6 @@ public class tableController {
     public void setupData(List<TargetDTO> targets) {
         numOfCBSelected = 0;
         pathSetup();
-        System.out.println("2");
 
         CheckBox tempCB;
         for(TargetDTO target : targets) {
@@ -114,7 +113,6 @@ public class tableController {
             CheckBoxMap.put(target.getTargetName(),tempCB);
         }
         OLTargets = FXCollections.observableArrayList(targets);
-        System.out.println("2");
         setTable();
         loadBackComponents();
         whatIfVBPaneController.whatIfSetup();
@@ -125,9 +123,7 @@ public class tableController {
         try {
             // what if pane
             fxmlLoader.setLocation(getClass().getResource(TABLE_CYCLE_fXML_RESOURCE));
-            System.out.println("1");
             cycleVBPane = fxmlLoader.load();
-            System.out.println("1");
             cycleVBPaneController = fxmlLoader.getController();
             cycleVBPaneController.setParentController(this);
             System.out.println(" -- table (what if) done --");

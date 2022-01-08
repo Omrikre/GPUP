@@ -18,8 +18,13 @@ public class CommonResourcesPaths {
     public final static String TABLE_CYCLE_fXML_RESOURCE = "/components/table/cycle/cycle.fxml";
     public final static String TABLE_WHATIF_fXML_RESOURCE = "/components/table/whatIf/whatif.fxml";
 
+    // task back components
+    public final static String TASK_COMPILATION_fXML_RESOURCE = "/components/task/compilation/compilation.fxml";
+    public final static String TASK_SIMULATION_fXML_RESOURCE = "/components/task/simulation/simulation.fxml";
+
     // spacial messages
     public final static String INFO_CYCLE_MSG_fXML_RESOURCE = "/components/info/cycleWarningInfo/cycleWarningInfo.fxml";
+    public final static String TASK_INC_MSG_fXML_RESOURCE = "/components/task/simulation/incrementalError/incrementalError.fxml";
 
     //app icon
     public final static String APP_ICON_RESOURCE = "/images/Manchester-United-icon.png";

@@ -45,7 +45,7 @@ public class AppController {
     private cycleWarningInfoController cycleMsgComponentController;
     private Stage cycleMsgWin;
     // Task
-    private GridPane taskComponent;
+    private BorderPane taskComponent;
     private taskController taskComponentController;
     // Settings
     private BorderPane settingsComponent;
@@ -123,7 +123,7 @@ public class AppController {
             tableComponent = fxmlLoader.load();
             tableComponentController = fxmlLoader.getController();
             tableComponentController.setMainController(this);
-            System.out.println(" -- path done --");
+            System.out.println(" -- table done --");
 
         } catch (Exception e) {
             System.out.println("BIG Problem");
@@ -210,6 +210,14 @@ public class AppController {
     }
 
 
+    public int getMaxThreads() {
+        //TODO engine.getMaxThreads();
+        return 5;
+    }
+
+    public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings, int threadsNum) {
+        //TODO - engine.runSimulation();
+    }
 }
 
 

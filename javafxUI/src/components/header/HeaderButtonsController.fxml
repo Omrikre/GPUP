@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.header.HeaderButtonsController">
    <children>
       <Separator prefWidth="200.0" />
@@ -24,7 +23,7 @@
          <children>
             <HBox minWidth="-Infinity" prefHeight="45.0" prefWidth="438.0">
                <children>
-                  <Button fx:id="homeBt" contentDisplay="CENTER" minWidth="70.0" mnemonicParsing="false" onAction="#homePr" text="Home" textAlignment="CENTER">
+                  <Button fx:id="homeBt" accessibleRole="TOGGLE_BUTTON" contentDisplay="CENTER" minWidth="70.0" mnemonicParsing="false" onAction="#homePr" text="Home" textAlignment="CENTER">
                      <HBox.margin>
                         <Insets bottom="10.0" left="20.0" top="10.0" />
                      </HBox.margin>
@@ -39,17 +38,17 @@
                         <Insets left="10.0" top="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="graphBr" minWidth="70.0" mnemonicParsing="false" onAction="#graphPr" text="Graph">
+                  <Button fx:id="graphBt" minWidth="70.0" mnemonicParsing="false" onAction="#graphPr" text="Graph">
                      <HBox.margin>
                         <Insets left="10.0" top="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="pathBt" minWidth="70.0" mnemonicParsing="false" onAction="#pathPr" text="Path">
+                  <Button fx:id="tableBt" minWidth="70.0" mnemonicParsing="false" onAction="#pathPr" text="Table">
                      <HBox.margin>
                         <Insets left="10.0" top="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="taskBT" minWidth="70.0" mnemonicParsing="false" onAction="#taskPr" text="Task">
+                  <Button fx:id="taskBt" minWidth="70.0" mnemonicParsing="false" onAction="#taskPr" text="Task">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
