@@ -21,6 +21,12 @@ public class FileException extends Exception {
             case 2:
                 errorMessage = "the target's name: " + t + " isn't unique";
                 break;
+            case 3:
+                errorMessage = "the serial set's name: " + t + " isn't unique";
+                break;
+            case 4:
+                errorMessage = "the target's name: " + t + " exists in a serial set but not outside of it";
+                break;
         }
     }
 

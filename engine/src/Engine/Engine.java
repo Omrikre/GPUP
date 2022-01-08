@@ -28,9 +28,10 @@ public class Engine {
     private Graph g;
     private Task task;
     private String directoryPath, targetFilePath, slash;
-    private Path XMLfilePath;
+    private Path XMLFilePath;
     private boolean newRun;
     private final String systemStateFileEnding = ".bin";
+    private int maxThreads;
 
     public Engine() {
         g = new Graph();
@@ -145,18 +146,52 @@ public class Engine {
 
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
-        XMLfilePath = Paths.get(gp.getGPUPConfiguration().getGPUPWorkingDirectory());
-        if (!Files.isDirectory(XMLfilePath))
-            Files.createDirectory(XMLfilePath);
-        if (XMLfilePath.toString().contains("\\"))
+        XMLFilePath = Paths.get(gp.getGPUPConfiguration().getGPUPWorkingDirectory());
+        if (!Files.isDirectory(XMLFilePath))
+            Files.createDirectory(XMLFilePath);
+        if (XMLFilePath.toString().contains("\\"))
             slash = "\\";
         else slash = "/";
         Graph res = new Graph();
 
         List<GPUPTarget> targetsList = gp.getGPUPTargets().getGPUPTarget();
+        Set<String> serialSetsNames = new HashSet<>();
+        Set<GPUPDescriptor.GPUPSerialSets.GPUPSerialSet> serialSets = new HashSet<>();
+        for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet ss : gp.getGPUPSerialSets().getGPUPSerialSet()) { //checking if the serial sets are fine and adding them to a set
+            if (serialSetsNames.contains(ss.getName()))
+                //exception
+                throw new FileException(3, ss.getName());
+            else {
+                serialSetsNames.add(ss.getName());
+                serialSets.add(ss);
+            }
+        }
         for (GPUPTarget t : targetsList) { //adding all the targets to a graph, if there are two targets with the same name the exception will be thrown from the target constructor
             res.new Target(t.getName(), t.getGPUPUserData());
         }
+        for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet s : serialSets) { //checking if the targets in the serial sets are well-defined and adding their serial set to the graph
+            String[] split = s.getTargets().split(",");
+            for (String str : split) {
+                if (!res.isTargetInGraphByName(str))
+                    throw new FileException(4, str);
+                else {
+                    res.getTargetByName(str).addTargetToSerialSet();
+                    //check if serial set exists, if not make a new one and add to the set in the graph
+                    for (Map<String, Set<String>> m : res.getSerialSets()) {
+                        if (!m.containsKey(s.getName())) {
+                            Map<String, Set<String>> serSet = new HashMap<>();
+                            Set<String> names = new HashSet<>();
+                            names.add(str);
+                            serSet.put(s.getName(), names);
+                            res.getSerialSets().add(serSet);
+                        } else {
+                            m.get(s.getName()).add(str);
+                        }
+                    }
+                }
+            }
+        }
+        maxThreads = gp.getGPUPConfiguration().getGPUPMaxParallelism();
         for (GPUPTarget t : targetsList) { //adding all the dependencies
             List<GPUPTargetDependencies.GPUGDependency> dependencies;
             if (t.getGPUPTargetDependencies() != null) {
@@ -256,7 +291,7 @@ public class Engine {
     public String simulationStartInfo(String name) throws IOException {
         if (newRun) {
             task = new SimulationTask();
-            createTaskFolder(XMLfilePath);
+            createTaskFolder(XMLFilePath);
             newRun = false;
         }
         TargetDTO targetDTO = getTargetDataTransferObjectByName(name);
@@ -344,7 +379,7 @@ public class Engine {
      */
     public void saveCurrentStateToFile(String fileName) throws IOException {
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName + systemStateFileEnding))) {
-            out.writeUTF(XMLfilePath.toString()); //filepath for simulations if no graph was loaded
+            out.writeUTF(XMLFilePath.toString()); //filepath for simulations if no graph was loaded
             out.writeInt(g.getTargets().size()); //size of the graph
             out.writeObject(g);
         }
@@ -359,8 +394,8 @@ public class Engine {
      */
     public void loadCurrentStateFromFile(String fileName) throws IOException, ClassNotFoundException {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(fileName + systemStateFileEnding))) {
-            XMLfilePath = Paths.get(in.readUTF());
-            if (XMLfilePath.toString().contains("\\"))
+            XMLFilePath = Paths.get(in.readUTF());
+            if (XMLFilePath.toString().contains("\\"))
                 slash = "\\";
             else slash = "/";
             int size = in.readInt();
@@ -371,5 +406,20 @@ public class Engine {
         }
     }
 
+    //part 2:
+
+    /**
+     * this method gets a target's name and a bond type, and returns a set of all targets names connect to it by said bond
+     *
+     * @param name The target's name
+     * @param bond The required bond
+     * @return a set of targets names
+     */
+    public Set<String> getSetOfAllAffectedTargetsByBond(String name, Bond bond) {
+        return g.getSetOfAllAffectedTargetsByBond(name, bond);
+    }
+
+    //TODO: threads
+    
 
 }

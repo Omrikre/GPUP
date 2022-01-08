@@ -12,9 +12,11 @@ import java.util.*;
 
 public class Graph implements Serializable {
     private Map<String, Target> targets; //database that can find a target by its name
+    private Set<Map<String, Set<String>>> serialSets; //a collection of all the serial sets in the graph, each set containing target names and has a name
 
     public Graph() {
         targets = new HashMap<>();
+        serialSets = new HashSet<>();
     }
 
     public class Target implements Serializable {
@@ -25,6 +27,7 @@ public class Graph implements Serializable {
         private String info;
         private State state;
         private long time;
+        private int serialSetsBelongs; //how many serial sets the target is in
 
         public Target() {
 
@@ -36,6 +39,7 @@ public class Graph implements Serializable {
             requiredFor = new HashSet<>();
             this.info = info;
             this.state = State.FROZEN;
+            serialSetsBelongs = 0;
             if (targets.containsKey(name))
                 throw new FileException(2, name);
             targets.put(name, this);
@@ -108,6 +112,17 @@ public class Graph implements Serializable {
             }
         }
 
+        /**
+         * this function raises the counter of how many serial sets the target belongs to
+         */
+        public void addTargetToSerialSet() {
+            this.serialSetsBelongs++;
+        }
+
+        public int getSerialSetsBelongs() {
+            return serialSetsBelongs;
+        }
+
         @Override
         public String toString() {
             return name;
@@ -129,6 +144,10 @@ public class Graph implements Serializable {
 
     public Map<String, Target> getTargets() {
         return targets;
+    }
+
+    public Set<Map<String, Set<String>>> getSerialSets() {
+        return serialSets;
     }
 
     /**
@@ -476,5 +495,36 @@ public class Graph implements Serializable {
             }
         return res;
     }
+
+    //part 2:
+
+    /**
+     * this method gets a target's name and a bond type, and returns a set of all targets names connect to it by said bond
+     *
+     * @param name The target's name
+     * @param bond The required bond
+     * @return a set of targets names
+     */
+    public Set<String> getSetOfAllAffectedTargetsByBond(String name, Bond bond) {
+        Set<String> res = new HashSet<>();
+        Target t = getTargetByName(name);
+        getSetOfAllAffectedTargetsByBondRec(res, t, bond);
+        return res;
+    }
+
+    private void getSetOfAllAffectedTargetsByBondRec(Set<String> res, Target t, Bond bond) {
+        if (bond.equals(Bond.REQUIRED_FOR)) {
+            for (String str : t.requiredFor) {
+                res.add(str);
+                getSetOfAllAffectedTargetsByBondRec(res, getTargetByName(str), bond);
+            }
+        } else { //depends on
+            for (String str : t.dependsOn) {
+                res.add(str);
+                getSetOfAllAffectedTargetsByBondRec(res, getTargetByName(str), bond);
+            }
+        }
+    }
+
 
 }

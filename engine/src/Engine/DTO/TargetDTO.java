@@ -21,6 +21,7 @@ public class TargetDTO {
     private String targetStateString; // +
     private long targetTime;
     private CheckBox selectedState;
+    private final int serialSetsBelongs; //how many serial sets the target is in
 
 
 
@@ -34,6 +35,7 @@ public class TargetDTO {
         this.targetInfo = t.getInfo();
         this.targetState = t.getState();
         this.targetTime = t.getTime();
+        this.serialSetsBelongs=t.getSerialSetsBelongs();
 
         // stupid verbs for javaFX tables
         this.targetLocationString = targetLocation.toString();
@@ -70,6 +72,9 @@ public class TargetDTO {
     public int getTargetRequiredForNum() { return targetRequiredForNum; }
     public String getTargetStateString() { return targetStateString; }
     public CheckBox getSelectedState() { return selectedState; }
+    public int getSerialSetsBelongs() {
+        return serialSetsBelongs;
+    }
 
     // setters
     public void setTargetName(String targetName) { this.targetName = targetName; }
@@ -95,6 +100,7 @@ public class TargetDTO {
                 ", targetInfo='" + targetInfo + '\'' +
                 ", targetState=" + targetState +
                 ", targetTime=" + targetTime +
+                ", serialSetsBelongs=" + serialSetsBelongs +
                 '}';
     }
     public boolean isRoot() { return targetLocation == Location.ROOT; }
