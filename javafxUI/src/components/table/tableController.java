@@ -23,9 +23,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static components.app.CommonResourcesPaths.*;
@@ -89,8 +87,6 @@ public class tableController {
     private final int maxNumSelectedElse = 1;
     private int tabNum;
 
-
-    //TODO
     private IntegerBinding numCheckBoxesSelected;
 
 
@@ -140,6 +136,7 @@ public class tableController {
                 PATHgetPathBt.setDisable(false);
                 WHATmenuBt.setDisable(true);
                 CYCLEmenuBt.setDisable(true);
+                PATHmenuBt.setDisable(true);
 
             }
             else {
@@ -207,22 +204,39 @@ public class tableController {
     }
 
     private void clearLastName() {
-        if(numCheckBoxesSelected.get() == 0) {
-            PATHfirstTargetLabel.setText(" -");
-            PATHsecondTargetLabel.setText(" -");
+        if(tabNum == 2)
+            whatIfVBPaneController.clearSelectedTargetLabel();
+        else if(tabNum == 3)
+            cycleVBPaneController.clearSelectedTargetLabel();
+        else {
+            if (numCheckBoxesSelected.get() == 0) {
+                PATHfirstTargetLabel.setText(" -");
+                PATHsecondTargetLabel.setText(" -");
+                firstTargetName = null;
+                secondTargetName = null;
+            } else {
+                PATHsecondTargetLabel.setText(" -");
+                secondTargetName = null;
+            }
         }
-        else
-            PATHsecondTargetLabel.setText(" -");
     }
 
     private void setupNames(String targetName) {
-
-        if(numCheckBoxesSelected.get() == 1) {
-            PATHfirstTargetLabel.setText(targetName);
-            PATHsecondTargetLabel.setText(" -");
+        if(tabNum == 2)
+            whatIfVBPaneController.setSelectedTargetLabel(targetName);
+        else if(tabNum == 3)
+            cycleVBPaneController.setSelectedTargetLabel(targetName);
+        else {
+            if (numCheckBoxesSelected.get() == 1) {
+                PATHfirstTargetLabel.setText(targetName);
+                firstTargetName = targetName;
+                PATHsecondTargetLabel.setText(" -");
+                secondTargetName = null;
+            } else {
+                PATHsecondTargetLabel.setText(targetName);
+                secondTargetName = targetName;
+            }
         }
-        else
-            PATHsecondTargetLabel.setText(targetName);
 
     }
 
@@ -297,6 +311,9 @@ public class tableController {
         boolean firstTarget = true;
         int lineCount = 0;
 
+        if(lst.isEmpty())
+            return " -- There is no path --";
+
         for (List<String> line : lst) {
             lineCount++;
             stringBuild.append(" ").append(lineCount).append(")   ");
@@ -318,9 +335,9 @@ public class tableController {
         if(lineCount == 0)
             return null;
         else if(lineCount == 1)
-            firstRow = " There is 1 path\n\n";
+            firstRow = " -- There is 1 path --\n\n";
         else
-            firstRow = " There are " + lineCount + " paths\n\n";
+            firstRow = " -- There are " + lineCount + " paths --\n\n";
 
         return  firstRow + stringBuild;
     }
@@ -329,17 +346,27 @@ public class tableController {
         PATHreqTextBox.clear();
     }
     @FXML void pathClearTextPr(ActionEvent event) {
-        System.out.println("1");
+        PATHdepTextBox.clear();
+        PATHreqTextBox.clear();
     }
     @FXML void pathGetPathPr(ActionEvent event) {
-        System.out.println("1");
+        PATHdepTextBox.setText(
+                createListOfTargets(
+                        mainController.getPathDepends(firstTargetName, secondTargetName),
+                        Bond.DEPENDS_ON));
+
+        PATHreqTextBox.setText(
+                createListOfTargets(
+                        mainController.getPathRequired(firstTargetName, secondTargetName),
+                        Bond.REQUIRED_FOR));
     }
 
 
+    public Set<List<String>> getIfInCycle(String selectedTarget) {
+        return mainController.getIfInCycle(selectedTarget);
+    }
 
-
-
-
+    public Set<String> getWhatIf(String selectedTarget, Bond bond) { return mainController.getWhatIf(selectedTarget, bond); }
 }
 
 

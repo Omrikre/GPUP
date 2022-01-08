@@ -20,6 +20,17 @@ public class cycleController {
     @FXML private TextArea CYCLETextBox;
 
     private tableController parentController;
+    private String selectedTarget;
+
+    public void clearSelectedTargetLabel() {
+        CYCLEselectedTargetLabel.setText(" -");
+        selectedTarget = null;
+    }
+
+    public void setSelectedTargetLabel(String targetName) {
+        CYCLEselectedTargetLabel.setText(targetName);
+        selectedTarget = targetName;
+    }
 
 
     public void setParentController(tableController parent) { parentController = parent; }
@@ -30,10 +41,14 @@ public class cycleController {
         System.out.println("1");
     }
     @FXML void cycleClearTextPr(ActionEvent event) {
-        System.out.println("1");
+        CYCLETextBox.clear();
     }
     @FXML void cycleGetCyclePr(ActionEvent event) {
-        System.out.println("1");
+        CYCLETextBox.setDisable(false);
+        if(parentController.getIfInCycle(selectedTarget).size() == 0)
+            CYCLETextBox.setText("-- The target '" + selectedTarget + "' isn't part of a cycle --");
+        else
+            CYCLETextBox.setText(parentController.getIfInCycle(selectedTarget).toString());
     }
 
 

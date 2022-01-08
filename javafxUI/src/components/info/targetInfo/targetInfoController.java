@@ -64,10 +64,7 @@ public class targetInfoController {
         dependsNamesLabel.setText(targetInfo.getTargetDependsOn().toString());
         requiredNumLabel.setText(String.valueOf(targetInfo.getTargetRequiredFor().size()));
         requiredNamesLabel.setText(targetInfo.getTargetRequiredFor().toString());
-        //TODO - the 2 methods below (in TargetDTO)
-        /*
-        serialSetNameLabel.setText(String.valueOf(targetInfo.getTargetSerialSet().size()));
-        serialSetTargetsLabel.setText(targetInfo.getTargetSerialSet().toString()));
-         */
+        serialSetNameLabel.setText(String.valueOf(targetInfo.getSerialSetsBelongs()));
+        serialSetTargetsLabel.setText(parentController.getSSByName(targetInfo.getTargetName()));
     }
 }

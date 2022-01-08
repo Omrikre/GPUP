@@ -10,6 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.Map;
+import java.util.Set;
 
 public class generalInfoController {
 
@@ -17,10 +18,10 @@ public class generalInfoController {
     @FXML private TableColumn<targetsInfoBox, String> AtargetTypeCol;
     @FXML private TableColumn<targetsInfoBox, Integer> AquantityCol;
 
-    @FXML    private TableView<?> serialSetTV;
-    @FXML    private TableColumn<?, ?> BsetNameCol;
-    @FXML    private TableColumn<?, ?> BquantityCol;
-    @FXML    private TableColumn<?, ?> BtargetsNamesCol;
+    @FXML    private TableView<serialSetBox> serialSetTV;
+    @FXML    private TableColumn<serialSetBox, String> BsetNameCol;
+    @FXML    private TableColumn<serialSetBox, Integer> BquantityCol;
+    @FXML    private TableColumn<serialSetBox, String> BtargetsNamesCol;
 
     @FXML private Label numOfSetsLabel;
     @FXML private Label fileNameLabel;
@@ -28,6 +29,7 @@ public class generalInfoController {
     @FXML private Label containsCycleLabel;
 
     ObservableList<targetsInfoBox> lst;
+    ObservableList<serialSetBox> lstSS;
 
     @FXML private void initialize() {
         numOfSetsLabel.setText("-");
@@ -44,17 +46,30 @@ public class generalInfoController {
     }
 
 
-    public void setupData(Map<Location, Integer> TV_A_Map, int numOfTargets, boolean containsCycle) {
+    public void setupData(Map<Location, Integer> TV_A_Map, int numOfTargets, boolean containsCycle, String fileName, int numOfSets, Map<String, Set<String>> serialSets) {
         setTableA(TV_A_Map);
-        //TODO - setTableB(); - need serialSet info
-        setLabels(numOfTargets, containsCycle);
+        setTableB(serialSets);
+        setLabels(numOfTargets, containsCycle, fileName, numOfSets);
     }
 
-    private void setLabels(int numOfTargets, boolean containsCycle) {
+    private void setTableB(Map<String, Set<String>> serialSets) {
+        lstSS = FXCollections.observableArrayList();
+        for(String s : serialSets.keySet()){
+            lstSS.add(new serialSetBox(s,serialSets.get(s).size(),serialSets.get(s).toString()));
+        }
+
+        BquantityCol.setCellValueFactory(new PropertyValueFactory<serialSetBox, Integer>("membersNum"));
+        BtargetsNamesCol.setCellValueFactory(new PropertyValueFactory<serialSetBox, String>("membersNames"));
+        BsetNameCol.setCellValueFactory(new PropertyValueFactory<serialSetBox, String>("setName"));
+
+
+        serialSetTV.setItems(lstSS);
+    }
+
+    private void setLabels(int numOfTargets, boolean containsCycle, String fileName, Integer numOfSets) {
         numOfTargetsLabel.setText(String.valueOf(numOfTargets));
-        //TODO - num of sets, file name
-        //numOfSetsLabel.setText();
-        //fileNameLabel.setText();
+        numOfSetsLabel.setText(numOfSets.toString());
+        fileNameLabel.setText(fileName);
         String cycle = "no";
         if(containsCycle)
             cycle = "yes";

@@ -195,8 +195,7 @@ public class AppController {
     }
     public int getNumOfTargets() { return engine.getAmountOfTargets(); }
     public boolean getGraphContainsCycle() { return graphContainsCycle; }
-    private void setGraphContainsCycle() { graphContainsCycle = false; //TODO engine.checkIfTheGraphContainsCycle();
-        }
+    private void setGraphContainsCycle() { graphContainsCycle = engine.checkIfTheGraphContainsCycle(); }
 
 
 
@@ -214,14 +213,22 @@ public class AppController {
     }
 
 
-    public int getMaxThreads() {
-        //TODO engine.getMaxThreads();
-        return 5;
-    }
+    public int getMaxThreads() { return engine.getMaxThreads(); }
 
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings, int threadsNum) {
         //TODO - engine.runSimulation();
     }
+
+    public String getFileName() { return engine.getFileName(); }
+
+    public int getNumOfSets() { return engine.getSerialSets().size(); }
+
+    public Map<String, Set<String>> getSerialSets() { return engine.getSerialSets();}
+    public Map<String, Set<String>> getSerialSetByName(String name) { return engine.getSerialSetsByTargetName(name);}
+
+    public Set<List<String>> getIfInCycle(String selectedTarget) { return engine.isTargetInCircleByName(selectedTarget); }
+
+    public Set<String> getWhatIf(String selectedTarget, Bond bond) { return engine.getSetOfAllAffectedTargetsByBond(selectedTarget, bond); }
 }
 
 

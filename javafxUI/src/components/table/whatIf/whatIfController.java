@@ -1,5 +1,6 @@
 package components.table.whatIf;
 
+import Engine.Enums.Bond;
 import components.table.tableController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+
+import java.util.Set;
 
 public class whatIfController {
 
@@ -20,6 +23,17 @@ public class whatIfController {
     @FXML private TextArea WHATreqTextBox;
 
     private tableController parentController;
+    private String selectedTarget;
+
+    public void clearSelectedTargetLabel() {
+        WHATselectedTargetLabel.setText(" -");
+        selectedTarget = null;
+    }
+
+    public void setSelectedTargetLabel(String targetName) {
+        WHATselectedTargetLabel.setText(targetName);
+        selectedTarget = targetName;
+    }
 
 
     public void setParentController(tableController parent) { parentController = parent; }
@@ -29,10 +43,20 @@ public class whatIfController {
     public void setWhatBtDisable(boolean disable) { WHATgetWhatBt.setDisable(disable);}
     private void whatIfClearTextBoxes() {}
     @FXML void whatIfClearTextPr(ActionEvent event) {
-        System.out.println("1");
+
     }
     @FXML void whatIfGetWhatIfPr(ActionEvent event) {
-        System.out.println("1");
+        Set<String> res = parentController.getWhatIf(selectedTarget, Bond.DEPENDS_ON);
+        if(res.isEmpty())
+            WHATdepTextBox.setText(" -- No Dependency --");
+        else
+            WHATdepTextBox.setText(res.toString());
+        res = parentController.getWhatIf(selectedTarget, Bond.REQUIRED_FOR);
+        if(res.isEmpty())
+            WHATreqTextBox.setText(" -- No Requirements --");
+        else
+            WHATreqTextBox.setText(res.toString());
+
     }
 
 

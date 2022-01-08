@@ -39,7 +39,7 @@ public class InfoController {
 
     public void setupData() {
         if(generalInfoGPController != null) {
-            generalInfoGPController.setupData(mainController.getGeneralInfoTable(), mainController.getNumOfTargets(), mainController.getGraphContainsCycle());
+            generalInfoGPController.setupData(mainController.getGeneralInfoTable(), mainController.getNumOfTargets(), mainController.getGraphContainsCycle(), mainController.getFileName(), mainController.getNumOfSets(), mainController.getSerialSets());
         } else System.out.println("null fuck 1");
         if(infoByTargetGPController != null) {
             infoByTargetGPController.setChoiceTargetBox(mainController.getTargetList());
@@ -57,4 +57,5 @@ public class InfoController {
     }
     public TargetDTO getTargetDTO(String targetName) { return mainController.getTargetDTO(targetName); }
 
+    public String getSSByName(String name) { return mainController.getSerialSetByName(name).toString(); }
 }
