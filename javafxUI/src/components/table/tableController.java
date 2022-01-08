@@ -2,6 +2,9 @@ package components.table;
 
 import components.table.cycle.cycleController;
 import components.table.whatIf.whatIfController;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
+import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -76,16 +79,30 @@ public class tableController {
     // in class members
     private AppController mainController;
     private ObservableList<TargetDTO> OLTargets;
-    private int numOfCBSelected;
+
     private String firstTargetName;
     private String secondTargetName;
-    private Map<String, CheckBox> CheckBoxMap;
+
+    private ObservableSet<CheckBox> selectedCheckBoxes;
+    private ObservableSet<CheckBox> unselectedCheckBoxes;
+    private final int maxNumSelectedPath = 2;
+    private final int maxNumSelectedElse = 1;
+    private int tabNum;
+
+
+    //TODO
+    private IntegerBinding numCheckBoxesSelected;
 
 
 
     // initializers
     @FXML public void initialize() {
-        CheckBoxMap = new HashMap<>();
+        tabNum = 1;
+
+        selectedCheckBoxes = FXCollections.observableSet();
+        unselectedCheckBoxes = FXCollections.observableSet();
+        numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
+
         targetNameCOL.setStyle( "-fx-alignment: CENTER;");
         depOnDirectCOL.setStyle( "-fx-alignment: CENTER;");
         depOnTotalCOL.setStyle( "-fx-alignment: CENTER;");
@@ -95,7 +112,6 @@ public class tableController {
         targetInfoCOL.setStyle( "-fx-alignment: CENTER;");
         checkBoxCOL.setStyle( "-fx-alignment: CENTER;");
         targetTypeCOL.setStyle( "-fx-alignment: CENTER;");
-
     }
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -103,21 +119,49 @@ public class tableController {
 
     // data setup
     public void setupData(List<TargetDTO> targets) {
-        numOfCBSelected = 0;
         pathSetup();
 
         CheckBox tempCB;
         for(TargetDTO target : targets) {
             tempCB = new CheckBox();
             target.setSelectedState(tempCB);
-            CheckBoxMap.put(target.getTargetName(),tempCB);
+            configureCheckBox(tempCB, target.getTargetName());
         }
+
+        numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> {
+            if (newSelectedCount.intValue() == maxNumSelectedElse && getTabNum() != 1) {
+                unselectedCheckBoxes.forEach(cb -> cb.setDisable(true));
+                PATHgetPathBt.setDisable(true);
+                whatIfVBPaneController.setWhatBtDisable(false);
+                cycleVBPaneController.setCycleDisable(false);
+            }
+            else if (newSelectedCount.intValue() == maxNumSelectedPath && getTabNum() == 1) {
+                unselectedCheckBoxes.forEach(cb -> cb.setDisable(true));
+                PATHgetPathBt.setDisable(false);
+                WHATmenuBt.setDisable(true);
+                CYCLEmenuBt.setDisable(true);
+
+            }
+            else {
+                unselectedCheckBoxes.forEach(cb -> cb.setDisable(false));
+                PATHgetPathBt.setDisable(true);
+                whatIfVBPaneController.setWhatBtDisable(true);
+                cycleVBPaneController.setCycleDisable(true);
+                WHATmenuBt.setDisable(false);
+                CYCLEmenuBt.setDisable(false);
+            }
+        });
+
         OLTargets = FXCollections.observableArrayList(targets);
         setTable();
         loadBackComponents();
         whatIfVBPaneController.whatIfSetup();
         cycleVBPaneController.cycleSetup();
     }
+
+    private int getTabNum() { return tabNum; }
+
+
     public void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         try {
@@ -142,6 +186,47 @@ public class tableController {
         }
     }
 
+    private void configureCheckBox(CheckBox checkBox, String targetName) {
+        if (checkBox.isSelected())
+            selectedCheckBoxes.add(checkBox);
+        else
+            unselectedCheckBoxes.add(checkBox);
+
+        checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
+
+            if (isNowSelected) {
+                unselectedCheckBoxes.remove(checkBox);
+                selectedCheckBoxes.add(checkBox);
+                setupNames(targetName);
+            } else {
+                selectedCheckBoxes.remove(checkBox);
+                unselectedCheckBoxes.add(checkBox);
+                clearLastName();
+            }
+        });
+    }
+
+    private void clearLastName() {
+        if(numCheckBoxesSelected.get() == 0) {
+            PATHfirstTargetLabel.setText(" -");
+            PATHsecondTargetLabel.setText(" -");
+        }
+        else
+            PATHsecondTargetLabel.setText(" -");
+    }
+
+    private void setupNames(String targetName) {
+
+        if(numCheckBoxesSelected.get() == 1) {
+            PATHfirstTargetLabel.setText(targetName);
+            PATHsecondTargetLabel.setText(" -");
+        }
+        else
+            PATHsecondTargetLabel.setText(targetName);
+
+    }
+
+
     // table
     public void setTable() {
         targetNameCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetName"));
@@ -159,25 +244,25 @@ public class tableController {
     }
 
 
-
     // change panes methods
     @FXML void CYCLEmenuPr(ActionEvent event) {
-        clearTableCB();
+        clearTableCB(3);
+
         settingsBp.setCenter(cycleVBPane);
     }
     @FXML void PATHmenuPr(ActionEvent event) {
-        clearTableCB();
+        clearTableCB(1);
         settingsBp.setCenter(pathVBPane);
     }
     @FXML void WHATmenuPr(ActionEvent event) {
-        clearTableCB();
+        clearTableCB(2);
         settingsBp.setCenter(whatIfVBPane);
     }
 
-    private void clearTableCB() {
+    private void clearTableCB(int tabNum) {
+        selectedCheckBoxes.forEach(checkBox -> checkBox.setSelected(false));
+        this.tabNum = tabNum;
     }
-
-
 
 
     //
@@ -249,10 +334,6 @@ public class tableController {
     @FXML void pathGetPathPr(ActionEvent event) {
         System.out.println("1");
     }
-
-
-
-
 
 
 

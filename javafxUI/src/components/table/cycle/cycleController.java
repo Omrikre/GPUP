@@ -13,7 +13,6 @@ public class cycleController {
 
     @FXML private VBox cycleVBPane;
     // find cycle tab
-    @FXML private Tab CYCLEtab;
     @FXML private Label CYCLEselectedTargetLabel;
     @FXML private Button CYCLEclearTextBt;
     @FXML private Button CYCLEgetCycleBt;
@@ -36,6 +35,10 @@ public class cycleController {
     @FXML void cycleGetCyclePr(ActionEvent event) {
         System.out.println("1");
     }
+
+
+    public void setCycleDisable(boolean disable) { CYCLEgetCycleBt.setDisable(disable); }
+
 
 
 

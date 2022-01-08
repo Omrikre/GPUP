@@ -13,7 +13,6 @@ public class whatIfController {
 
     @FXML private VBox whatIfVBPane;
     // what if tab
-    @FXML private Tab WHATtab;
     @FXML private Label WHATselectedTargetLabel;
     @FXML private Button WHATclearTextBt;
     @FXML private Button WHATgetWhatBt;
@@ -27,6 +26,7 @@ public class whatIfController {
 
     // what if tab
     public void whatIfSetup() {}
+    public void setWhatBtDisable(boolean disable) { WHATgetWhatBt.setDisable(disable);}
     private void whatIfClearTextBoxes() {}
     @FXML void whatIfClearTextPr(ActionEvent event) {
         System.out.println("1");
@@ -34,11 +34,6 @@ public class whatIfController {
     @FXML void whatIfGetWhatIfPr(ActionEvent event) {
         System.out.println("1");
     }
-
-
-
-
-
 
 
 
