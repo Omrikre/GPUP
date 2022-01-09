@@ -4,7 +4,6 @@ import Engine.DTO.TargetDTO;
 import Engine.Enums.Location;
 import components.info.InfoController;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import java.util.List;
@@ -27,32 +26,50 @@ public class treeViewController {
         TreeItem<String> tempItm;
         TreeItem<String> root;
 
+        int counter = 0;
         root = new TreeItem<String>("Roots");
         for(TargetDTO target : targetList) {
             if(target.isRoot()) {
+                counter++;
                 tempItm = new TreeItem<String>(target.getTargetName() + " (" + target.getTargetStateString() + ")");
                 setSmallTree(tempItm, target, Location.ROOT);
                 root.getChildren().add(tempItm);
             }
         }
+        if(counter == 0) {
+            tempItm = new TreeItem<String>(" -- No Roots --");
+            root.getChildren().add(tempItm);
+        }
         treeViewRtoL.setRoot(root);
 
+        counter = 0;
         root = new TreeItem<String>("Leaves");
         for(TargetDTO target : targetList) {
             if(target.isLeaf()) {
+                counter++;
                 tempItm = new TreeItem<String>(target.getTargetName() + " (" + target.getTargetStateString() + ")");
                 setSmallTree(tempItm, target, Location.LEAF);
                 root.getChildren().add(tempItm);
             }
         }
+        if(counter == 0) {
+            tempItm = new TreeItem<String>(" -- No Leaves --");
+            root.getChildren().add(tempItm);
+        }
         treeViewLtoR.setRoot(root);
 
+        counter = 0;
         root = new TreeItem<String>("Independents");
         for(TargetDTO target : targetList) {
             if(target.isIndependent()) {
+                counter++;
                 tempItm = new TreeItem<String>(target.getTargetName() + " (" + target.getTargetStateString() + ")");
                 root.getChildren().add(tempItm);
             }
+        }
+        if(counter == 0) {
+            tempItm = new TreeItem<String>(" -- No Independents --");
+            root.getChildren().add(tempItm);
         }
         treeViewInd.setRoot(root);
 
