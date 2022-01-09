@@ -7,11 +7,13 @@ import Exceptions.FileException;
 import components.app.AppController;
 import components.task.compilation.compilationController;
 import components.task.simulation.simulationController;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -23,6 +25,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static components.app.CommonResourcesPaths.*;
 
@@ -62,6 +66,11 @@ public class taskController {
     private List<TargetDTO> targetsList;
     private Map<String, TargetDTO> targetsMap;
 
+    private int taskProgress;
+    boolean pause;
+    boolean simTab;
+    boolean firstCallForResult;
+
 
 
     // initializers
@@ -71,6 +80,8 @@ public class taskController {
         numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
 
         targetsMap = new HashMap<String, TargetDTO>();
+        taskProgress = 0;
+        pause= false;
 
         taskTypeCB.getItems().add("Simulation");
         taskTypeCB.getItems().add("Compilation");
@@ -102,7 +113,7 @@ public class taskController {
         loadBackComponents();
         setChoiceBoxListener();
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
-
+        numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { compilationComponentController.setSelectedNum(numCheckBoxesSelected); });
     }
 
     private void configureCheckBox(CheckBox checkBox, String targetName) {
@@ -116,24 +127,28 @@ public class taskController {
                 unselectedCheckBoxes.remove(checkBox);
                 selectedCheckBoxes.add(checkBox);
                 simulationComponentController.addSelectedTargetsTB(targetName);
+                compilationComponentController.addSelectedTargetsTB(targetName);
             } else {
                 selectedCheckBoxes.remove(checkBox);
                 unselectedCheckBoxes.add(checkBox);
                 simulationComponentController.removeSelectedTargetsTB(targetName);
+                compilationComponentController.removeSelectedTargetsTB(targetName);
             }
         });
     }
     public void setChoiceBoxListener() {
         taskTypeCB.setOnAction((event) -> {
-            setPaneInSettings(taskTypeCB.getSelectionModel().getSelectedItem());
             cleanUpData();
+            setPaneInSettings(taskTypeCB.getSelectionModel().getSelectedItem());
             mainController.setAllTargetsFrozen();
         });
     }
 
     private void cleanUpData() {
+        taskProgress = 0;
         unselectAllCB();
-        //TODO - reset all target's status
+        compilationComponentController.cleanup();
+        simulationComponentController.cleanup();
     }
 
     public void setTable() {
@@ -181,6 +196,7 @@ public class taskController {
     private void setPaneInSettings(String selectedItem) {
         cleanUpData();
         if(Objects.equals(selectedItem, "Simulation")) {
+            simTab = true;
             simulationComponentController.setupData();
             prefByTaskBPane.setCenter(simulationComponent);
         }
@@ -196,21 +212,65 @@ public class taskController {
             int runTime, boolean randomRunTime, int success, int successWithWarnings,
             int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
         mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
-
+        pause = false;
+        firstCallForResult = true;
+        startRandomGenerator();
     }
 
     public void selectAllCB() { targetsList.forEach(dto -> dto.getSelectedState().setSelected(true)); }
     public void unselectAllCB() { targetsList.forEach(dto -> dto.getSelectedState().setSelected(false)); }
 
-    public void setPause() { mainController.setPause(); }
+    public void setPause() {
+        mainController.setPause();
+        pause = true;
+    }
     public void setDisableTaskType(boolean bool) { upGP.setDisable(bool); }
 
-    public void whenFinishedSimulation() {} //TODO
+    public void whenFinishedSimulation() {
+        if(simTab) {
+            simulationComponentController.openResult();
+        }
+        else {
+            //compilationComponentController.openResult();
+        }
+    }
     public Map<State, Set<String>> getSimResData() { return mainController.getSimulationResult(); }
     public Set<String> getWhatIf(String TargetName, Bond bond) { return mainController.getWhatIf(TargetName, bond); }
     public void setAllCBDisable(boolean bool) {targetsList.forEach(dto -> dto.getSelectedState().setDisable(bool));}
     public void setWhatIfSelections(Set<String> targetSet) {targetSet.forEach(tarName -> targetsMap.get(tarName).getSelectedState().setSelected(true));}
 
 
+    public int getSelectedNum() { return numCheckBoxesSelected.intValue();}
 
+    private void startRandomGenerator() {
+        Thread thread = new Thread(this::updateProgress);
+        thread.setDaemon(true);
+        thread.setName("progress bar thread");
+        thread.start();
+    }
+    private void updateProgress() {
+        while (taskProgress != 100 && !pause) {
+            sleepForSomeTime();
+            Platform.runLater(
+                    () -> setupProgressByThread()
+            );
+        }
+
+    }
+    public void setupProgressByThread() {
+        taskProgress = mainController.getProgress();
+        System.out.println("thread " + taskProgress);
+        compilationComponentController.setProgress(taskProgress);
+        simulationComponentController.setProgress(taskProgress);
+        if(taskProgress == 100) {
+            firstCallForResult = false;
+            whenFinishedSimulation();
+        }
+    }
+
+    private void sleepForSomeTime() {
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException ignored) {}
+    }
 }

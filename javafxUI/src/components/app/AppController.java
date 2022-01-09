@@ -228,6 +228,7 @@ public class AppController {
     public void setPause() { engine.pause(); }
     public  Map<State, Set<String>> getSimulationResult() { return engine.getTargetsInEachState(); }
     public void setAllTargetsFrozen() { engine.setAllTargetsFrozen(); }
+    public int getProgress() { return engine.getProgress(); }
 }
 
 

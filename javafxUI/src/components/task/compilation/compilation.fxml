@@ -70,7 +70,7 @@
                   <Insets left="5.0" right="5.0" />
                </padding>
                <VBox.margin>
-                  <Insets bottom="50.0" top="50.0" />
+                  <Insets bottom="20.0" top="20.0" />
                </VBox.margin>
             </Separator>
             <HBox alignment="CENTER">
@@ -108,6 +108,28 @@
                   <Insets top="5.0" />
                </VBox.margin>
             </GridPane>
+            <Separator layoutX="10.0" layoutY="204.0" prefWidth="200.0">
+               <padding>
+                  <Insets left="5.0" right="5.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets bottom="20.0" top="20.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="227.0">
+               <children>
+                  <Button fx:id="inputPathBT" mnemonicParsing="false" onAction="#inputPathPr" prefWidth="130.0" text="Set Input Folder">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="outputPathBt" layoutX="113.0" layoutY="10.0" mnemonicParsing="false" onAction="#outputPathPr" prefWidth="130.0" text="Set Output Folder">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
          </children>
       </VBox>
    </center>

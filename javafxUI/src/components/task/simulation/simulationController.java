@@ -78,6 +78,7 @@ public class simulationController {
         loadBackComponents();
         fromScratch = true;
         pauseBT.setDisable(true);
+        runBT.setDisable(true);
 
         useWhatIfBT.setOnAction((event) -> {
             if (useWhatIfBT.isSelected()) {
@@ -143,7 +144,7 @@ public class simulationController {
     }
 
     public void setParentController(taskController parent) {parentController = parent;}
-    private void cleanup() {
+    public void cleanup() {
         // buttons
         randomCB.setSelected(false);
         useWhatIfBT.setSelected(false);
@@ -159,10 +160,9 @@ public class simulationController {
         selectedTargetsTB.setEditable(false);
 
         // progress bar
-        progressBar.setDisable(true);
+        progressBar.setDisable(false);
         progressBar.setProgress(0);
         progressPresentLabel.setText("0 %");
-
         setupArray();
 
     }
@@ -211,11 +211,19 @@ public class simulationController {
         incrementalBT.setDisable(false);
         fromScratch = !incrementalBT.isSelected();
         lastRunTargetsArray = (ArrayList<String>) runTargetsArray.clone();
+        System.out.println(timeSpinner.getValue());
+        System.out.println(randomCB.isSelected());
+        System.out.println( successSpinner.getValue());
+        System.out.println(warningsSpinner.getValue());
+        System.out.println(threadsNumSpinner.getValue());
+        System.out.println(runTargetsArray);
+        System.out.println(fromScratch);
+
         parentController.runSimulation(
                 timeSpinner.getValue(), randomCB.isSelected(), successSpinner.getValue(),
                 warningsSpinner.getValue(), threadsNumSpinner.getValue(), runTargetsArray, fromScratch);
     }
-    @FXML void incrementalPr(ActionEvent event) {}
+    @FXML void incrementalPr(ActionEvent event) {fromScratch = !incrementalBT.isSelected();}
     @FXML void selectAllTargetsPr(ActionEvent event) {
         parentController.selectAllCB();
     }
@@ -251,7 +259,9 @@ public class simulationController {
     private void whatIfMakeDisable() {
         whatIfGP.setDisable(true);
         useWhatIfBT.setSelected(false);
-        //useWhatIfBT.setDisable(true);
+        if(parentController.getSelectedNum() != 1) {
+            useWhatIfBT.setDisable(true);
+        }
         reqForBT.setSelected(false);
         depOnBT.setSelected(false);
     }
@@ -268,25 +278,49 @@ public class simulationController {
     }
     public void removeSelectedTargetsTB(String targetName) {
         runTargetsArray.remove(targetName);
-
         setSelectedTargetsTB();
     }
     public void setSelectedNum(IntegerBinding numCheckBoxesSelected) {
-        this.SelectedNum = numCheckBoxesSelected.intValue();
-        if (SelectedNum != 1)
+        if (numCheckBoxesSelected.intValue() != 1)
             whatIfMakeDisable();
         else
             whatIfMakeEnable();
+        if(numCheckBoxesSelected.intValue() == 0)
+            runBT.setDisable(true);
+        else
+            runBT.setDisable(false);
     }
     public void closeResult() {
         simulationResultWin.close();
     }
-    private void openResult() {
+    public void openResult() {
         simulationResultComponentController.setupData(parentController.getSimResData());
         simulationResultWin.show();
+        cleanupAfterFinish();
     }
+
+    private void cleanupAfterFinish() {
+        pauseBT.setDisable(true);
+        runBT.setDisable(true);
+        parentController.setDisableTaskType(false);
+        upVB.setDisable(false);
+        downVB.setDisable(false);
+        runBT.setDisable(false);
+        cleanup();
+        parentController.unselectAllCB();
+    }
+
     public ArrayList<String> getRunTargetsArray() {return runTargetsArray;}
     public ArrayList<String> getLastRunTargetsArray() {return lastRunTargetsArray;}
+
+    public void setProgress(int progress) {
+        Integer temp = progress;
+        progressPresentLabel.setText(temp.toString() + " %");
+        double dProgress = progress;
+        double pres = dProgress/100;
+        System.out.println(pres);
+        progressBar.setProgress(pres);
+    }
 }
 
 
