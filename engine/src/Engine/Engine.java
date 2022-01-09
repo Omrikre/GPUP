@@ -504,10 +504,13 @@ public class Engine {
     }
 
     public void runSimulation(ArrayList<String> targets, int runTime, boolean randomRunTime, int success,
-                              int successWithWarnings, int threadsNum) throws FileException {
+                              int successWithWarnings, int threadsNum, boolean fromScratch) throws FileException {
         progressCounter = 0;
         progress = 0;
         newThreads = threadsNum;
+        if (fromScratch) {
+            g.setAllTargetsFrozen();
+        }
         Graph miniGraph = getGraphOfRunnableTargetsFromArray(targets);
         Set<String> set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
         while (set != null) {
