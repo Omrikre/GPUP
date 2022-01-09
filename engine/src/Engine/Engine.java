@@ -612,9 +612,9 @@ public class Engine {
 
     }
 
-    //TODO fix cycle...
+    //TODO get "from scratch" boolean to simulation task and set all frozen if true.
 
-    //TODO save file for incremental runs(?)
+    //TODO fix bugs simulation
 
     //TODO compilation! finish it...
 }

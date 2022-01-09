@@ -543,13 +543,17 @@ public class Graph implements Serializable {
     private void getSetOfAllAffectedTargetsByBondRec(Set<String> res, Target t, Bond bond) {
         if (bond.equals(Bond.REQUIRED_FOR)) {
             for (String str : t.requiredFor) {
-                res.add(str);
-                getSetOfAllAffectedTargetsByBondRec(res, getTargetByName(str), bond);
+                if (!res.contains(str)) {
+                    res.add(str);
+                    getSetOfAllAffectedTargetsByBondRec(res, getTargetByName(str), bond);
+                }
             }
         } else { //depends on
             for (String str : t.dependsOn) {
-                res.add(str);
-                getSetOfAllAffectedTargetsByBondRec(res, getTargetByName(str), bond);
+                if (!res.contains(str)) {
+                    res.add(str);
+                    getSetOfAllAffectedTargetsByBondRec(res, getTargetByName(str), bond);
+                }
             }
         }
     }
