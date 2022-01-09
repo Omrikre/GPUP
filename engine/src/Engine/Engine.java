@@ -4,6 +4,7 @@ import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
+import Engine.Tasks.CompilationTask;
 import Engine.Tasks.SimulationTask;
 import Engine.Tasks.Task;
 import Engine.XML.GPUPDescriptor;
@@ -510,23 +511,25 @@ public class Engine {
 
     public void runSimulation(ArrayList<String> targets, int runTime, boolean randomRunTime, int success,
                               int successWithWarnings, int threadsNum, boolean fromScratch) throws FileException, InterruptedException {
-           new Thread(()->{
-               progressCounter = 0;
-               progress = 0;
-               newThreads = threadsNum;
-               if (fromScratch) {
-                   g.setAllTargetsFrozen();
-               }
-               Graph miniGraph = null;
-               try {
-                   miniGraph = getGraphOfRunnableTargetsFromArray(targets);
-               } catch (FileException e) {
-                   e.printStackTrace();
-               }
-               Set<String> set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
-               ExecutorService threadExecutor = null;
-               while (set != null) {
-                   threadExecutor = Executors.newFixedThreadPool(newThreads);
+        new Thread(() -> {
+            progressCounter = 0;
+            progress = 0;
+            newThreads = threadsNum;
+            if (fromScratch) {
+                g.setAllTargetsFrozen();
+            }
+            else
+                g.setAllFailedAndSkippedTargetsFrozen();
+            Graph miniGraph = null;
+            try {
+                miniGraph = getGraphOfRunnableTargetsFromArray(targets);
+            } catch (FileException e) {
+                e.printStackTrace();
+            }
+            Set<String> set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
+            ExecutorService threadExecutor = null;
+            while (set != null) {
+                threadExecutor = Executors.newFixedThreadPool(newThreads);
 //            Thread t1 = new Thread(() ->
 //            {
 //                while (true) {
@@ -551,31 +554,31 @@ public class Engine {
 //                }
 //            });
 //            t2.start();
-                   for (String s : set) {
-                       g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
-                       miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
-                       if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
-                           threadExecutor.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
-                       } else {
-                           new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings).run();
-                       }
-                       g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
-                       miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
-                       g.getTargetByName(s).setTime();
-                       miniGraph.getTargetByName(s).setTime();
-                       progressCounter++;
-                       progress = calculateProgress(miniGraph.getTargets().size());
-                   }
-                   threadExecutor.shutdown();
-                   try {
-                       threadExecutor.awaitTermination(120, TimeUnit.SECONDS);
-                   } catch (InterruptedException e) {
-                       e.printStackTrace();
-                   }
-                   set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
-               }
-               progress = 100;
-           }).start();
+                for (String s : set) {
+                    g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
+                    miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
+                    if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
+                        threadExecutor.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
+                    } else {
+                        new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings).run();
+                    }
+                    g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
+                    miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
+                    g.getTargetByName(s).setTime();
+                    miniGraph.getTargetByName(s).setTime();
+                    progressCounter++;
+                    progress = calculateProgress(miniGraph.getTargets().size());
+                }
+                threadExecutor.shutdown();
+                try {
+                    threadExecutor.awaitTermination(120, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
+            }
+            progress = 100;
+        }).start();
     }
 
     private int calculateProgress(int howManyTargets) {
@@ -635,8 +638,75 @@ public class Engine {
         pause = true;
     }
 
-    public void runCompilation() {
-
+    public void runCompilation(ArrayList<String> targets, String src, String compilationFolder, int threadsNum, boolean fromScratch) {
+        new Thread(() -> {
+            progressCounter = 0;
+            progress = 0;
+            newThreads = threadsNum;
+            if (fromScratch) {
+                g.setAllTargetsFrozen();
+            }
+            else
+                g.setAllFailedAndSkippedTargetsFrozen();
+            Graph miniGraph = null;
+            try {
+                miniGraph = getGraphOfRunnableTargetsFromArray(targets);
+            } catch (FileException e) {
+                e.printStackTrace();
+            }
+            Set<String> set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
+            ExecutorService threadExecutor = null;
+            while (set != null) {
+                threadExecutor = Executors.newFixedThreadPool(newThreads);
+//            Thread t1 = new Thread(() ->
+//            {
+//                while (true) {
+//                    if (pause) {
+//                        threadExecutor.shutdown();
+//                        try {
+//                            this.wait();
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        break;
+//                    }
+//                }
+//            });
+//            t1.start();
+//            Thread t2 = new Thread(() -> {
+//                while (true) {
+//                    if (resume) {
+//                        this.notifyAll();
+//                        break;
+//                    }
+//                }
+//            });
+//            t2.start();
+                for (String s : set) {
+                    g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
+                    miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
+                    if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
+                        threadExecutor.execute(new CompilationTask(String src, String compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
+                    } else {
+                        new CompilationTask(String src, String compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)).run();
+                    }
+                    g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
+                    miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
+                    g.getTargetByName(s).setTime();
+                    miniGraph.getTargetByName(s).setTime();
+                    progressCounter++;
+                    progress = calculateProgress(miniGraph.getTargets().size());
+                }
+                threadExecutor.shutdown();
+                try {
+                    threadExecutor.awaitTermination(120, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
+            }
+            progress = 100;
+        }).start();
     }
 
     //TODO fix bugs simulation - resume pause.
