@@ -202,7 +202,7 @@ public class simulationController {
         downVB.setDisable(false);
         runBT.setDisable(false);
     }
-    @FXML void runBTPr(ActionEvent event) throws FileException {
+    @FXML void runBTPr(ActionEvent event) throws FileException, InterruptedException {
         pauseBT.setDisable(false);
         runBT.setDisable(true);
         parentController.setDisableTaskType(true);

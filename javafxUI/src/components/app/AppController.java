@@ -216,7 +216,7 @@ public class AppController {
     }
     public int getMaxThreads() { return engine.getMaxThreads(); }
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
-                              int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException {
+                              int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
         engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum, fromScratch);
     }
     public String getFileName() { return engine.getFileName(); }
