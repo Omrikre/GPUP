@@ -1,8 +1,11 @@
 package components.task.simulation;
 
 
+import Exceptions.FileException;
 import components.task.simulation.incrementalError.incrementalErrorController;
 import components.task.taskController;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,15 +14,21 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static components.app.CommonResourcesPaths.TASK_INC_MSG_fXML_RESOURCE;
 
 
 public class simulationController {
+
+    @FXML private VBox upVB;
+    @FXML private VBox downVB;
 
     @FXML private BorderPane simulationBP;
     @FXML private Spinner<Integer> timeSpinner;//
@@ -30,6 +39,7 @@ public class simulationController {
     @FXML private ToggleButton depOnBT;//
     @FXML private ToggleButton reqForBT;//
     @FXML private Button selectAllTargetsBT;//
+    @FXML private Button unselectAllTargetsBT;
     @FXML private TextField selectedTargetsTB;//
     @FXML private ToggleButton incrementalBT;//
     @FXML private Spinner<Integer> threadsNumSpinner;//
@@ -39,24 +49,23 @@ public class simulationController {
     @FXML private Button runBT;
     @FXML private GridPane whatIfGP;
 
-    private taskController parentController;
-    private ArrayList<String> runTargetsArray;
-
-    public ArrayList<String> getRunTargetsArray() { return runTargetsArray; }
-    public ArrayList<String> getLastRunTargetsArray() { return lastRunTargetsArray; }
-
-    private ArrayList<String> lastRunTargetsArray;
-    private boolean fromScratch;
-
     private BorderPane incErrorComponent;
     private incrementalErrorController incErrorComponentController;
     private Stage incErrorWin;
+    private taskController parentController;
+
+    private ArrayList<String> runTargetsArray;
+    private ArrayList<String> lastRunTargetsArray;
+    private int SelectedNum;
+
+    private boolean fromScratch;
 
 
 
     // initializers
     @FXML public void initialize() {
         runTargetsArray = new ArrayList<String>();
+        lastRunTargetsArray = new ArrayList<String>();
         cleanup();
         loadBackComponents();
         fromScratch = true;
@@ -105,6 +114,8 @@ public class simulationController {
         return false;
         //return runTargetsArray.equals(lastRunTargetsArray);
     }
+    public ArrayList<String> getRunTargetsArray() { return runTargetsArray; }
+    public ArrayList<String> getLastRunTargetsArray() { return lastRunTargetsArray; }
 
     public void setParentController(taskController parent) { parentController = parent; }
     private void cleanup() {
@@ -137,7 +148,7 @@ public class simulationController {
         selectedTargetsTB.setText(runTargetsArray.toString());
     }
     public void setupData() {
-        cleanup();
+        //cleanup();
 
         // spinners
         SpinnerValueFactory<Integer> valueFactory;
@@ -155,29 +166,75 @@ public class simulationController {
         setupArray();
     }
 
-    private void whatIfSettings() {
-
-    }
+    public void setSelectedTargetsTB() { selectedTargetsTB.setText(runTargetsArray.toString()); }
 
 
     // buttons
     @FXML void pauseBTPr(ActionEvent event) {
+        upVB.setDisable(false);
+        downVB.setDisable(false);
         runBT.setDisable(false);
     }
-    @FXML void runBTPr(ActionEvent event) {
+    @FXML void runBTPr(ActionEvent event) throws FileException {
+        upVB.setDisable(true);
+        downVB.setDisable(true);
         incrementalBT.setDisable(false);
+        fromScratch = !incrementalBT.isSelected();
         runBT.setDisable(true);
         lastRunTargetsArray = (ArrayList<String>)runTargetsArray.clone();
         parentController.runSimulation(
-                timeSpinner.getValue(),
-                randomCB.isSelected(),
-                successSpinner.getValue(),
-                warningsSpinner.getValue(),
-                threadsNumSpinner.getValue());
+                timeSpinner.getValue(), randomCB.isSelected(), successSpinner.getValue(),
+                warningsSpinner.getValue(), threadsNumSpinner.getValue(), runTargetsArray, fromScratch);
+    }
+
+
+    @FXML void incrementalPr(ActionEvent event) {
+
+    }
+
+    @FXML void selectAllTargetsPr(ActionEvent event) { parentController.selectAllCB(); }
+
+    @FXML void unselectAllTargetsPr(ActionEvent event) { parentController.unselectAllCB();}
+
+    @FXML void useWhatIfPr(ActionEvent event) {
+
+    }
+    private void whatIfMakeDisable() {
+        whatIfGP.setDisable(true);
+        useWhatIfBT.setSelected(false);
+        useWhatIfBT.setDisable(true);
+        reqForBT.setSelected(false);
+        depOnBT.setSelected(false);
+    }
+    private void whatIfMakeEnable() {
+        whatIfGP.setDisable(true);
+        useWhatIfBT.setSelected(false);
+        useWhatIfBT.setDisable(false);
+        reqForBT.setSelected(false);
+        depOnBT.setSelected(false);
     }
 
 
 
 
+
+    public void addSelectedTargetsTB(String targetName) {
+        runTargetsArray.add(targetName);
+        setSelectedTargetsTB();
+    }
+    public void removeSelectedTargetsTB(String targetName) {
+        runTargetsArray.remove(targetName);
+
+        setSelectedTargetsTB();
+    }
+
+
+    public void setSelectedNum(IntegerBinding numCheckBoxesSelected) {
+        this.SelectedNum = numCheckBoxesSelected.intValue();
+        if(SelectedNum > 1)
+            whatIfMakeDisable();
+        else
+            whatIfMakeEnable();
+    }
 }
 

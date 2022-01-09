@@ -42,9 +42,24 @@ public class targetInfoController {
 
 
     }
+    public void resetData() {
+        nameLabel.setText(" - ");
+        typeLabel.setText(" - ");
+        infoLabel.setText(" - ");
+        dependsNumLabel.setText(" - ");
+        dependsNamesLabel.setText(" - ");
+        requiredNumLabel.setText(" - ");
+        requiredNamesLabel.setText(" - ");
+        serialSetNameLabel.setText(" - ");
+        serialSetTargetsLabel.setText(" - ");
+        if(!choiceTargetBox.getItems().isEmpty())
+            choiceTargetBox.getItems().clear();
+    }
 
     public void setChoiceTargetBox(List<TargetDTO> targetDTOS) {
         targetDTOList = targetDTOS;
+        if(!choiceTargetBox.getItems().isEmpty())
+            choiceTargetBox.getItems().clear();
         for(TargetDTO target :  targetDTOS) {
             choiceTargetBox.getItems().add(target.getTargetName());
         }

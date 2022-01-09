@@ -146,6 +146,7 @@ public class tableController {
                 cycleVBPaneController.setCycleDisable(true);
                 WHATmenuBt.setDisable(false);
                 CYCLEmenuBt.setDisable(false);
+                PATHmenuBt.setDisable(false);
             }
         });
 
@@ -245,10 +246,10 @@ public class tableController {
     public void setTable() {
         targetNameCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetName"));
         depOnDirectCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("targetDependsOnNum"));
-        //depOnTotalCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("targetDependsOnNum")); //TODO
+        depOnTotalCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("totalDependencies"));
         reqForDirectCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("targetRequiredForNum"));
-        //reqForTotalCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("targetDependsOnNum")); //TODO
-        //serialSetCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetDependsOnNum")); //TODO
+        reqForTotalCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("totalRequierments"));
+        serialSetCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("serialSetsBelongs"));
         targetInfoCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetInfo"));
         targetTypeCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetLocationString"));
 
@@ -350,15 +351,20 @@ public class tableController {
         PATHreqTextBox.clear();
     }
     @FXML void pathGetPathPr(ActionEvent event) {
+        pathSetTextBoxes(firstTargetName, secondTargetName);
+        /*
         PATHdepTextBox.setText(
                 createListOfTargets(
                         mainController.getPathDepends(firstTargetName, secondTargetName),
                         Bond.DEPENDS_ON));
 
+        PATHAreqBLabel.setText();
         PATHreqTextBox.setText(
                 createListOfTargets(
                         mainController.getPathRequired(firstTargetName, secondTargetName),
                         Bond.REQUIRED_FOR));
+
+         */
     }
 
 
