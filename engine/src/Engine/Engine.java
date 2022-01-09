@@ -486,6 +486,10 @@ public class Engine {
         for (String s : targets) {
             Graph.Target realTarget = g.getTargets().get(s);
             Graph.Target newTarget = miniGraph.new Target(s, realTarget.getInfo());
+        }
+        for (String s : targets) {
+            Graph.Target realTarget = g.getTargets().get(s);
+            Graph.Target newTarget = miniGraph.getTargetByName(s);
             for (String str : realTarget.getRequiredFor()) {
                 if (targets.contains(str))
                     newTarget.addBondedTarget(Bond.REQUIRED_FOR, str);
@@ -494,7 +498,6 @@ public class Engine {
                 if (targets.contains(str))
                     newTarget.addBondedTarget(Bond.DEPENDS_ON, str);
             }
-
         }
         miniGraph.setLocationForAllTargets();
         return miniGraph;
