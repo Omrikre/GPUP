@@ -78,6 +78,10 @@ public class Graph implements Serializable {
             this.time = endingTime - startingTime;
         }
 
+        public void setTime(int num) {
+            this.time = num;
+        }
+
         public void setStartingTime(long sTime) {
             startingTime = sTime;
         }
@@ -312,6 +316,35 @@ public class Graph implements Serializable {
         return res;
     }
 
+    public Map<State, Set<String>> getTargetsInEachState() {
+        Map<State, Set<String>> res = new HashMap<>();
+        res.put(State.FROZEN, new HashSet<>());
+        res.put(State.SKIPPED, new HashSet<>());
+        res.put(State.FINISHED_SUCCESS, new HashSet<>());
+        res.put(State.FINISHED_FAILURE, new HashSet<>());
+        res.put(State.FINISHED_WARNINGS, new HashSet<>());
+        for (Target t : targets.values()) {
+            switch (t.getState()) {
+                case FROZEN:
+                    res.get(State.FROZEN).add(t.getName());
+                    break;
+                case SKIPPED:
+                    res.get(State.SKIPPED).add(t.getName());
+                    break;
+                case FINISHED_FAILURE:
+                    res.get(State.FINISHED_FAILURE).add(t.getName());
+                    break;
+                case FINISHED_WARNINGS:
+                    res.get(State.FINISHED_WARNINGS).add(t.getName());
+                    break;
+                case FINISHED_SUCCESS:
+                    res.get(State.FINISHED_SUCCESS).add(t.getName());
+                    break;
+            }
+        }
+        return res;
+    }
+
     /**
      * This method returns a map containing how many targets are in each location.
      *
@@ -388,8 +421,10 @@ public class Graph implements Serializable {
      */
     public void setAllTargetsFrozen() {
         for (Target t : targets.values()) {
-            if (!t.getState().equals(State.FROZEN))
+            if (!t.getState().equals(State.FROZEN)) {
                 t.setState(State.FROZEN);
+                t.setTime(0);
+            }
         }
     }
 

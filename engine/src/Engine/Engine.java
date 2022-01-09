@@ -107,6 +107,10 @@ public class Engine {
         return g.howManyTargetsInEachState();
     }
 
+    public Map<State, Set<String>> getTargetsInEachState() {
+        return g.getTargetsInEachState();
+    }
+
     /**
      * This method returns a set of targets names if they are in a given state,
      * from independent to roots. If the entire graph was finished (no more of said state),
@@ -596,9 +600,9 @@ public class Engine {
             default:
                 additionalInfo = g.getTargetByName(targetName).getState().toString();
         }
-        return "Name: " + targetName +
-                "Status: " + g.getTargetByName(targetName).getState() +
-                "Serial Sets: " + getSerialSetsByTargetName(targetName) +
+        return "Name: " + targetName + "\n" +
+                "Status: " + g.getTargetByName(targetName).getState() + "\n" +
+                "Serial Sets: " + getSerialSetsByTargetName(targetName) + "\n" +
                 additionalInfo;
     }
 
