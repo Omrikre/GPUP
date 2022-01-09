@@ -10,6 +10,12 @@ public enum State {
         }
     },
     SKIPPED, WAITING,
+    IN_PROCESS{
+        @Override
+        public String toString() {
+            return "in process";
+        }
+    },
     FINISHED_SUCCESS {
         @Override
         public String toString() {

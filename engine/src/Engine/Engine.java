@@ -20,6 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class Engine {
@@ -32,6 +34,9 @@ public class Engine {
     private boolean newRun;
     private final String systemStateFileEnding = ".bin";
     private int maxThreads;
+    private int progressCounter, progress;
+    private boolean pause = false, resume = false;
+    private int newThreads;
 
     public Engine() {
         g = new Graph();
@@ -157,7 +162,7 @@ public class Engine {
         List<GPUPTarget> targetsList = gp.getGPUPTargets().getGPUPTarget();
         Set<String> serialSetsNames = new HashSet<>();
         Set<GPUPDescriptor.GPUPSerialSets.GPUPSerialSet> serialSets = new HashSet<>();
-        if (gp.getGPUPSerialSets()!=null)
+        if (gp.getGPUPSerialSets() != null)
             for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet ss : gp.getGPUPSerialSets().getGPUPSerialSet()) { //checking if the serial sets are fine and adding them to a set
                 if (serialSetsNames.contains(ss.getName()))
                     //exception
@@ -289,19 +294,19 @@ public class Engine {
         }
     }
 
-    public String simulationStartInfo(String name) throws IOException {
-        if (newRun) {
-            task = new SimulationTask();
-            createTaskFolder(XMLFilePath);
-            newRun = false;
-        }
-        TargetDTO targetDTO = getTargetDataTransferObjectByName(name);
-        //if null exception
-        createTargetFileByName(name); //creating the target's file because it's the first time
-        String info = ((SimulationTask) task).simulationStartInfo(targetDTO);
-        saveTargetInfoToFile(info);
-        return info;
-    }
+//    public String simulationStartInfo(String name) throws IOException {
+//        if (newRun) {
+//            task = new SimulationTask();
+//            createTaskFolder(XMLFilePath);
+//            newRun = false;
+//        }
+//        TargetDTO targetDTO = getTargetDataTransferObjectByName(name);
+//        //if null exception
+//        createTargetFileByName(name); //creating the target's file because it's the first time
+//        String info = ((SimulationTask) task).simulationStartInfo(targetDTO);
+//        saveTargetInfoToFile(info);
+//        return info;
+//    }
 
     /**
      * This method gets a target's name and creates a log file for it
@@ -313,35 +318,35 @@ public class Engine {
 
     }
 
-    public int getSleepTime(int runTime) throws IOException {
-        int info = ((SimulationTask) task).getSleepTime(runTime);
-        saveTargetInfoToFile("The target slept for: " + makeMStoString(info));
-        return info;
-    }
+//    public int getSleepTime(int runTime) throws IOException {
+//        int info = ((SimulationTask) task).getSleepTime(runTime);
+//        saveTargetInfoToFile("The target slept for: " + makeMStoString(info));
+//        return info;
+//    }
 
 
-    public String simulationRunAndResult(String targetName, long runTime, float success, float successWithWarnings) throws
-            IOException {
-        State state = ((SimulationTask) task).changeTargetState(success, successWithWarnings);
-        //save info to target as well
-        setFinishedState(targetName, state);
-        g.getTargetByName(targetName).setTime(runTime);
-        String targetChanges = getTargetChanges(targetName, state);
-        String info = ((SimulationTask) task).simulationRunAndResult(targetChanges, state, runTime);
-        saveTargetInfoToFile(info);
-        return info;
-    }
+//    public String simulationRunAndResult(String targetName, long runTime, float success, float successWithWarnings) throws
+//            IOException {
+//        State state = ((SimulationTask) task).changeTargetState(success, successWithWarnings);
+//        //save info to target as well
+//        setFinishedState(targetName, state);
+//        g.getTargetByName(targetName).setTime(runTime);
+//        String targetChanges = getTargetChanges(targetName, state);
+//        String info = ((SimulationTask) task).simulationRunAndResult(targetChanges, state, runTime);
+//        saveTargetInfoToFile(info);
+//        return info;
+//    }
 
-    private String getTargetChanges(String targetName, State state) {
-        boolean mainTargetSucceed = (state == State.FINISHED_SUCCESS || state == State.FINISHED_WARNINGS);
-        Set<String> targetChanges;
-        if (mainTargetSucceed)
-            targetChanges = getRunnableTargetsNamesFromFinishedTarget(targetName);
-        else
-            targetChanges = getSkippedTargetsNamesFromFailedTarget(targetName);
-        return ((SimulationTask) task).getTargetChanges(mainTargetSucceed, targetChanges, targetName);
-
-    }
+//    private String getTargetChanges(String targetName, State state) {
+//        boolean mainTargetSucceed = (state == State.FINISHED_SUCCESS || state == State.FINISHED_WARNINGS);
+//        Set<String> targetChanges;
+//        if (mainTargetSucceed)
+//            targetChanges = getRunnableTargetsNamesFromFinishedTarget(targetName);
+//        else
+//            targetChanges = getSkippedTargetsNamesFromFailedTarget(targetName);
+//        return ((SimulationTask) task).getTargetChanges(mainTargetSucceed, targetChanges, targetName);
+//
+//    }
 
     public static String makeMStoString(long time) {
         long millis = time % 1000;
@@ -477,9 +482,139 @@ public class Engine {
 
     }
 
-    void runSimulation(ArrayList<String> targets, int runTime, boolean randomRunTime, int success, int successWithWarnings, int threadsNum) {
+    private Graph getGraphOfRunnableTargetsFromArray(ArrayList<String> targets) throws FileException {
+        Graph miniGraph = new Graph();
+        for (String s : targets) {
+            Graph.Target realTarget = g.getTargets().get(s);
+            Graph.Target newTarget = miniGraph.new Target(s, realTarget.getInfo());
+            for (String str : realTarget.getRequiredFor()) {
+                if (targets.contains(str))
+                    newTarget.addBondedTarget(Bond.REQUIRED_FOR, str);
+            }
+            for (String str : realTarget.getDependsOn()) {
+                if (targets.contains(str))
+                    newTarget.addBondedTarget(Bond.DEPENDS_ON, str);
+            }
+
+        }
+        miniGraph.setLocationForAllTargets();
+        return miniGraph;
+    }
+
+    public void runSimulation(ArrayList<String> targets, int runTime, boolean randomRunTime, int success,
+                              int successWithWarnings, int threadsNum) throws FileException {
+        progressCounter = 0;
+        progress = 0;
+        newThreads = threadsNum;
+        Graph miniGraph = getGraphOfRunnableTargetsFromArray(targets);
+        Set<String> set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
+        while (set != null) {
+            ExecutorService threadExecutor = Executors.newFixedThreadPool(newThreads);
+            Thread t1 = new Thread(() ->
+            {
+                while (true) {
+                    if (pause) {
+                        threadExecutor.shutdown();
+                        try {
+                            this.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            });
+            t1.start();
+            Thread t2 = new Thread(() -> {
+                while (true) {
+                    if (resume) {
+                        this.notifyAll();
+                        break;
+                    }
+                }
+            });
+            t2.start();
+            for (String s : set) {
+                g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
+                miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
+                if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
+                    threadExecutor.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
+                } else {
+                    new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings);
+                }
+                g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
+                miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
+                g.getTargetByName(s).setTime();
+                miniGraph.getTargetByName(s).setTime();
+                progressCounter++;
+                progress = calculateProgress(miniGraph.getTargets().size());
+            }
+            threadExecutor.shutdown();
+            set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
+        }
+    }
+
+    private int calculateProgress(int howManyTargets) {
+        return (progressCounter * 100) / howManyTargets;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    /**
+     * This method gets a target name and returns its mid-run info
+     *
+     * @param targetName
+     * @return
+     */
+    public String getTargetInfo(String targetName) {
+        String additionalInfo;
+        switch (g.getTargetByName(targetName).getState()) {
+            case FROZEN:
+                additionalInfo = "Waiting for: [" + g.getSetOfAllAffectedTargetsByBond(targetName, Bond.DEPENDS_ON) + "] to complete";
+                break;
+            case WAITING:
+                g.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
+                g.getTargetByName(targetName).setTime();
+                additionalInfo = "Waiting for: " + g.getTargetByName(targetName).getTime() + " ms";
+                break;
+            case SKIPPED:
+                additionalInfo = "skipped because of: [" +
+                        g.getFailedTargetsFromSkipped(targetName) + "]";
+                break;
+            case IN_PROCESS:
+                g.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
+                g.getTargetByName(targetName).setTime();
+                additionalInfo = "in process for: " + g.getTargetByName(targetName).getTime() + " ms";
+                break;
+            default:
+                additionalInfo = g.getTargetByName(targetName).getState().toString();
+        }
+        return "Name: " + targetName +
+                "Status: " + g.getTargetByName(targetName).getState() +
+                "Serial Sets: " + getSerialSetsByTargetName(targetName) +
+                additionalInfo;
+    }
+
+
+    public void resume(int newNum) {
+        resume = true;
+        pause = false;
+        newThreads = newNum;
+    }
+
+    public void pause() {
+        pause = true;
+    }
+
+    public void runCompilation() {
 
     }
 
-    //TODO progress bar - add counter to target when it progresses
+    //TODO fix cycle...
+
+    //TODO save file for incremental runs(?)
+
+    //TODO compilation! finish it...
 }

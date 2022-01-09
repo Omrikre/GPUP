@@ -26,6 +26,7 @@ public class Graph implements Serializable {
         private Set<String> requiredFor;
         private String info;
         private State state;
+        private long startingTime, endingTime;
         private long time;
         private int serialSetsBelongs; //how many serial sets the target is in
 
@@ -73,8 +74,16 @@ public class Graph implements Serializable {
             return time;
         }
 
-        public void setTime(long time) {
-            this.time = time;
+        public void setTime() {
+            this.time = endingTime - startingTime;
+        }
+
+        public void setStartingTime(long sTime) {
+            startingTime = sTime;
+        }
+
+        public void setEndingTime(long eTime) {
+            endingTime = eTime;
         }
 
         //used only in the function that automatically sets a location to all the targets in the graph
@@ -125,6 +134,21 @@ public class Graph implements Serializable {
 
         public int getNumberOfBonds(Bond bond) {
             return getSetOfAllAffectedTargetsByBond(this.name, bond).size();
+        }
+
+        public void setTargetStateByParameters(int success, int successWithWarnings) {
+            Random rand = new Random();
+            float magicNumber = rand.nextFloat();
+            if (success >= magicNumber) {
+                magicNumber = rand.nextFloat();
+                if (successWithWarnings >= magicNumber) {
+                    setFinishedState(this.name, State.FINISHED_WARNINGS);
+                } else {
+                    setFinishedState(this.name, State.FINISHED_SUCCESS);
+                }
+            } else {
+                setFinishedState(this.name, State.FINISHED_FAILURE);
+            }
         }
 
         @Override
@@ -530,5 +554,21 @@ public class Graph implements Serializable {
         }
     }
 
+    public Set<String> getFailedTargetsFromSkipped(String name) {
+        Set<String> res = new HashSet<>();
+        getFailedTargetsFromSkippedRec(res, name);
+        return res;
+    }
+
+    private void getFailedTargetsFromSkippedRec(Set<String> res, String name) {
+        for (String s : targets.get(name).dependsOn) {
+            if (targets.get(s).state.equals(State.FINISHED_FAILURE))
+                res.add(s);
+            else
+                getFailedTargetsFromSkippedRec(res, s);
+        }
+    }
 
 }
+
+
