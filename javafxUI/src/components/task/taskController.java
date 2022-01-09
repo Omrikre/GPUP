@@ -194,7 +194,7 @@ public class taskController {
     public Integer getMaxThreads() { return mainController.getMaxThreads(); }
     public void runSimulation(
             int runTime, boolean randomRunTime, int success, int successWithWarnings,
-            int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException {
+            int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
         mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
 
     }

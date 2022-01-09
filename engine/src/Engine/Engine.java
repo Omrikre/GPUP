@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class Engine {
@@ -508,7 +509,7 @@ public class Engine {
     }
 
     public void runSimulation(ArrayList<String> targets, int runTime, boolean randomRunTime, int success,
-                              int successWithWarnings, int threadsNum, boolean fromScratch) throws FileException {
+                              int successWithWarnings, int threadsNum, boolean fromScratch) throws FileException, InterruptedException {
         progressCounter = 0;
         progress = 0;
         newThreads = threadsNum;
@@ -517,39 +518,40 @@ public class Engine {
         }
         Graph miniGraph = getGraphOfRunnableTargetsFromArray(targets);
         Set<String> set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
+        ExecutorService threadExecutor = null;
         while (set != null) {
-            ExecutorService threadExecutor = Executors.newFixedThreadPool(newThreads);
-            Thread t1 = new Thread(() ->
-            {
-                while (true) {
-                    if (pause) {
-                        threadExecutor.shutdown();
-                        try {
-                            this.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    }
-                }
-            });
-            t1.start();
-            Thread t2 = new Thread(() -> {
-                while (true) {
-                    if (resume) {
-                        this.notifyAll();
-                        break;
-                    }
-                }
-            });
-            t2.start();
+            threadExecutor = Executors.newFixedThreadPool(newThreads);
+//            Thread t1 = new Thread(() ->
+//            {
+//                while (true) {
+//                    if (pause) {
+//                        threadExecutor.shutdown();
+//                        try {
+//                            this.wait();
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        break;
+//                    }
+//                }
+//            });
+//            t1.start();
+//            Thread t2 = new Thread(() -> {
+//                while (true) {
+//                    if (resume) {
+//                        this.notifyAll();
+//                        break;
+//                    }
+//                }
+//            });
+//            t2.start();
             for (String s : set) {
                 g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                 miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                 if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
                     threadExecutor.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
                 } else {
-                    new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings);
+                    new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings).run();
                 }
                 g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
                 miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
@@ -559,12 +561,17 @@ public class Engine {
                 progress = calculateProgress(miniGraph.getTargets().size());
             }
             threadExecutor.shutdown();
+            threadExecutor.awaitTermination(120, TimeUnit.SECONDS);
             set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
         }
+        progress = 100;
     }
 
     private int calculateProgress(int howManyTargets) {
-        return (progressCounter * 100) / howManyTargets;
+        int res = (progressCounter * 100) / howManyTargets;
+        if (res == 100)
+            return 99;
+        else return res;
     }
 
     public int getProgress() {
@@ -621,9 +628,7 @@ public class Engine {
 
     }
 
-    //TODO get "from scratch" boolean to simulation task and set all frozen if true.
-
-    //TODO fix bugs simulation
+    //TODO fix bugs simulation - resume pause.
 
     //TODO compilation! finish it...
 }
