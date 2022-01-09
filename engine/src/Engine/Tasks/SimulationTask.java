@@ -1,19 +1,48 @@
 package Engine.Tasks;
 
 import Engine.Enums.State;
-import Engine.DTO.TargetDTO;
+import Engine.Graph;
 
 import java.util.Random;
-import java.util.Set;
 
 import static java.lang.Thread.sleep;
 
-public class SimulationTask extends Task {
-    public SimulationTask() {
+public class SimulationTask extends Task implements Runnable {
+    private final int runTime;
+    private final boolean randomRunTime;
+    private Graph.Target t, realTarget;
+    private final int success;
+    private final int successWithWarnings;
+
+    public SimulationTask(int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
         super("Simulation");
+        this.runTime = runTime;
+        this.randomRunTime = randomRunTime;
+        this.t = t;
+        this.realTarget=realTarget;
+        this.success=success;
+        this.successWithWarnings=successWithWarnings;
     }
 
-    public String simulationStartInfo(TargetDTO target) {
+    @Override
+    public void run() {
+        int sleepTime;
+        if (randomRunTime) {
+            Random rand = new Random();
+            sleepTime = rand.nextInt(runTime);
+            t.setState(State.IN_PROCESS);
+            realTarget.setState(State.IN_PROCESS);
+        } else sleepTime = runTime;
+        try {
+            sleep(sleepTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        t.setTargetStateByParameters(success,successWithWarnings);
+        realTarget.setTargetStateByParameters(success,successWithWarnings);
+    }
+
+    /*public String simulationStartInfo(TargetDTO target) {
         String targetInfo;
         String res;
         res = " target name: " + target.getTargetName();
@@ -33,6 +62,8 @@ public class SimulationTask extends Task {
         super.addTotalRuntime(runTime);
         return res;
     }
+
+
 
     public int getSleepTime(int runTime) {
         Random rand = new Random();
@@ -83,6 +114,7 @@ public class SimulationTask extends Task {
         res += "\n";
 
         return res;
-    }
+    }*/
+
 
 }
