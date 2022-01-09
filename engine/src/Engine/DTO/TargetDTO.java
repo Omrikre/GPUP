@@ -47,6 +47,26 @@ public class TargetDTO {
         this.selectedState = null;
     }
 
+
+
+
+    public int getTotalDependencies() {
+        return totalDependencies;
+    }
+
+    public void setTotalDependencies(int totalDependencies) {
+        this.totalDependencies = totalDependencies;
+    }
+
+    public int getTotalRequierments() {
+        return totalRequierments;
+    }
+
+    public void setTotalRequierments(int totalRequierments) {
+        this.totalRequierments = totalRequierments;
+    }
+
+
     // getters
     public String getTargetName() {
         return targetName;

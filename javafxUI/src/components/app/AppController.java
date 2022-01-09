@@ -19,9 +19,11 @@ import Engine.Engine;
 import components.settings.settingsController;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -215,8 +217,9 @@ public class AppController {
 
     public int getMaxThreads() { return engine.getMaxThreads(); }
 
-    public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings, int threadsNum) {
-        //TODO - engine.runSimulation();
+    public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
+                              int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException {
+        engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum);
     }
 
     public String getFileName() { return engine.getFileName(); }
@@ -229,6 +232,7 @@ public class AppController {
     public Set<List<String>> getIfInCycle(String selectedTarget) { return engine.isTargetInCircleByName(selectedTarget); }
 
     public Set<String> getWhatIf(String selectedTarget, Bond bond) { return engine.getSetOfAllAffectedTargetsByBond(selectedTarget, bond); }
+
 }
 
 

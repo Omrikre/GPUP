@@ -42,6 +42,7 @@ public class InfoController {
             generalInfoGPController.setupData(mainController.getGeneralInfoTable(), mainController.getNumOfTargets(), mainController.getGraphContainsCycle(), mainController.getFileName(), mainController.getNumOfSets(), mainController.getSerialSets());
         } else System.out.println("null fuck 1");
         if(infoByTargetGPController != null) {
+            infoByTargetGPController.resetData();
             infoByTargetGPController.setChoiceTargetBox(mainController.getTargetList());
         } else System.out.println("null fuck 2");
         if(treeViewBPController != null) {

@@ -1,11 +1,15 @@
 package components.task;
 
 import Engine.DTO.TargetDTO;
+import Exceptions.FileException;
 import components.app.AppController;
 import components.task.compilation.compilationController;
 import components.task.simulation.simulationController;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -16,6 +20,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static components.app.CommonResourcesPaths.*;
@@ -48,9 +53,20 @@ public class taskController {
     private AppController mainController;
     private ObservableList<TargetDTO> OLTargets;
 
+    private ObservableSet<CheckBox> selectedCheckBoxes;
+    private ObservableSet<CheckBox> unselectedCheckBoxes;
+    private IntegerBinding numCheckBoxesSelected;
+
+    private List<TargetDTO> targets;
+
+
 
     // initializers
     @FXML public void initialize() {
+        selectedCheckBoxes = FXCollections.observableSet();
+        unselectedCheckBoxes = FXCollections.observableSet();
+        numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
+
         taskTypeCB.getItems().add("Simulation");
         taskTypeCB.getItems().add("Compilation");
 
@@ -69,16 +85,41 @@ public class taskController {
 
     // data setup
     public void setupData(List<TargetDTO> targets) {
-        for(TargetDTO target : targets)
-            target.setSelectedState(new CheckBox());
+        CheckBox tempCB;
+        this.targets = targets;
+        for(TargetDTO target : targets) {
+            tempCB = new CheckBox();
+            target.setSelectedState(tempCB);
+            configureCheckBox(tempCB, target.getTargetName());
+        }
         OLTargets = FXCollections.observableArrayList(targets);
         setTable();
         loadBackComponents();
         setChoiceBoxListener();
+        numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
+
+    }
+
+    private void configureCheckBox(CheckBox checkBox, String targetName) {
+        if (checkBox.isSelected())
+            selectedCheckBoxes.add(checkBox);
+        else
+            unselectedCheckBoxes.add(checkBox);
+
+        checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
+            if (isNowSelected) {
+                unselectedCheckBoxes.remove(checkBox);
+                selectedCheckBoxes.add(checkBox);
+                simulationComponentController.addSelectedTargetsTB(targetName);
+            } else {
+                selectedCheckBoxes.remove(checkBox);
+                unselectedCheckBoxes.add(checkBox);
+                simulationComponentController.removeSelectedTargetsTB(targetName);
+            }
+        });
     }
     public void setChoiceBoxListener() {
         taskTypeCB.setOnAction((event) -> {
-            System.out.println("Selection target: " + taskTypeCB.getSelectionModel().getSelectedItem());
             setPaneInSettings(taskTypeCB.getSelectionModel().getSelectedItem());
         });
     }
@@ -86,7 +127,7 @@ public class taskController {
         targetNameCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetName"));
         depOnCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("targetDependsOnNum"));
         reqForCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("targetRequiredForNum"));
-        //serialSetCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetDependsOnNum"));
+        serialSetCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("serialSetsBelongs"));
         targetInfoCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetInfo"));
         statusCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetStateString"));
         targetTypeCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetLocationString"));
@@ -137,8 +178,14 @@ public class taskController {
 
 
     public Integer getMaxThreads() { return mainController.getMaxThreads(); }
-    public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings, int threadsNum) {
-        mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum);
+    public void runSimulation(
+            int runTime, boolean randomRunTime, int success, int successWithWarnings,
+            int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException {
+        mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
 
     }
+
+    public void selectAllCB() { targets.forEach(dto -> dto.getSelectedState().setSelected(true)); }
+    public void unselectAllCB() { targets.forEach(dto -> dto.getSelectedState().setSelected(false)); }
+
 }

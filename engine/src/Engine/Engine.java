@@ -148,7 +148,6 @@ public class Engine {
     public void loadFile(String filePath) throws JAXBException, IOException, FileException {
         if (!filePath.endsWith(".xml"))
             throw new FileException(1, filePath);
-        fileName = Paths.get(filePath).getFileName().toString();
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
         XMLFilePath = Paths.get(gp.getGPUPConfiguration().getGPUPWorkingDirectory());
@@ -193,7 +192,7 @@ public class Engine {
             }
         }
 
-
+        fileName = Paths.get(filePath).getFileName().toString();
         maxThreads = gp.getGPUPConfiguration().
 
                 getGPUPMaxParallelism();
