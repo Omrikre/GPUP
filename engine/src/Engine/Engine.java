@@ -686,9 +686,9 @@ public class Engine {
                     g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                     miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                     if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
-                        threadExecutor.execute(new CompilationTask(String src, String compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
+                        threadExecutor.execute(new CompilationTask( src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
                     } else {
-                        new CompilationTask(String src, String compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)).run();
+                        new CompilationTask(src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)).run();
                     }
                     g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
                     miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
