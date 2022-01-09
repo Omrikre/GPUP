@@ -25,6 +25,7 @@ public class CommonResourcesPaths {
     // spacial messages
     public final static String INFO_CYCLE_MSG_fXML_RESOURCE = "/components/info/cycleWarningInfo/cycleWarningInfo.fxml";
     public final static String TASK_INC_MSG_fXML_RESOURCE = "/components/task/simulation/incrementalError/incrementalError.fxml";
+    public final static String TASK_SIM_RES_MSG_fXML_RESOURCE = "/components/task/simulation/result/result.fxml";
 
     //app icon
     public final static String APP_ICON_RESOURCE = "/images/Manchester-United-icon.png";

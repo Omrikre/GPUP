@@ -1,8 +1,10 @@
 package components.task.simulation;
 
 
+import Engine.Enums.Bond;
 import Exceptions.FileException;
 import components.task.simulation.incrementalError.incrementalErrorController;
+import components.task.simulation.result.simulationResultController;
 import components.task.taskController;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
@@ -21,8 +23,10 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static components.app.CommonResourcesPaths.TASK_INC_MSG_fXML_RESOURCE;
+import static components.app.CommonResourcesPaths.TASK_SIM_RES_MSG_fXML_RESOURCE;
 
 
 public class simulationController {
@@ -52,6 +56,11 @@ public class simulationController {
     private BorderPane incErrorComponent;
     private incrementalErrorController incErrorComponentController;
     private Stage incErrorWin;
+
+    private BorderPane simulationResultComponent;
+    private simulationResultController simulationResultComponentController;
+    private Stage simulationResultWin;
+
     private taskController parentController;
 
     private ArrayList<String> runTargetsArray;
@@ -61,7 +70,6 @@ public class simulationController {
     private boolean fromScratch;
 
 
-
     // initializers
     @FXML public void initialize() {
         runTargetsArray = new ArrayList<String>();
@@ -69,22 +77,26 @@ public class simulationController {
         cleanup();
         loadBackComponents();
         fromScratch = true;
+        pauseBT.setDisable(true);
 
         useWhatIfBT.setOnAction((event) -> {
-            if(useWhatIfBT.isSelected()) { whatIfGP.setDisable(false); }
-            else { whatIfGP.setDisable(true); }
+            if (useWhatIfBT.isSelected()) {
+                whatIfGP.setDisable(false);
+            } else {
+                whatIfGP.setDisable(true);
+            }
         });
         incrementalBT.setOnAction((event) -> {
-            if(incrementalBT.isSelected()) {
-                if(!IfIncrementalPossible()) {
+            if (incrementalBT.isSelected()) {
+                if (!IfIncrementalPossible()) {
                     incrementalBT.setSelected(false);
                     popupErrorMessage();
                 } else {
                     fromScratch = false;
                 }
-            }});
+            }
+        });
     }
-
     private void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         try {
@@ -99,29 +111,43 @@ public class simulationController {
             incErrorWin.setScene(new Scene(incErrorComponent));
             incErrorWin.initModality(Modality.APPLICATION_MODAL);
             incErrorWin.setResizable(false);
+
+
+            // simulation - end result
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(TASK_SIM_RES_MSG_fXML_RESOURCE));
+            simulationResultComponent = fxmlLoader.load();
+            simulationResultComponentController = fxmlLoader.getController();
+            simulationResultComponentController.setParentController(this);
+            simulationResultWin = new Stage();
+            simulationResultWin.setTitle("Simulation Result");
+            simulationResultWin.getIcons().add(new Image("/images/appIcon.png"));
+            simulationResultWin.setScene(new Scene(simulationResultComponent));
+            simulationResultWin.initModality(Modality.APPLICATION_MODAL);
+            simulationResultWin.setResizable(false);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("BIG Problem (inc. error)");
         }
     }
 
-    public void closeError() { incErrorWin.close(); }
+    public void closeError() {incErrorWin.close();}
     private void popupErrorMessage() {
         incErrorComponentController.setupData();
-        incErrorWin.show(); }
-
+        incErrorWin.show();
+    }
     private boolean IfIncrementalPossible() {
         return false;
-        //return runTargetsArray.equals(lastRunTargetsArray);
+        //return runTargetsArray.equals(lastRunTargetsArray); //TODO
     }
-    public ArrayList<String> getRunTargetsArray() { return runTargetsArray; }
-    public ArrayList<String> getLastRunTargetsArray() { return lastRunTargetsArray; }
 
-    public void setParentController(taskController parent) { parentController = parent; }
+    public void setParentController(taskController parent) {parentController = parent;}
     private void cleanup() {
         // buttons
         randomCB.setSelected(false);
         useWhatIfBT.setSelected(false);
+        useWhatIfBT.setDisable(true);
         incrementalBT.setSelected(false);
         depOnBT.setSelected(false);
         reqForBT.setSelected(false);
@@ -139,7 +165,6 @@ public class simulationController {
 
         setupArray();
 
-        //TODO - check boxes mark all
     }
     private void setupArray() {
         runTargetsArray.clear();
@@ -148,61 +173,85 @@ public class simulationController {
         selectedTargetsTB.setText(runTargetsArray.toString());
     }
     public void setupData() {
-        //cleanup();
-
         // spinners
         SpinnerValueFactory<Integer> valueFactory;
-        valueFactory =  new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999999, 100, 1);
+        valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999999, 1000, 1);
         timeSpinner.setValueFactory(valueFactory);
         timeSpinner.setEditable(true);
 
-        valueFactory =  new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 100, 1);
+        valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 100, 1);
         successSpinner.setValueFactory(valueFactory);
-        valueFactory =  new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 100, 1);
+        valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 0, 1);
         warningsSpinner.setValueFactory(valueFactory);
 
-        valueFactory =  new SpinnerValueFactory.IntegerSpinnerValueFactory(1, parentController.getMaxThreads(), 1, 1);
+        valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, parentController.getMaxThreads(), 1, 1);
         threadsNumSpinner.setValueFactory(valueFactory);
         setupArray();
     }
-
-    public void setSelectedTargetsTB() { selectedTargetsTB.setText(runTargetsArray.toString()); }
+    public void setSelectedTargetsTB() {selectedTargetsTB.setText(runTargetsArray.toString());}
 
 
     // buttons
     @FXML void pauseBTPr(ActionEvent event) {
+        parentController.setPause();
+        pauseBT.setDisable(true);
+        runBT.setDisable(false);
+        parentController.setDisableTaskType(false);
+
         upVB.setDisable(false);
         downVB.setDisable(false);
         runBT.setDisable(false);
     }
     @FXML void runBTPr(ActionEvent event) throws FileException {
+        pauseBT.setDisable(false);
+        runBT.setDisable(true);
+        parentController.setDisableTaskType(true);
         upVB.setDisable(true);
         downVB.setDisable(true);
         incrementalBT.setDisable(false);
         fromScratch = !incrementalBT.isSelected();
-        runBT.setDisable(true);
-        lastRunTargetsArray = (ArrayList<String>)runTargetsArray.clone();
+        lastRunTargetsArray = (ArrayList<String>) runTargetsArray.clone();
         parentController.runSimulation(
                 timeSpinner.getValue(), randomCB.isSelected(), successSpinner.getValue(),
                 warningsSpinner.getValue(), threadsNumSpinner.getValue(), runTargetsArray, fromScratch);
     }
-
-
-    @FXML void incrementalPr(ActionEvent event) {
-
+    @FXML void incrementalPr(ActionEvent event) {}
+    @FXML void selectAllTargetsPr(ActionEvent event) {
+        parentController.selectAllCB();
     }
-
-    @FXML void selectAllTargetsPr(ActionEvent event) { parentController.selectAllCB(); }
-
-    @FXML void unselectAllTargetsPr(ActionEvent event) { parentController.unselectAllCB();}
-
+    @FXML void unselectAllTargetsPr(ActionEvent event) {
+        parentController.unselectAllCB();
+    }
     @FXML void useWhatIfPr(ActionEvent event) {
+        if(!useWhatIfBT.isSelected()){
+            parentController.setAllCBDisable(false);
+            depOnBT.setSelected(false);
+            reqForBT.setSelected(false);
+        }
+        else {
+            parentController.setAllCBDisable(true);
+        }
+    }
+
+    @FXML void reqForPr(ActionEvent event) {
+        String name = runTargetsArray.get(0);
+        System.out.println(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
+        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
+        whatIfMakeDisable();
 
     }
+    @FXML void depOnPr(ActionEvent event) {
+        String name = runTargetsArray.get(0);
+        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.DEPENDS_ON));
+        whatIfMakeDisable();
+    }
+
+
+    // methods
     private void whatIfMakeDisable() {
         whatIfGP.setDisable(true);
         useWhatIfBT.setSelected(false);
-        useWhatIfBT.setDisable(true);
+        //useWhatIfBT.setDisable(true);
         reqForBT.setSelected(false);
         depOnBT.setSelected(false);
     }
@@ -213,11 +262,6 @@ public class simulationController {
         reqForBT.setSelected(false);
         depOnBT.setSelected(false);
     }
-
-
-
-
-
     public void addSelectedTargetsTB(String targetName) {
         runTargetsArray.add(targetName);
         setSelectedTargetsTB();
@@ -227,14 +271,22 @@ public class simulationController {
 
         setSelectedTargetsTB();
     }
-
-
     public void setSelectedNum(IntegerBinding numCheckBoxesSelected) {
         this.SelectedNum = numCheckBoxesSelected.intValue();
-        if(SelectedNum > 1)
+        if (SelectedNum != 1)
             whatIfMakeDisable();
         else
             whatIfMakeEnable();
     }
+    public void closeResult() {
+        simulationResultWin.close();
+    }
+    private void openResult() {
+        simulationResultComponentController.setupData(parentController.getSimResData());
+        simulationResultWin.show();
+    }
+    public ArrayList<String> getRunTargetsArray() {return runTargetsArray;}
+    public ArrayList<String> getLastRunTargetsArray() {return lastRunTargetsArray;}
 }
+
 

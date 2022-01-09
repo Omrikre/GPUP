@@ -1,6 +1,7 @@
 package components.task.simulation.incrementalError;
 
 import components.app.AppController;
+import components.task.compilation.compilationController;
 import components.task.simulation.simulationController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,6 +11,7 @@ import javafx.scene.control.TextField;
 public class incrementalErrorController {
 
     private simulationController parentController;
+    private compilationController parentCompController;
 
 
     @FXML private Button OKBt;
@@ -26,10 +28,17 @@ public class incrementalErrorController {
     public void setParentController(simulationController parent) {
         parentController = parent;
     }
+    public void setParentCompController(compilationController parent) {
+        parentCompController = parent;
+    }
 
 
-
-    @FXML void OkPr(ActionEvent event) { parentController.closeError(); }
+    @FXML void OkPr(ActionEvent event) {
+        if(parentController != null)
+            parentController.closeError();
+        else
+            parentCompController.closeError();
+    }
 
     public void setupData() {
         lastRunTargetsTB.setText(parentController.getLastRunTargetsArray().toString());

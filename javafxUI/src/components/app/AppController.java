@@ -3,6 +3,7 @@ package components.app;
 import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
+import Engine.Enums.State;
 import Exceptions.FileException;
 import components.header.HeaderButtonsController;
 import components.info.InfoController;
@@ -213,26 +214,20 @@ public class AppController {
         engine.loadFile(path);
         return true;
     }
-
-
     public int getMaxThreads() { return engine.getMaxThreads(); }
-
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
                               int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException {
-        engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum);
+        engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum, fromScratch);
     }
-
     public String getFileName() { return engine.getFileName(); }
-
     public int getNumOfSets() { return engine.getSerialSets().size(); }
-
     public Map<String, Set<String>> getSerialSets() { return engine.getSerialSets();}
     public Map<String, Set<String>> getSerialSetByName(String name) { return engine.getSerialSetsByTargetName(name);}
-
     public Set<List<String>> getIfInCycle(String selectedTarget) { return engine.isTargetInCircleByName(selectedTarget); }
-
     public Set<String> getWhatIf(String selectedTarget, Bond bond) { return engine.getSetOfAllAffectedTargetsByBond(selectedTarget, bond); }
-
+    public void setPause() { engine.pause(); }
+    public  Map<State, Set<String>> getSimulationResult() { return engine.getTargetsInEachState(); }
+    public void setAllTargetsFrozen() { engine.setAllTargetsFrozen(); }
 }
 
 

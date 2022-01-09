@@ -26,7 +26,7 @@ public class Main extends Application {
         URL url = getClass().getResource(MAIN_APP_RESOURCE);
         fxmlLoader.setLocation(url);
         Parent root = fxmlLoader.load(url.openStream());
-        Scene scene = new Scene(root, 1000, 650);
+        Scene scene = new Scene(root, 1100, 820);
         primaryStage.setScene(scene);
         primaryStage.setTitle("G.P.U.P");
         primaryStage.getIcons().add(new Image(APP_ICON_RESOURCE));

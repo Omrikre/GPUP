@@ -1,6 +1,8 @@
 package components.task;
 
 import Engine.DTO.TargetDTO;
+import Engine.Enums.Bond;
+import Engine.Enums.State;
 import Exceptions.FileException;
 import components.app.AppController;
 import components.task.compilation.compilationController;
@@ -18,10 +20,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static components.app.CommonResourcesPaths.*;
 
@@ -31,11 +32,12 @@ public class taskController {
     // task settings
     @FXML private ChoiceBox<String> taskTypeCB;
     @FXML private BorderPane prefByTaskBPane;
+    @FXML private GridPane upGP;
     // simulation
     private BorderPane simulationComponent;
     private simulationController simulationComponentController;
     // compilation
-    private VBox compilationComponent;
+    private BorderPane compilationComponent;
     private compilationController compilationComponentController;
 
     // table
@@ -57,7 +59,8 @@ public class taskController {
     private ObservableSet<CheckBox> unselectedCheckBoxes;
     private IntegerBinding numCheckBoxesSelected;
 
-    private List<TargetDTO> targets;
+    private List<TargetDTO> targetsList;
+    private Map<String, TargetDTO> targetsMap;
 
 
 
@@ -66,6 +69,8 @@ public class taskController {
         selectedCheckBoxes = FXCollections.observableSet();
         unselectedCheckBoxes = FXCollections.observableSet();
         numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
+
+        targetsMap = new HashMap<String, TargetDTO>();
 
         taskTypeCB.getItems().add("Simulation");
         taskTypeCB.getItems().add("Compilation");
@@ -79,18 +84,18 @@ public class taskController {
         checkBoxCOL.setStyle( "-fx-alignment: CENTER;");
         targetTypeCOL.setStyle( "-fx-alignment: CENTER;");
     }
-    public void setMainController(AppController mainController) {
-        this.mainController = mainController;
-    }
+    public void setMainController(AppController mainController) {this.mainController = mainController;}
 
     // data setup
     public void setupData(List<TargetDTO> targets) {
         CheckBox tempCB;
-        this.targets = targets;
+        this.targetsList = targets;
+
         for(TargetDTO target : targets) {
             tempCB = new CheckBox();
             target.setSelectedState(tempCB);
             configureCheckBox(tempCB, target.getTargetName());
+            this.targetsMap.put(target.getTargetName(), target);
         }
         OLTargets = FXCollections.observableArrayList(targets);
         setTable();
@@ -121,8 +126,16 @@ public class taskController {
     public void setChoiceBoxListener() {
         taskTypeCB.setOnAction((event) -> {
             setPaneInSettings(taskTypeCB.getSelectionModel().getSelectedItem());
+            cleanUpData();
+            mainController.setAllTargetsFrozen();
         });
     }
+
+    private void cleanUpData() {
+        unselectAllCB();
+        //TODO - reset all target's status
+    }
+
     public void setTable() {
         targetNameCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetName"));
         depOnCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, Integer>("targetDependsOnNum"));
@@ -140,8 +153,7 @@ public class taskController {
     public void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         try {
-            // compilation pane //TODO
-            /*
+            // compilation pane
             fxmlLoader.setLocation(getClass().getResource(TASK_COMPILATION_fXML_RESOURCE));
             System.out.println("1");
             compilationComponent = fxmlLoader.load();
@@ -149,7 +161,6 @@ public class taskController {
             compilationComponentController = fxmlLoader.getController();
             compilationComponentController.setParentController(this);
             System.out.println(" -- task (compilation) done --");
-             */
 
             // simulation pane
             fxmlLoader = new FXMLLoader();
@@ -168,12 +179,15 @@ public class taskController {
 
     // set settings pane
     private void setPaneInSettings(String selectedItem) {
-        if(selectedItem == "Simulation") {
+        cleanUpData();
+        if(Objects.equals(selectedItem, "Simulation")) {
             simulationComponentController.setupData();
             prefByTaskBPane.setCenter(simulationComponent);
         }
-        else
+        else {
+            compilationComponentController.setupData();
             prefByTaskBPane.setCenter(compilationComponent);
+        }
     }
 
 
@@ -185,7 +199,18 @@ public class taskController {
 
     }
 
-    public void selectAllCB() { targets.forEach(dto -> dto.getSelectedState().setSelected(true)); }
-    public void unselectAllCB() { targets.forEach(dto -> dto.getSelectedState().setSelected(false)); }
+    public void selectAllCB() { targetsList.forEach(dto -> dto.getSelectedState().setSelected(true)); }
+    public void unselectAllCB() { targetsList.forEach(dto -> dto.getSelectedState().setSelected(false)); }
+
+    public void setPause() { mainController.setPause(); }
+    public void setDisableTaskType(boolean bool) { upGP.setDisable(bool); }
+
+    public void whenFinishedSimulation() {} //TODO
+    public Map<State, Set<String>> getSimResData() { return mainController.getSimulationResult(); }
+    public Set<String> getWhatIf(String TargetName, Bond bond) { return mainController.getWhatIf(TargetName, bond); }
+    public void setAllCBDisable(boolean bool) {targetsList.forEach(dto -> dto.getSelectedState().setDisable(bool));}
+    public void setWhatIfSelections(Set<String> targetSet) {targetSet.forEach(tarName -> targetsMap.get(tarName).getSelectedState().setSelected(true));}
+
+
 
 }
