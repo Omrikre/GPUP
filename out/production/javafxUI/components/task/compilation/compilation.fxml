@@ -133,7 +133,16 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="10.0" layoutY="343.0">
                <children>
-                  <CheckBox mnemonicParsing="false" text="CheckBox" />
+                  <CheckBox fx:id="inputPathCB" mnemonicParsing="false" text="Input Path">
+                     <HBox.margin>
+                        <Insets right="40.0" />
+                     </HBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="outputPathCB" layoutX="136.0" layoutY="10.0" mnemonicParsing="false" text="Output Path">
+                     <HBox.margin>
+                        <Insets left="30.0" />
+                     </HBox.margin>
+                  </CheckBox>
                </children>
                <VBox.margin>
                   <Insets top="15.0" />
