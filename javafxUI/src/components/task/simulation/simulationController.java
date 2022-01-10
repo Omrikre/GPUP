@@ -6,7 +6,6 @@ import Exceptions.FileException;
 import components.task.simulation.incrementalError.incrementalErrorController;
 import components.task.simulation.result.simulationResultController;
 import components.task.taskController;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -20,10 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static components.app.CommonResourcesPaths.TASK_INC_MSG_fXML_RESOURCE;
 import static components.app.CommonResourcesPaths.TASK_SIM_RES_MSG_fXML_RESOURCE;
@@ -51,6 +47,7 @@ public class simulationController {
     @FXML private Label progressPresentLabel;//
     @FXML private Button pauseBT;
     @FXML private Button runBT;
+    @FXML private Button newRunBt;
     @FXML private GridPane whatIfGP;
 
     private BorderPane incErrorComponent;
@@ -68,6 +65,8 @@ public class simulationController {
     private int SelectedNum;
 
     private boolean fromScratch;
+    private boolean runningSimulation;
+    private boolean firstRun;
 
 
     // initializers
@@ -77,6 +76,9 @@ public class simulationController {
         cleanup();
         loadBackComponents();
         fromScratch = true;
+        runningSimulation = false;
+        firstRun = true;
+        newRunBt.setDisable(true);
         pauseBT.setDisable(true);
         runBT.setDisable(true);
 
@@ -139,8 +141,18 @@ public class simulationController {
         incErrorWin.show();
     }
     private boolean IfIncrementalPossible() {
-        return false;
-        //return runTargetsArray.equals(lastRunTargetsArray); //TODO
+
+        Collections.sort(runTargetsArray);
+        Collections.sort(lastRunTargetsArray);
+        return runTargetsArray.equals(lastRunTargetsArray);
+        /*
+        for (String name : runTargetsArray) {
+            if(!lastRunTargetsArray.contains(name))
+                return false;
+        }
+        return true;
+
+         */
     }
 
     public void setParentController(taskController parent) {parentController = parent;}
@@ -152,8 +164,9 @@ public class simulationController {
         incrementalBT.setSelected(false);
         depOnBT.setSelected(false);
         reqForBT.setSelected(false);
+        newRunBt.setDisable(true);
 
-        incrementalBT.setDisable(true);
+        incrementalBT.setDisable(firstRun);
         whatIfGP.setDisable(true);
 
         // text boxes
@@ -164,7 +177,6 @@ public class simulationController {
         progressBar.setProgress(0);
         progressPresentLabel.setText("0 %");
         setupArray();
-
     }
     private void setupArray() {
         runTargetsArray.clear();
@@ -175,34 +187,67 @@ public class simulationController {
     public void setupData() {
         // spinners
         SpinnerValueFactory<Integer> valueFactory;
+
         valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 9999999, 1000, 1);
         timeSpinner.setValueFactory(valueFactory);
-        timeSpinner.setEditable(true);
+        fixSpinnerBug(timeSpinner);
 
         valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 100, 1);
         successSpinner.setValueFactory(valueFactory);
+        fixSpinnerBug(successSpinner);
+
         valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100, 0, 1);
         warningsSpinner.setValueFactory(valueFactory);
+        fixSpinnerBug(warningsSpinner);
 
         valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, parentController.getMaxThreads(), 1, 1);
         threadsNumSpinner.setValueFactory(valueFactory);
+        fixSpinnerBug(threadsNumSpinner);
+
         setupArray();
     }
     public void setSelectedTargetsTB() {selectedTargetsTB.setText(runTargetsArray.toString());}
-
+    private void fixSpinnerBug(Spinner<Integer> spinner) {
+        spinner.setEditable(true);
+        TextFormatter format = new TextFormatter(spinner.getValueFactory().getConverter(), spinner.getValueFactory().getValue());
+        spinner.getEditor().setTextFormatter(format);
+        spinner.getValueFactory().valueProperty().bindBidirectional(format.valueProperty());
+    }
 
     // buttons
     @FXML void pauseBTPr(ActionEvent event) {
-        parentController.setPause();
-        pauseBT.setDisable(true);
-        runBT.setDisable(false);
-        parentController.setDisableTaskType(false);
+        if(runningSimulation) {
+            parentController.setPause();
+            pauseBT.setDisable(false);
+            pauseBT.setText("Resume");
+            runBT.setDisable(true);
+            newRunBt.setDisable(false);
+            downVB.setDisable(false);
+            incrementalBT.setDisable(true);
+            runningSimulation = false;
+        }
+        else {
+            parentController.setResume(threadsNumSpinner.getValue());
+            newRunBt.setDisable(true);
+            pauseBT.setDisable(false);
+            pauseBT.setText("Pause");
+            runBT.setDisable(true);
+            incrementalBT.setDisable(false);
+            downVB.setDisable(true);
+            runningSimulation = true;
+        }
 
-        upVB.setDisable(false);
-        downVB.setDisable(false);
-        runBT.setDisable(false);
     }
+    @FXML void newRunPr(ActionEvent event) {cleanupAfterFinish();}
     @FXML void runBTPr(ActionEvent event) throws FileException, InterruptedException {
+        if (incrementalBT.isSelected()) {
+            if (!IfIncrementalPossible()) {
+                incrementalBT.setSelected(false);
+                popupErrorMessage();
+            } else {
+                fromScratch = false;
+            }
+        }
         pauseBT.setDisable(false);
         runBT.setDisable(true);
         parentController.setDisableTaskType(true);
@@ -211,25 +256,28 @@ public class simulationController {
         incrementalBT.setDisable(false);
         fromScratch = !incrementalBT.isSelected();
         lastRunTargetsArray = (ArrayList<String>) runTargetsArray.clone();
+
+        //TODO - delete
+        System.out.println("\n\n-- Simulation Data --");
         System.out.println(timeSpinner.getValue());
         System.out.println(randomCB.isSelected());
-        System.out.println( successSpinner.getValue());
+        System.out.println(successSpinner.getValue());
         System.out.println(warningsSpinner.getValue());
         System.out.println(threadsNumSpinner.getValue());
         System.out.println(runTargetsArray);
         System.out.println(fromScratch);
+        System.out.println("\n");
+
+        runningSimulation = true;
+        firstRun = false;
 
         parentController.runSimulation(
                 timeSpinner.getValue(), randomCB.isSelected(), successSpinner.getValue(),
                 warningsSpinner.getValue(), threadsNumSpinner.getValue(), runTargetsArray, fromScratch);
     }
     @FXML void incrementalPr(ActionEvent event) {fromScratch = !incrementalBT.isSelected();}
-    @FXML void selectAllTargetsPr(ActionEvent event) {
-        parentController.selectAllCB();
-    }
-    @FXML void unselectAllTargetsPr(ActionEvent event) {
-        parentController.unselectAllCB();
-    }
+    @FXML void selectAllTargetsPr(ActionEvent event) {parentController.selectAllCB();}
+    @FXML void unselectAllTargetsPr(ActionEvent event) {parentController.unselectAllCB();}
     @FXML void useWhatIfPr(ActionEvent event) {
         if(!useWhatIfBT.isSelected()){
             parentController.setAllCBDisable(false);
@@ -240,13 +288,11 @@ public class simulationController {
             parentController.setAllCBDisable(true);
         }
     }
-
     @FXML void reqForPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
         System.out.println(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
         parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
         whatIfMakeDisable();
-
     }
     @FXML void depOnPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
@@ -290,22 +336,24 @@ public class simulationController {
         else
             runBT.setDisable(false);
     }
-    public void closeResult() {
-        simulationResultWin.close();
-    }
+    public void closeResult() {simulationResultWin.close();}
     public void openResult() {
         simulationResultComponentController.setupData(parentController.getSimResData());
         simulationResultWin.show();
-        cleanupAfterFinish();
+        runningSimulation = false;
+        pauseBT.setDisable(true);
+        newRunBt.setDisable(false);
     }
 
     private void cleanupAfterFinish() {
+        newRunBt.setDisable(true);
         pauseBT.setDisable(true);
-        runBT.setDisable(true);
+        pauseBT.setText("Pause");
         parentController.setDisableTaskType(false);
+
         upVB.setDisable(false);
         downVB.setDisable(false);
-        runBT.setDisable(false);
+        runBT.setDisable(true);
         cleanup();
         parentController.unselectAllCB();
     }
@@ -318,7 +366,6 @@ public class simulationController {
         progressPresentLabel.setText(temp.toString() + " %");
         double dProgress = progress;
         double pres = dProgress/100;
-        System.out.println(pres);
         progressBar.setProgress(pres);
     }
 }

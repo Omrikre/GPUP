@@ -8,6 +8,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class incrementalErrorController {
 
     private simulationController parentController;
@@ -41,8 +44,21 @@ public class incrementalErrorController {
     }
 
     public void setupData() {
-        lastRunTargetsTB.setText(parentController.getLastRunTargetsArray().toString());
-        selectedTargetsTB.setText(parentController.getRunTargetsArray().toString());
+        ArrayList<String> currRunArr;
+        ArrayList<String> lastRunArr;
+        if(parentController != null) {
+            currRunArr = parentController.getRunTargetsArray();
+            lastRunArr = parentController.getLastRunTargetsArray();
+        }
+        else {
+            currRunArr = parentCompController.getRunTargetsArray();
+            lastRunArr = parentCompController.getLastRunTargetsArray();
+        }
+        Collections.sort(currRunArr);
+        Collections.sort(lastRunArr);
+
+        selectedTargetsTB.setText(currRunArr.toString());
+        lastRunTargetsTB.setText(lastRunArr.toString());
     }
 }
 

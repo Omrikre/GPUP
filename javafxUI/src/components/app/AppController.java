@@ -192,9 +192,8 @@ public class AppController {
         xmlPath = path;
         System.out.println(xmlPath);
         xmlFileIsLoaded = true;
-        if (true) { //if xml file is good
-            setAllDataInPanes();
-        }
+        initialize();
+        setAllDataInPanes();
     }
     public int getNumOfTargets() { return engine.getAmountOfTargets(); }
     public boolean getGraphContainsCycle() { return graphContainsCycle; }
@@ -229,6 +228,16 @@ public class AppController {
     public  Map<State, Set<String>> getSimulationResult() { return engine.getTargetsInEachState(); }
     public void setAllTargetsFrozen() { engine.setAllTargetsFrozen(); }
     public int getProgress() { return engine.getProgress(); }
+
+    public State getStateByTargetName(String targetName) {return engine.getStateByTargetName(targetName);}
+
+    public void setResume(int threadNum) { engine.resume(threadNum); }
+    public String getInRunTargetInfo(String targetName) { return engine.getTargetInfo(targetName); }
+
+    public void runCompilation(Integer threads, ArrayList<String> targets, boolean fromScratch,
+                               String inputPath, String outputPath) {
+        engine.runCompilation(targets,inputPath,outputPath,threads,fromScratch);
+    }
 }
 
 

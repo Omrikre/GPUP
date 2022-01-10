@@ -16,10 +16,7 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -231,7 +228,7 @@ public class taskController {
             simulationComponentController.openResult();
         }
         else {
-            //compilationComponentController.openResult();
+            compilationComponentController.openResult();
         }
     }
     public Map<State, Set<String>> getSimResData() { return mainController.getSimulationResult(); }
@@ -259,7 +256,7 @@ public class taskController {
     }
     public void setupProgressByThread() {
         taskProgress = mainController.getProgress();
-        System.out.println("thread " + taskProgress);
+        updateTableStatus();
         compilationComponentController.setProgress(taskProgress);
         simulationComponentController.setProgress(taskProgress);
         if(taskProgress == 100) {
@@ -268,9 +265,71 @@ public class taskController {
         }
     }
 
+    private void updateTableStatus() {
+        for(TargetDTO dto : targetDataTable.getItems() ) {
+            State state = mainController.getStateByTargetName(dto.getTargetName());
+            dto.setTargetState(state);
+            dto.setTargetStateString(state.toString());
+        }
+        targetDataTable.refresh();
+    }
+
     private void sleepForSomeTime() {
         try {
             Thread.sleep(300);
         } catch (InterruptedException ignored) {}
     }
+
+    public void setResume(int threadNum) { mainController.setResume(threadNum); }
+
+    public void runCompilation(Integer threads, ArrayList<String> runTargetsArray,
+                               boolean fromScratch, String inputPath, String outputPath) {
+        mainController.runCompilation(threads, runTargetsArray, fromScratch,
+                inputPath, outputPath);
+        pause = false;
+        firstCallForResult = true;
+        startRandomGenerator();
+    }
+
+    //TODO
+    /*
+    private void rowClickData() {
+        mainController.getInRunTargetInfo()
+        targetDataTable.setRowFactory(rowBig ->
+        {
+            TableRow<TargetDTO> row = new TableRow<>();
+            row.setOnMouseClicked(event ->
+            {
+                if(event.getClickCount() == 2 && (!row.isEmpty())) {
+                    List<String> lst = new ArrayList<>();
+                    synchronized (Lock) {
+                        if(targetDataTable.getSelectionModel().getSelectedItem() == null)
+                            return;
+                        String nameTarget = targetDataTable.getSelectionModel().getSelectedItem().getTargetName();
+                        TargetDTO t = mainController.getTargetDTO(nameTarget);
+                        String name = t.getTargetName();
+                        String type = t.getTargetLocationString();
+
+                        Map<String, Set<String>> serialSets = mainController.getSerialSetByName(name);
+                        String SetNames;
+                        if (serialSets.size() == 0)
+                            SetNames = "doesn't belong to any serial set";
+                        else
+                            SetNames = serialSets.toString() + "\n";
+
+                        String process = "";
+                        //if (t.getIsRunning())
+                          //  process = t.();
+
+                        new targetInfoMain (name, type, serialSets, process, t.getSet DependsOn (), t.getSetRequiredFor ());
+                    }
+                }
+            });
+            return row;
+        });
+    }
+
+     */
+
+
 }
