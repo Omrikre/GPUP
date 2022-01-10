@@ -47,7 +47,7 @@ public class simulationController {
     @FXML private Label progressPresentLabel;//
     @FXML private Button pauseBT;
     @FXML private Button runBT;
-    @FXML private Button newRunBt;
+    //@FXML private Button newRunBt;
     @FXML private GridPane whatIfGP;
 
     private BorderPane incErrorComponent;
@@ -67,6 +67,7 @@ public class simulationController {
     private boolean fromScratch;
     private boolean runningSimulation;
     private boolean firstRun;
+    private boolean runIsDone;
 
 
     // initializers
@@ -78,7 +79,8 @@ public class simulationController {
         fromScratch = true;
         runningSimulation = false;
         firstRun = true;
-        newRunBt.setDisable(true);
+        runIsDone = false;
+        //newRunBt.setDisable(true);
         pauseBT.setDisable(true);
         runBT.setDisable(true);
 
@@ -164,7 +166,7 @@ public class simulationController {
         incrementalBT.setSelected(false);
         depOnBT.setSelected(false);
         reqForBT.setSelected(false);
-        newRunBt.setDisable(true);
+        //newRunBt.setDisable(true);
 
         incrementalBT.setDisable(firstRun);
         whatIfGP.setDisable(true);
@@ -221,14 +223,19 @@ public class simulationController {
             pauseBT.setDisable(false);
             pauseBT.setText("Resume");
             runBT.setDisable(true);
-            newRunBt.setDisable(false);
+            //newRunBt.setDisable(false);
             downVB.setDisable(false);
             incrementalBT.setDisable(true);
             runningSimulation = false;
         }
+        else if(runIsDone) {
+            cleanupAfterFinish();
+            runningSimulation = false;
+            runIsDone = false;
+        }
         else {
             parentController.setResume(threadsNumSpinner.getValue());
-            newRunBt.setDisable(true);
+            //newRunBt.setDisable(true);
             pauseBT.setDisable(false);
             pauseBT.setText("Pause");
             runBT.setDisable(true);
@@ -238,15 +245,19 @@ public class simulationController {
         }
 
     }
-    @FXML void newRunPr(ActionEvent event) {cleanupAfterFinish();}
+    //@FXML void newRunPr(ActionEvent event) {cleanupAfterFinish();}
     @FXML void runBTPr(ActionEvent event) throws FileException, InterruptedException {
+        runIsDone = false;
         if (incrementalBT.isSelected()) {
             if (!IfIncrementalPossible()) {
                 incrementalBT.setSelected(false);
                 popupErrorMessage();
+                return;
             } else {
                 fromScratch = false;
             }
+        } else {
+            parentController.resetTargetsStatus();
         }
         pauseBT.setDisable(false);
         runBT.setDisable(true);
@@ -275,6 +286,7 @@ public class simulationController {
                 timeSpinner.getValue(), randomCB.isSelected(), successSpinner.getValue(),
                 warningsSpinner.getValue(), threadsNumSpinner.getValue(), runTargetsArray, fromScratch);
     }
+
     @FXML void incrementalPr(ActionEvent event) {fromScratch = !incrementalBT.isSelected();}
     @FXML void selectAllTargetsPr(ActionEvent event) {parentController.selectAllCB();}
     @FXML void unselectAllTargetsPr(ActionEvent event) {parentController.unselectAllCB();}
@@ -338,15 +350,17 @@ public class simulationController {
     }
     public void closeResult() {simulationResultWin.close();}
     public void openResult() {
+        runIsDone = true;
         simulationResultComponentController.setupData(parentController.getSimResData());
         simulationResultWin.show();
         runningSimulation = false;
-        pauseBT.setDisable(true);
-        newRunBt.setDisable(false);
+        pauseBT.setDisable(false);
+        pauseBT.setText("Clean Run");
+        //newRunBt.setDisable(false);
     }
 
     private void cleanupAfterFinish() {
-        newRunBt.setDisable(true);
+        //newRunBt.setDisable(true);
         pauseBT.setDisable(true);
         pauseBT.setText("Pause");
         parentController.setDisableTaskType(false);

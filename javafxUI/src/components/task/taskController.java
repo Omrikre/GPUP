@@ -135,7 +135,6 @@ public class taskController {
     }
     public void setChoiceBoxListener() {
         taskTypeCB.setOnAction((event) -> {
-            cleanUpData();
             setPaneInSettings(taskTypeCB.getSelectionModel().getSelectedItem());
             mainController.setAllTargetsFrozen();
         });
@@ -143,6 +142,7 @@ public class taskController {
 
     private void cleanUpData() {
         taskProgress = 0;
+        resetTargetsStatus();
         unselectAllCB();
         compilationComponentController.cleanup();
         simulationComponentController.cleanup();
@@ -208,6 +208,7 @@ public class taskController {
     public void runSimulation(
             int runTime, boolean randomRunTime, int success, int successWithWarnings,
             int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
+        mainController.resetProgress();
         mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
         pause = false;
         firstCallForResult = true;
@@ -262,6 +263,7 @@ public class taskController {
         if(taskProgress == 100) {
             firstCallForResult = false;
             whenFinishedSimulation();
+            pause = false;
         }
     }
 
@@ -280,15 +282,27 @@ public class taskController {
         } catch (InterruptedException ignored) {}
     }
 
-    public void setResume(int threadNum) { mainController.setResume(threadNum); }
+    public void setResume(int threadNum) {
+        pause = false;
+        mainController.setResume(threadNum);
+        startRandomGenerator();
+    }
 
     public void runCompilation(Integer threads, ArrayList<String> runTargetsArray,
                                boolean fromScratch, String inputPath, String outputPath) {
+        mainController.resetProgress();
         mainController.runCompilation(threads, runTargetsArray, fromScratch,
                 inputPath, outputPath);
         pause = false;
         firstCallForResult = true;
         startRandomGenerator();
+    }
+    public void resetTargetsStatus() {
+        for(TargetDTO dto : targetDataTable.getItems() ) {
+            dto.setTargetState(State.FROZEN);
+            dto.setTargetStateString(State.FROZEN.toString());
+        }
+        targetDataTable.refresh();
     }
 
     //TODO

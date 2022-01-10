@@ -14,6 +14,7 @@ import components.xmlLoader.LoadXMLController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import Engine.Engine;
@@ -39,7 +40,7 @@ public class AppController {
     @FXML private VBox headerComponent;
     @FXML private HeaderButtonsController headerComponentController;
     // XML Loader
-    @FXML private BorderPane FXMLComponent;
+    @FXML private ScrollPane FXMLComponent;
     @FXML private LoadXMLController FXMLComponentController;
     // Info
     private BorderPane infoComponent;
@@ -228,6 +229,10 @@ public class AppController {
     public  Map<State, Set<String>> getSimulationResult() { return engine.getTargetsInEachState(); }
     public void setAllTargetsFrozen() { engine.setAllTargetsFrozen(); }
     public int getProgress() { return engine.getProgress(); }
+    public void resetProgress() {
+    //    engine.resetProgress();
+
+    }
 
     public State getStateByTargetName(String targetName) {return engine.getStateByTargetName(targetName);}
 
