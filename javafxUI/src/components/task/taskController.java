@@ -209,6 +209,7 @@ public class taskController {
             int runTime, boolean randomRunTime, int success, int successWithWarnings,
             int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
         mainController.resetProgress();
+        taskProgress = 0;
         mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
         pause = false;
         firstCallForResult = true;
@@ -291,6 +292,7 @@ public class taskController {
     public void runCompilation(Integer threads, ArrayList<String> runTargetsArray,
                                boolean fromScratch, String inputPath, String outputPath) {
         mainController.resetProgress();
+        taskProgress = 0;
         mainController.runCompilation(threads, runTargetsArray, fromScratch,
                 inputPath, outputPath);
         pause = false;

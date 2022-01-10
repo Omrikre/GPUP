@@ -43,8 +43,10 @@ public class compilationController {
     @FXML private Label progressPresentLabel;
     @FXML private Button pauseBT;
     @FXML private Button runBT;
-    @FXML private Button inputPathBT; // TODO
-    @FXML private Button outputPathBt; // TODO
+    @FXML private Button inputPathBT;
+    @FXML private Button outputPathBt;
+    @FXML private CheckBox outputPathCB;
+    @FXML private CheckBox inputPathCB;
 
     private BorderPane incErrorComponent;
     private incrementalErrorController incErrorComponentController;
@@ -78,6 +80,8 @@ public class compilationController {
         lastRunTargetsArray = new ArrayList<String>();
         cleanup();
         loadBackComponents();
+        outputPathCB.setDisable(true);
+        inputPathCB.setDisable(true);
         runningCompilation = false;
         firstRun = true;
         fromScratch = true;
@@ -171,6 +175,8 @@ public class compilationController {
 
         inputPath = null;
         outputPath = null;
+        outputPathCB.setSelected(false);
+        inputPathCB.setSelected(false);
 
         // text boxes
         selectedTargetsTB.setEditable(false);
@@ -271,10 +277,14 @@ public class compilationController {
     }
     @FXML void inputPathPr(ActionEvent event) {
         inputPath = pathGetter();
+        if(inputPath != null)
+            inputPathCB.setSelected(true);
         checkIfToOpenRunBT();
     }
     @FXML void outputPathPr(ActionEvent event) {
         outputPath = pathGetter();
+        if(outputPath != null)
+            outputPathCB.setSelected(true);
         checkIfToOpenRunBT();
     }
     @FXML void reqForPr(ActionEvent event) {
