@@ -143,9 +143,9 @@ public class Graph implements Serializable {
         public void setTargetStateByParameters(int success, int successWithWarnings) {
             Random rand = new Random();
             float magicNumber = rand.nextFloat();
-            if (success >= magicNumber) {
+            if ((float)(success)/100 >= magicNumber) {
                 magicNumber = rand.nextFloat();
-                if (successWithWarnings >= magicNumber) {
+                if ((float)(successWithWarnings) >= magicNumber) {
                     setFinishedState(this.name, State.FINISHED_WARNINGS);
                 } else {
                     setFinishedState(this.name, State.FINISHED_SUCCESS);

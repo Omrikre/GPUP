@@ -19,9 +19,9 @@ public class SimulationTask extends Task implements Runnable {
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
         this.t = t;
-        this.realTarget=realTarget;
-        this.success=success;
-        this.successWithWarnings=successWithWarnings;
+        this.realTarget = realTarget;
+        this.success = success;
+        this.successWithWarnings = successWithWarnings;
     }
 
     @Override
@@ -30,16 +30,16 @@ public class SimulationTask extends Task implements Runnable {
         if (randomRunTime) {
             Random rand = new Random();
             sleepTime = rand.nextInt(runTime);
-            t.setState(State.IN_PROCESS);
-            realTarget.setState(State.IN_PROCESS);
         } else sleepTime = runTime;
+        t.setState(State.IN_PROCESS);
+        realTarget.setState(State.IN_PROCESS);
         try {
             sleep(sleepTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        t.setTargetStateByParameters(success,successWithWarnings);
-        realTarget.setTargetStateByParameters(success,successWithWarnings);
+        t.setTargetStateByParameters(success, successWithWarnings);
+        realTarget.setTargetStateByParameters(success, successWithWarnings);
     }
 
     /*public String simulationStartInfo(TargetDTO target) {

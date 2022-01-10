@@ -512,6 +512,7 @@ public class Engine {
     public void runSimulation(ArrayList<String> targets, int runTime, boolean randomRunTime, int success,
                               int successWithWarnings, int threadsNum, boolean fromScratch) throws FileException, InterruptedException {
         new Thread(() -> {
+            boolean firstRun = true;
             progressCounter = 0;
             progress = 0;
             newThreads = threadsNum;
@@ -527,39 +528,45 @@ public class Engine {
             }
             Set<String> set = miniGraph.getSetOfWaitingTargetsNamesBottomsUp();
             ExecutorService threadExecutor = null;
+            ExecutorService ssThread = Executors.newFixedThreadPool(1);
+            ssThread.shutdown();
             while (set != null) {
+                if (pause) {
+                    threadExecutor.shutdown();
+                    ssThread.shutdown();
+                    try {
+                        threadExecutor.awaitTermination(runTime * 5, TimeUnit.MILLISECONDS);
+                        ssThread.awaitTermination(runTime * 5, TimeUnit.MILLISECONDS);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    while (pause) {
+
+                    }
+                    System.out.println("OUT OF PAUSE");
+                }
                 threadExecutor = Executors.newFixedThreadPool(newThreads);
-//            Thread t1 = new Thread(() ->
-//            {
-//                while (true) {
-//                    if (pause) {
-//                        threadExecutor.shutdown();
-//                        try {
-//                            this.wait();
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        break;
-//                    }
-//                }
-//            });
-//            t1.start();
-//            Thread t2 = new Thread(() -> {
-//                while (true) {
-//                    if (resume) {
-//                        this.notifyAll();
-//                        break;
-//                    }
-//                }
-//            });
-//            t2.start();
+
                 for (String s : set) {
                     g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                     miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                     if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
                         threadExecutor.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
                     } else {
-                        new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings).run();
+                        if (ssThread.isTerminated()) {
+                            ssThread = Executors.newFixedThreadPool(1);
+                            ssThread.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
+                            ssThread.shutdown();
+                        } else {
+                            try {
+                                ssThread.awaitTermination(runTime * 5, TimeUnit.MILLISECONDS);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            ssThread = Executors.newFixedThreadPool(1);
+                            ssThread.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
+                            ssThread.shutdown();
+                        }
                     }
                     g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
                     miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
@@ -570,7 +577,7 @@ public class Engine {
                 }
                 threadExecutor.shutdown();
                 try {
-                    threadExecutor.awaitTermination(120, TimeUnit.SECONDS);
+                    threadExecutor.awaitTermination(runTime * 5, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -585,6 +592,11 @@ public class Engine {
         if (res == 100)
             return 99;
         else return res;
+    }
+
+    public void resetProgress() {
+        progress = 0;
+        progressCounter = 0;
     }
 
     public int getProgress() {
@@ -711,7 +723,9 @@ public class Engine {
         return g.getTargetByName(targetName).getState();
     }
 
-    //TODO fix bugs simulation & compilation - resume pause.
+    //TODO run on entire graph every time, get a viable target and perform task,
+    // get all serial sets, run on every serial set with 1 thread
+
 
     //TODO test compilation and fix bugs.
 }
