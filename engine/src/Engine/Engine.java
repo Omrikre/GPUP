@@ -709,7 +709,7 @@ public class Engine {
         }).start();
     }
 
-    //TODO fix bugs simulation - resume pause.
+    //TODO fix bugs simulation & compilation - resume pause.
 
-    //TODO compilation! finish it...
+    //TODO test compilation and fix bugs.
 }

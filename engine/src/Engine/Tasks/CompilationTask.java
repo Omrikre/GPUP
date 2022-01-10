@@ -2,9 +2,12 @@ package Engine.Tasks;
 
 import Engine.Graph;
 
+import java.io.IOException;
+
 public class CompilationTask extends Task implements Runnable {
     private String src; //check if exists!
     private String compilationFolder; //create if doesn't exist!
+    private String FQN;
     Graph.Target target, realTarget;
 
     public CompilationTask(String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
@@ -13,12 +16,26 @@ public class CompilationTask extends Task implements Runnable {
         this.compilationFolder = compilationFolder;
         this.target = target;
         this.realTarget = realTarget;
-    }
+        FQN = realTarget.getInfo();
+        //convert to real path
+        FQN.replace(".", "/");
+        FQN += ".java";
 
-    ProcessBuilder n = new ProcessBuilder();
+    }
 
     @Override
     public void run() {
-
+        ProcessBuilder processBuilder = new ProcessBuilder("cd", src);
+        try {
+            processBuilder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
+        try {
+            processBuilder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
