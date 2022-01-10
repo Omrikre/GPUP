@@ -517,8 +517,7 @@ public class Engine {
             newThreads = threadsNum;
             if (fromScratch) {
                 g.setAllTargetsFrozen();
-            }
-            else
+            } else
                 g.setAllFailedAndSkippedTargetsFrozen();
             Graph miniGraph = null;
             try {
@@ -645,8 +644,7 @@ public class Engine {
             newThreads = threadsNum;
             if (fromScratch) {
                 g.setAllTargetsFrozen();
-            }
-            else
+            } else
                 g.setAllFailedAndSkippedTargetsFrozen();
             Graph miniGraph = null;
             try {
@@ -686,7 +684,7 @@ public class Engine {
                     g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                     miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                     if (g.getTargetByName(s).getSerialSetsBelongs() == 0) {
-                        threadExecutor.execute(new CompilationTask( src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
+                        threadExecutor.execute(new CompilationTask(src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
                     } else {
                         new CompilationTask(src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)).run();
                     }
@@ -707,6 +705,10 @@ public class Engine {
             }
             progress = 100;
         }).start();
+    }
+
+    public State getStateByTargetName(String targetName) {
+        return g.getTargetByName(targetName).getState();
     }
 
     //TODO fix bugs simulation & compilation - resume pause.
