@@ -2,6 +2,7 @@ package Engine.Tasks;
 
 import Engine.Graph;
 
+import java.io.File;
 import java.io.IOException;
 
 public class CompilationTask extends Task implements Runnable {
@@ -25,12 +26,8 @@ public class CompilationTask extends Task implements Runnable {
 
     @Override
     public void run() {
-        ProcessBuilder processBuilder = new ProcessBuilder("cd", src);
-        try {
-            processBuilder.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.directory(new File(src));
         processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
         try {
             processBuilder.start();

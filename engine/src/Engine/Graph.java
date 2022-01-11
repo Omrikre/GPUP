@@ -143,9 +143,9 @@ public class Graph implements Serializable {
         public void setTargetStateByParameters(int success, int successWithWarnings) {
             Random rand = new Random();
             float magicNumber = rand.nextFloat();
-            if ((float)(success)/100 >= magicNumber) {
+            if ((float) (success) / 100 >= magicNumber) {
                 magicNumber = rand.nextFloat();
-                if ((float)(successWithWarnings) >= magicNumber) {
+                if ((float) (successWithWarnings) >= magicNumber) {
                     setFinishedState(this.name, State.FINISHED_WARNINGS);
                 } else {
                     setFinishedState(this.name, State.FINISHED_SUCCESS);
@@ -606,6 +606,15 @@ public class Graph implements Serializable {
             else
                 getFailedTargetsFromSkippedRec(res, s);
         }
+    }
+
+    public Set<String> getAllTargetsByLocation(Location location) {
+        Set<String> res = new HashSet<>();
+        for (Target t : targets.values()) {
+            if (t.location.equals(location))
+                res.add(t.getName());
+        }
+        return res;
     }
 
 }

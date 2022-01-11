@@ -31,8 +31,6 @@ public class SimulationTask extends Task implements Runnable {
             Random rand = new Random();
             sleepTime = rand.nextInt(runTime);
         } else sleepTime = runTime;
-        t.setState(State.IN_PROCESS);
-        realTarget.setState(State.IN_PROCESS);
         try {
             sleep(sleepTime);
         } catch (InterruptedException e) {
