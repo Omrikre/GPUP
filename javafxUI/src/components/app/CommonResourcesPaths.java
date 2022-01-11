@@ -27,6 +27,7 @@ public class CommonResourcesPaths {
     public final static String TASK_INC_MSG_fXML_RESOURCE = "/components/task/simulation/incrementalError/incrementalError.fxml";
     public final static String TASK_SIM_RES_MSG_fXML_RESOURCE = "/components/task/simulation/result/result.fxml";
     public final static String TASK_COMP_RES_MSG_fXML_RESOURCE = "/components/task/compilation/result/compResult.fxml";
+    public final static String TASK_MORE_INFO_MSG_fXML_RESOURCE = "/components/task/moreInfo/moreInfo.fxml";
 
 
     //app icon

@@ -6,6 +6,7 @@ import Engine.Enums.State;
 import Exceptions.FileException;
 import components.app.AppController;
 import components.task.compilation.compilationController;
+import components.task.moreInfo.moreInfoController;
 import components.task.simulation.simulationController;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -16,10 +17,15 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,6 +46,10 @@ public class taskController {
     // compilation
     private BorderPane compilationComponent;
     private compilationController compilationComponentController;
+    // more info
+    public VBox moreInfoComponent;
+    private moreInfoController moreInfoComponentController;
+    private Stage moreInfoWin;
 
     // table
     @FXML private TableView<TargetDTO> targetDataTable;
@@ -51,6 +61,8 @@ public class taskController {
     @FXML private TableColumn<TargetDTO, String> targetInfoCOL;
     @FXML private TableColumn<TargetDTO, String> statusCOL;
     @FXML private TableColumn<TargetDTO, String> targetTypeCOL;
+
+    public AppController getMainController() {return mainController;}
 
     // members
     private AppController mainController;
@@ -67,6 +79,7 @@ public class taskController {
     boolean pause;
     boolean simTab;
     boolean firstCallForResult;
+    boolean infoWindowStillOpen;
 
 
 
@@ -78,7 +91,8 @@ public class taskController {
 
         targetsMap = new HashMap<String, TargetDTO>();
         taskProgress = 0;
-        pause= false;
+        pause = false;
+        infoWindowStillOpen = false;
 
         taskTypeCB.getItems().add("Simulation");
         taskTypeCB.getItems().add("Compilation");
@@ -107,12 +121,12 @@ public class taskController {
         }
         OLTargets = FXCollections.observableArrayList(targets);
         setTable();
+        rowClickData();
         loadBackComponents();
         setChoiceBoxListener();
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { compilationComponentController.setSelectedNum(numCheckBoxesSelected); });
     }
-
     private void configureCheckBox(CheckBox checkBox, String targetName) {
         if (checkBox.isSelected())
             selectedCheckBoxes.add(checkBox);
@@ -139,7 +153,6 @@ public class taskController {
             mainController.setAllTargetsFrozen();
         });
     }
-
     private void cleanUpData() {
         taskProgress = 0;
         resetTargetsStatus();
@@ -156,7 +169,6 @@ public class taskController {
         targetInfoCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetInfo"));
         statusCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetStateString"));
         targetTypeCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetLocationString"));
-
         checkBoxCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, CheckBox>("selectedState"));
 
         targetDataTable.setItems(OLTargets);
@@ -167,9 +179,7 @@ public class taskController {
         try {
             // compilation pane
             fxmlLoader.setLocation(getClass().getResource(TASK_COMPILATION_fXML_RESOURCE));
-            System.out.println("1");
             compilationComponent = fxmlLoader.load();
-            System.out.println("1");
             compilationComponentController = fxmlLoader.getController();
             compilationComponentController.setParentController(this);
             System.out.println(" -- task (compilation) done --");
@@ -182,12 +192,24 @@ public class taskController {
             simulationComponentController.setParentController(this);
             System.out.println(" -- task (simulation) done --");
 
+            // task table - end result
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(TASK_MORE_INFO_MSG_fXML_RESOURCE));
+            moreInfoComponent = fxmlLoader.load();
+            moreInfoComponentController = fxmlLoader.getController();
+            moreInfoComponentController.setParentController(this);
+            moreInfoWin = new Stage();
+            moreInfoWin.setTitle("More Info By Target");
+            moreInfoWin.getIcons().add(new Image("/images/appIcon.png"));
+            moreInfoWin.setScene(new Scene(moreInfoComponent));
+            moreInfoWin.setResizable(false);
+            System.out.println(" -- task (more info window) done --");
+
         } catch (Exception e) {
             System.out.println("BIG (task) Problem");
             System.out.println(e.getMessage());
         }
     }
-
 
     // set settings pane
     private void setPaneInSettings(String selectedItem) {
@@ -202,19 +224,7 @@ public class taskController {
             prefByTaskBPane.setCenter(compilationComponent);
         }
     }
-
-
     public Integer getMaxThreads() { return mainController.getMaxThreads(); }
-    public void runSimulation(
-            int runTime, boolean randomRunTime, int success, int successWithWarnings,
-            int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
-        mainController.resetProgress();
-        taskProgress = 0;
-        mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
-        pause = false;
-        firstCallForResult = true;
-        startRandomGenerator();
-    }
 
     public void selectAllCB() { targetsList.forEach(dto -> dto.getSelectedState().setSelected(true)); }
     public void unselectAllCB() { targetsList.forEach(dto -> dto.getSelectedState().setSelected(false)); }
@@ -224,7 +234,6 @@ public class taskController {
         pause = true;
     }
     public void setDisableTaskType(boolean bool) { upGP.setDisable(bool); }
-
     public void whenFinishedSimulation() {
         if(simTab) {
             simulationComponentController.openResult();
@@ -237,10 +246,7 @@ public class taskController {
     public Set<String> getWhatIf(String TargetName, Bond bond) { return mainController.getWhatIf(TargetName, bond); }
     public void setAllCBDisable(boolean bool) {targetsList.forEach(dto -> dto.getSelectedState().setDisable(bool));}
     public void setWhatIfSelections(Set<String> targetSet) {targetSet.forEach(tarName -> targetsMap.get(tarName).getSelectedState().setSelected(true));}
-
-
     public int getSelectedNum() { return numCheckBoxesSelected.intValue();}
-
     private void startRandomGenerator() {
         Thread thread = new Thread(this::updateProgress);
         thread.setDaemon(true);
@@ -267,7 +273,6 @@ public class taskController {
             pause = false;
         }
     }
-
     private void updateTableStatus() {
         for(TargetDTO dto : targetDataTable.getItems() ) {
             State state = mainController.getStateByTargetName(dto.getTargetName());
@@ -276,19 +281,16 @@ public class taskController {
         }
         targetDataTable.refresh();
     }
-
     private void sleepForSomeTime() {
         try {
             Thread.sleep(300);
         } catch (InterruptedException ignored) {}
     }
-
     public void setResume(int threadNum) {
         pause = false;
         mainController.setResume(threadNum);
         startRandomGenerator();
     }
-
     public void runCompilation(Integer threads, ArrayList<String> runTargetsArray,
                                boolean fromScratch, String inputPath, String outputPath) {
         mainController.resetProgress();
@@ -299,6 +301,17 @@ public class taskController {
         firstCallForResult = true;
         startRandomGenerator();
     }
+    public void runSimulation(
+            int runTime, boolean randomRunTime, int success, int successWithWarnings,
+            int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
+        mainController.resetProgress();
+        taskProgress = 0;
+        mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
+        pause = false;
+        firstCallForResult = true;
+        startRandomGenerator();
+    }
+
     public void resetTargetsStatus() {
         for(TargetDTO dto : targetDataTable.getItems() ) {
             dto.setTargetState(State.FROZEN);
@@ -307,37 +320,22 @@ public class taskController {
         targetDataTable.refresh();
     }
 
-    //TODO
-    /*
     private void rowClickData() {
-        mainController.getInRunTargetInfo()
-        targetDataTable.setRowFactory(rowBig ->
-        {
+        targetDataTable.setRowFactory(rowBig -> {
             TableRow<TargetDTO> row = new TableRow<>();
-            row.setOnMouseClicked(event ->
-            {
+            row.setOnMouseClicked(event -> {
                 if(event.getClickCount() == 2 && (!row.isEmpty())) {
                     List<String> lst = new ArrayList<>();
-                    synchronized (Lock) {
+                     {
                         if(targetDataTable.getSelectionModel().getSelectedItem() == null)
                             return;
-                        String nameTarget = targetDataTable.getSelectionModel().getSelectedItem().getTargetName();
-                        TargetDTO t = mainController.getTargetDTO(nameTarget);
-                        String name = t.getTargetName();
-                        String type = t.getTargetLocationString();
+                         infoWindowStillOpen = true;
+                         Thread thread = new Thread(this::moreInfoThread);
+                         thread.setDaemon(true);
+                         thread.setName("more info by target thread");
 
-                        Map<String, Set<String>> serialSets = mainController.getSerialSetByName(name);
-                        String SetNames;
-                        if (serialSets.size() == 0)
-                            SetNames = "doesn't belong to any serial set";
-                        else
-                            SetNames = serialSets.toString() + "\n";
-
-                        String process = "";
-                        //if (t.getIsRunning())
-                          //  process = t.();
-
-                        new targetInfoMain (name, type, serialSets, process, t.getSet DependsOn (), t.getSetRequiredFor ());
+                         openMoreInfoWindow();
+                         thread.start();
                     }
                 }
             });
@@ -345,7 +343,30 @@ public class taskController {
         });
     }
 
-     */
+    private void moreInfoThread() {
+        // after show stage
 
+        // keep update data loop
+        while (infoWindowStillOpen) {
+            String nameTarget = targetDataTable.getSelectionModel().getSelectedItem().getTargetName();
+            TargetDTO t = mainController.getTargetDTO(nameTarget);
+            sleepForSomeTime();
+            // get all info from DTO and place them in the stage
+            Platform.runLater(
+                    () -> moreInfoComponentController.setupData(t)
+            );
+        }
+    }
+
+    private void openMoreInfoWindow() {
+        //TODO if already open close the last one
+        System.out.println("check 1");
+        moreInfoWin.show();
+    }
+
+    public void closeMoreInfoWindow() {
+        infoWindowStillOpen = false;
+        moreInfoWin.close();
+    }
 
 }

@@ -15,6 +15,11 @@ public class settingsController {
     @FXML private CheckBox animationsCB;
 
 
+    @FXML public void initialize() {
+        darkModeCB.setDisable(true);
+        animationsCB.setDisable(true);
+    }
+
     @FXML void savePr(ActionEvent event) {
         mainController.setDarkModeOn(darkModeCB.isSelected());
         mainController.setAnimationsOn(animationsCB.isSelected());

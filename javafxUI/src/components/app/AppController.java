@@ -60,7 +60,7 @@ public class AppController {
     private tableController tableComponentController;
 
     // members
-    private static final Engine engine = new Engine();
+    public static final Engine engine = new Engine();
     private String xmlPath;
     public boolean xmlFileIsLoaded;
     private boolean cycleMsgShownAlready = false;
@@ -243,6 +243,8 @@ public class AppController {
                                String inputPath, String outputPath) {
         engine.runCompilation(targets,inputPath,outputPath,threads,fromScratch);
     }
+
+    public Engine getEngine() { return engine; }
 }
 
 
