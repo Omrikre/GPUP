@@ -1,5 +1,6 @@
 package Engine.Tasks;
 
+import Engine.Enums.State;
 import Engine.Graph;
 
 import java.io.File;
@@ -19,7 +20,7 @@ public class CompilationTask extends Task implements Runnable {
         this.realTarget = realTarget;
         FQN = realTarget.getInfo();
         //convert to real path
-        FQN.replace(".", "/");
+        FQN = FQN.replace(".", "/");
         FQN += ".java";
 
     }
@@ -29,10 +30,24 @@ public class CompilationTask extends Task implements Runnable {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory(new File(src));
         processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
+        Process result = null;
         try {
-            processBuilder.start();
+            result = processBuilder.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        try {
+            result.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (result.exitValue() == 0) {
+                target.setState(State.FINISHED_SUCCESS);
+                realTarget.setState(State.FINISHED_SUCCESS);
+            } else {
+                target.setState(State.FINISHED_FAILURE);
+                realTarget.setState(State.FINISHED_FAILURE);
+            }
+
     }
 }
