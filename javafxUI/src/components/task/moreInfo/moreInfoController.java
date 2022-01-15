@@ -1,13 +1,11 @@
 package components.task.moreInfo;
 
 import Engine.DTO.TargetDTO;
-import Engine.Enums.State;
 import components.task.taskController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.util.ArrayList;
 
 public class moreInfoController {
 
@@ -27,7 +25,7 @@ public class moreInfoController {
     @FXML private Label setsLB;
     @FXML private TextField setsTB;
     @FXML private Button okBT;
-    @FXML private TextField targetLogTB;
+    @FXML private TextArea targetLogTB;
 
     @FXML public void initialize() {
         targetNameLB.setText("-"); //
@@ -51,14 +49,14 @@ public class moreInfoController {
     public void setupData(TargetDTO t) {
         String name = t.getTargetName();
         targetNameLB.setText(name);
-        String StateString = getStateAffect(t, t.getTargetState());
-        currStateLB.setText(StateString);
-        targetTypeLB.setText(t.getTargetLocationString().toString());
+        currStateLB.setText(t.getTargetState().toString());
+        targetTypeLB.setText(t.getTargetLocationString());
         pTimeLB.setText(parentController.getMainController().getEngine().getProsTime(name));
         Integer tempSize = t.getSerialSetsBelongs();
         setsLB.setText(tempSize.toString());
         setsTB.setText(parentController.getMainController().getEngine().getSerialSetsByTargetName(name).toString());
-        currStateTB.setText(t.getTargetState().toString());
+        String StateString = parentController.getMainController().getEngine().getTargetInfo(name);
+        currStateTB.setText(StateString);
         javacTB.setText(parentController.getMainController().getEngine().getJavacLog(name));
         tempSize = t.getTargetDependsOn().size();
         depOnLB.setText(tempSize.toString());
@@ -69,8 +67,11 @@ public class moreInfoController {
         targetLogTB.setText(parentController.getMainController().getEngine().getTargetLog(name));
     }
 
+/*
     private String getStateAffect(TargetDTO t, State targetState) {
         String resString = ""; //TODO - add waiting?
+
+        parentController.getMainController().getEngine().getTargetInfo(t.);
         switch (targetState) {
             case WAITING:
                 resString = "Waiting for: " + t.getWhyWaiting();
@@ -98,4 +99,6 @@ public class moreInfoController {
         }
         return resString;
     }
+
+ */
 }
