@@ -92,8 +92,7 @@ public class generalInfoController {
 
     }
 
-    //TODO setTableB - get all serial set info
-    //private void setTableA(Map<Location, Integer> infoMap)
+
 }
 
 

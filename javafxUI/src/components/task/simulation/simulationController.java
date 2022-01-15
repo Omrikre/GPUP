@@ -47,7 +47,6 @@ public class simulationController {
     @FXML private Label progressPresentLabel;//
     @FXML private Button pauseBT;
     @FXML private Button runBT;
-    //@FXML private Button newRunBt;
     @FXML private GridPane whatIfGP;
 
     private BorderPane incErrorComponent;

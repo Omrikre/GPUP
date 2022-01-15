@@ -69,7 +69,7 @@ public class moreInfoController {
 
 /*
     private String getStateAffect(TargetDTO t, State targetState) {
-        String resString = ""; //TODO - add waiting?
+        String resString = "";
 
         parentController.getMainController().getEngine().getTargetInfo(t.);
         switch (targetState) {
