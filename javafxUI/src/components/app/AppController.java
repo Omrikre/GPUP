@@ -123,13 +123,9 @@ public class AppController {
 
             // table pane
             fxmlLoader = new FXMLLoader();
-            System.out.println("1");
             fxmlLoader.setLocation(getClass().getResource(TABLE_fXML_RESOURCE));
-            System.out.println("1");
             tableComponent = fxmlLoader.load();
-            System.out.println("1");
             tableComponentController = fxmlLoader.getController();
-            System.out.println("1");
             tableComponentController.setMainController(this);
             System.out.println(" -- table done --");
 
