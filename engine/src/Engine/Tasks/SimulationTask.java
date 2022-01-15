@@ -4,6 +4,7 @@ import Engine.Engine;
 import Engine.Enums.State;
 import Engine.Graph;
 
+import java.io.IOException;
 import java.util.Random;
 
 import static java.lang.Thread.sleep;
@@ -18,7 +19,7 @@ public class SimulationTask extends Task implements Runnable {
     private Engine e;
     private int amountOfTargets;
 
-    public SimulationTask(int amountOfTargets, Engine e, String javac, String log, int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
+    public SimulationTask(int amountOfTargets, Engine e, int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
         super("Simulation");
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
@@ -26,19 +27,19 @@ public class SimulationTask extends Task implements Runnable {
         this.realTarget = realTarget;
         this.success = success;
         this.successWithWarnings = successWithWarnings;
-        this.javac = javac;
-        this.log = log;
         this.e = e;
-        this.amountOfTargets=amountOfTargets;
+        this.amountOfTargets = amountOfTargets;
     }
 
     @Override
     public void run() {
+        String log;
         int sleepTime;
         if (randomRunTime) {
             Random rand = new Random();
             sleepTime = rand.nextInt(runTime);
         } else sleepTime = runTime;
+        log = "going to sleep for " + sleepTime + " ms";
         realTarget.setStartingTime(System.currentTimeMillis());
         t.setStartingTime(System.currentTimeMillis());
         try {
@@ -46,8 +47,15 @@ public class SimulationTask extends Task implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        javac = "";
-        log = "";
+        log += "\nwoke up!";
+        e.updateLog(log);
+        e.updateJavac("");
+        e.createTargetFileByName(t.getName());
+        try {
+            e.saveTargetInfoToFile(log);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         e.progressCounter++;
         e.calculateProgress(amountOfTargets);
         realTarget.setEndingTime(System.currentTimeMillis());

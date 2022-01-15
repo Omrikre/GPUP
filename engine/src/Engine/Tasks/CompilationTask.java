@@ -17,14 +17,12 @@ public class CompilationTask extends Task implements Runnable {
     private Engine e;
     private int amountOfTargets;
 
-    public CompilationTask(int amountOfTargets, Engine e, String javac, String log, String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
+    public CompilationTask(int amountOfTargets, Engine e, String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
         super("Compilation");
         this.src = src;
         this.compilationFolder = compilationFolder;
         this.target = target;
         this.realTarget = realTarget;
-        this.javac = javac;
-        this.log = log;
         this.e = e;
         this.amountOfTargets = amountOfTargets;
         FQN = realTarget.getInfo();
@@ -36,6 +34,8 @@ public class CompilationTask extends Task implements Runnable {
 
     @Override
     public void run() {
+        String log;
+        String javac;
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory(new File(src));
         processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
@@ -52,14 +52,27 @@ public class CompilationTask extends Task implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        javac = result.getOutputStream().toString();
-        log = "";
+
         e.progressCounter++;
         e.calculateProgress(amountOfTargets);
         realTarget.setEndingTime(System.currentTimeMillis());
         target.setEndingTime(System.currentTimeMillis());
         realTarget.setTime();
         target.setTime();
+        javac = "The success line: " + result.getOutputStream().toString();
+        if (result.exitValue() != 0)
+            javac = "The failure line: " + result.getErrorStream().toString();
+        log = "the file being compiled: " + target.getInfo() + "\n"
+                + "The CMD line about to be excecuted: " + "javac -d " + compilationFolder + " -cp " + compilationFolder + " " + FQN + "\n"
+                + "how much time the compiler worked: " + target.getTime() + "ms";
+        e.updateJavac(javac);
+        e.updateLog(log);
+        e.createTargetFileByName(target.getName());
+        try {
+            e.saveTargetInfoToFile(log + "\n" + javac);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
         if (result.exitValue() == 0) {
             target.setState(State.FINISHED_SUCCESS);
             realTarget.setState(State.FINISHED_SUCCESS);

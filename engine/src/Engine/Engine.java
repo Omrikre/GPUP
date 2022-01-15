@@ -40,6 +40,7 @@ public class Engine {
     private boolean pause = false, resume = false;
     private int newThreads;
     private String javac = "", log = "";
+    private Graph miniGraph;
 
     public Engine() {
         g = new Graph();
@@ -218,6 +219,7 @@ public class Engine {
         }
         res.setLocationForAllTargets();
         g = res;
+        miniGraph = g;
     }
 
     /**
@@ -279,11 +281,10 @@ public class Engine {
      *
      * @param XMLfilePath The XML path
      */
-    private void createTaskFolder(Path XMLfilePath) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy HH.mm.ss");
-        directoryPath = XMLfilePath + slash + task.getName() + " - " + dtf.format(task.getExecutionDate());
+    private void createTaskFolder(String taskName, Path XMLfilePath) {
+        directoryPath = XMLfilePath + slash + taskName + " - " + makeMStoString(System.currentTimeMillis()).replace(":", ".");
         File dir = new File(directoryPath);
-        dir.mkdir(); //if false throw exception?
+        dir.mkdirs(); //if false throw exception?
     }
 
     /**
@@ -292,7 +293,7 @@ public class Engine {
      * @param info String, the info.
      * @throws IOException
      */
-    private void saveTargetInfoToFile(String info) throws IOException {
+    public void saveTargetInfoToFile(String info) throws IOException {
         try (Writer out = new BufferedWriter(
                 new OutputStreamWriter(
                         new FileOutputStream(targetFilePath, true)))) {
@@ -319,7 +320,7 @@ public class Engine {
      *
      * @param name String, the target's name.
      */
-    private void createTargetFileByName(String name) {
+    public void createTargetFileByName(String name) {
         targetFilePath = (directoryPath + slash + name + ".log");
 
     }
@@ -491,15 +492,31 @@ public class Engine {
     private Graph getGraphOfRunnableTargetsFromArray(ArrayList<String> targets) throws FileException {
         Graph miniGraph = new Graph();
         for (String s : targets) {
+            Graph.Target newTarget;
             Graph.Target realTarget = g.getTargets().get(s);
-            Graph.Target newTarget = miniGraph.new Target(s, realTarget.getInfo());
+            newTarget = miniGraph.new Target(s, realTarget.getInfo());
+            newTarget.setState(realTarget.getState());
             for (int i = 0; i < realTarget.getSerialSetsBelongs(); i++) {
                 newTarget.addTargetToSerialSet();
             }
+
         }
-        for (String s : g.getSerialSets().keySet()) {
-            miniGraph.getSerialSets().put(s, g.getSerialSets().get(s));
+        for (String st : g.getSerialSets().keySet()) {
+            miniGraph.getSerialSets().put(st, g.getSerialSets().get(st));
         }
+        for (String ts : targets) {
+            Graph.Target oldTarget = g.getTargetByName(ts);
+            Graph.Target nTarget = miniGraph.getTargetByName(ts);
+            for (String str : oldTarget.getRequiredFor()) {
+                if (targets.contains(str))
+                    nTarget.addBondedTarget(Bond.REQUIRED_FOR, str);
+            }
+            for (String str : oldTarget.getDependsOn()) {
+                if (targets.contains(str))
+                    nTarget.addBondedTarget(Bond.DEPENDS_ON, str);
+            }
+        }
+
 //        //checking for strays and adding
 //        for (String s : targets) {
 //            Graph.Target newTarget = miniGraph.getTargetByName(s);
@@ -540,38 +557,38 @@ public class Engine {
     }
 
 
-    private String getAvailableTargetBottomsUp(Graph miniG) {
-        for (String s : miniG.getAllTargetsByLocation(Location.INDEPENDENT)) {
-            Graph.Target t = miniG.getTargetByName(s);
+    private String getAvailableTargetBottomsUp() {
+        for (String s : miniGraph.getAllTargetsByLocation(Location.INDEPENDENT)) {
+            Graph.Target t = miniGraph.getTargetByName(s);
             if (t.getState().equals(State.FROZEN)) {
-                if (isSerialSetViable(miniG, t)) {
+                if (isSerialSetViable(miniGraph, t)) {
                     t.setState(State.WAITING);
                     return t.getName();
                 }
             }
         }
-        for (String s : miniG.getAllTargetsByLocation(Location.LEAF)) {
-            Graph.Target t = miniG.getTargetByName(s);
+        for (String s : miniGraph.getAllTargetsByLocation(Location.LEAF)) {
+            Graph.Target t = miniGraph.getTargetByName(s);
             if (t.getState().equals(State.FROZEN)) {
-                if (isSerialSetViable(miniG, t)) {
+                if (isSerialSetViable(miniGraph, t)) {
                     t.setState(State.WAITING);
                     return t.getName();
                 }
             }
         }
-        for (String s : miniG.getAllTargetsByLocation(Location.MIDDLE)) {
-            Graph.Target t = miniG.getTargetByName(s);
+        for (String s : miniGraph.getAllTargetsByLocation(Location.MIDDLE)) {
+            Graph.Target t = miniGraph.getTargetByName(s);
             if (t.getState().equals(State.FROZEN)) {
-                if (isSerialSetViable(miniG, t) && isTargetViable(miniG, t)) {
+                if (isSerialSetViable(miniGraph, t) && isTargetViable(miniGraph, t)) {
                     t.setState(State.WAITING);
                     return t.getName();
                 }
             }
         }
-        for (String s : miniG.getAllTargetsByLocation(Location.ROOT)) {
-            Graph.Target t = miniG.getTargetByName(s);
+        for (String s : miniGraph.getAllTargetsByLocation(Location.ROOT)) {
+            Graph.Target t = miniGraph.getTargetByName(s);
             if (t.getState().equals(State.FROZEN)) {
-                if (isSerialSetViable(miniG, t) && isTargetViable(miniG, t)) {
+                if (isSerialSetViable(miniGraph, t) && isTargetViable(miniGraph, t)) {
                     t.setState(State.WAITING);
                     return t.getName();
                 }
@@ -599,50 +616,53 @@ public class Engine {
                     g.setAllTargetsFrozen();
                 } else
                     g.setAllFailedAndSkippedTargetsFrozen();
-                Graph miniGraph = null;
                 try {
                     miniGraph = getGraphOfRunnableTargetsFromArray(targets);
                 } catch (FileException e) {
                     e.printStackTrace();
                 }
-                ThreadPoolExecutor threadExecutor = new ThreadPoolExecutor(newThreads, newThreads, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
-                while (!isTaskFinished(miniGraph)) {
-                    if (pause) {
+                if (!miniGraph.isFinishedSuccessfully()) {
+                    ThreadPoolExecutor threadExecutor = new ThreadPoolExecutor(newThreads, newThreads, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+                    createTaskFolder("Simulation", XMLFilePath);
+                    while (!isTaskFinished(miniGraph)) {
+                        if (pause) {
 //                    threadExecutor.shutdown();
 //                    try {
 //                        threadExecutor.awaitTermination(runTime * 5, TimeUnit.MILLISECONDS);
 //                    } catch (InterruptedException e) {
 //                        e.printStackTrace();
 //                    }
-                        while (pause) {
-                            System.out.println("IN PAUSE");
+                            while (pause) {
+                                System.out.println("IN PAUSE");
+                            }
+                            System.out.println("OUT OF PAUSE");
+                            if (newThreads > oldThreads) {
+                                oldThreads = newThreads;
+                                threadExecutor.setMaximumPoolSize(newThreads);
+                                threadExecutor.setCorePoolSize(newThreads);
+                            } else {
+                                oldThreads = newThreads;
+                                threadExecutor.setCorePoolSize(newThreads);
+                                threadExecutor.setMaximumPoolSize(newThreads);
+                            }
                         }
-                        System.out.println("OUT OF PAUSE");
-                        if (newThreads > oldThreads) {
-                            oldThreads = newThreads;
-                            threadExecutor.setMaximumPoolSize(newThreads);
-                            threadExecutor.setCorePoolSize(newThreads);
-                        } else {
-                            oldThreads = newThreads;
-                            threadExecutor.setCorePoolSize(newThreads);
-                            threadExecutor.setMaximumPoolSize(newThreads);
+                        String s = getAvailableTargetBottomsUp();
+                        if (s != null) {
+                            g.getTargetByName(s).setState(State.IN_PROCESS);
+                            miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
+                            threadExecutor.execute(new SimulationTask(miniGraph.getAmountOfTargets(), this, runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
                         }
                     }
-                    String s = getAvailableTargetBottomsUp(miniGraph);
-                    if (s != null) {
-                        g.getTargetByName(s).setState(State.IN_PROCESS);
-                        miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
-                        threadExecutor.execute(new SimulationTask(miniGraph.getAmountOfTargets(), this, javac, log, runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
+                    threadExecutor.shutdown();
+                    System.out.println("SHUTTING DOWN");
+                    while (!threadExecutor.isTerminated()) {
+                        System.out.println("NOT TERMINATED");
                     }
-                }
-                threadExecutor.shutdown();
-                System.out.println("SHUTTING DOWN");
-                while (threadExecutor.isTerminated()) {
-                    System.out.println("NOT TERMINATED");
-                }
-                System.out.println("END SIM");
-                progress = 100;
-            }).
+                    System.out.println("END SIM");
+                    progress = 100;
+                } else progress = 100;
+            }
+            ).
 
                     start();
 
@@ -654,8 +674,8 @@ public class Engine {
     public void calculateProgress(int howManyTargets) {
         int res = (progressCounter * 100) / howManyTargets;
         if (res == 100)
-            progress= 99;
-        else progress= res;
+            progress = 99;
+        else progress = res;
     }
 
     public void resetProgress() {
@@ -667,6 +687,19 @@ public class Engine {
         return progress;
     }
 
+    public Set<String> getSetOfAllAffectedTargetsBySerialSet(String targetName) {
+        Set<String> res = new HashSet<>();
+        Map<String, Set<String>> mapSet = getSerialSetsByTargetName(targetName);
+        for (String m : mapSet.keySet()) {
+            if (mapSet.get(m).contains(targetName))
+                for (String str : mapSet.get(m))
+                    if (miniGraph.getTargetByName(str).getState().equals(State.IN_PROCESS))
+                        res.add(str);
+        }
+        return res;
+    }
+
+
     /**
      * This method gets a target name and returns its mid-run info
      *
@@ -674,32 +707,42 @@ public class Engine {
      * @return
      */
     public String getTargetInfo(String targetName) {
-        String additionalInfo;
+        String additionalInfo = "";
         switch (g.getTargetByName(targetName).getState()) {
-            case FROZEN:
-                additionalInfo = "Waiting for: [" + g.getSetOfAllAffectedTargetsByBond(targetName, Bond.DEPENDS_ON) + "] to complete";
+            case FROZEN: {
+                Set<String> r;
+                r = miniGraph.getSetOfAllAffectedTargetsByBond(targetName, Bond.DEPENDS_ON);
+                if (r.isEmpty()) {
+                    r = getSetOfAllAffectedTargetsBySerialSet(targetName);
+                } else
+                    additionalInfo = "Waiting for: [" + r + "] to complete";
                 break;
-            case WAITING:
-                g.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
-                g.getTargetByName(targetName).setTime();
-                additionalInfo = "Waiting for: " + g.getTargetByName(targetName).getTime() + " ms";
+            }
+            case WAITING: {
+                this.miniGraph.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
+                this.miniGraph.getTargetByName(targetName).setTime();
+                additionalInfo = "Waiting for: " + makeMStoString(this.miniGraph.getTargetByName(targetName).getTime());
                 break;
-            case SKIPPED:
+            }
+            case SKIPPED: {
                 additionalInfo = "skipped because of: [" +
-                        g.getFailedTargetsFromSkipped(targetName) + "]";
+                        this.miniGraph.getFailedTargetsFromSkipped(targetName) + "]";
                 break;
-            case IN_PROCESS:
-                g.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
-                g.getTargetByName(targetName).setTime();
-                additionalInfo = "in process for: " + g.getTargetByName(targetName).getTime() + " ms";
+            }
+            case IN_PROCESS: {
+                miniGraph.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
+                miniGraph.getTargetByName(targetName).setTime();
+                additionalInfo = "in process for: " + this.miniGraph.getTargetByName(targetName).getTime() + " ms";
                 break;
+            }
+            case FINISHED_FAILURE: {
+                additionalInfo = "the following targets are now skipped: " + this.miniGraph.getSetOfAllAffectedTargetsByBond(targetName, Bond.REQUIRED_FOR);
+                break;
+            }
             default:
-                additionalInfo = g.getTargetByName(targetName).getState().toString();
+                additionalInfo = "";
         }
-        return "Name: " + targetName + "\n" +
-                "Status: " + g.getTargetByName(targetName).getState() + "\n" +
-                "Serial Sets: " + getSerialSetsByTargetName(targetName) + "\n" +
-                additionalInfo;
+        return additionalInfo;
     }
 
 
@@ -713,7 +756,8 @@ public class Engine {
         pause = true;
     }
 
-    public void runCompilation(ArrayList<String> targets, String src, String compilationFolder, int threadsNum, boolean fromScratch) {
+    public void runCompilation(ArrayList<String> targets, String src, String compilationFolder, int threadsNum,
+                               boolean fromScratch) {
         if (!targets.isEmpty()) {
             new Thread(() -> {
                 progressCounter = 0;
@@ -724,49 +768,51 @@ public class Engine {
                     g.setAllTargetsFrozen();
                 } else
                     g.setAllFailedAndSkippedTargetsFrozen();
-                Graph miniGraph = null;
                 try {
                     miniGraph = getGraphOfRunnableTargetsFromArray(targets);
                 } catch (FileException e) {
                     e.printStackTrace();
                 }
-                ThreadPoolExecutor threadExecutor = new ThreadPoolExecutor(newThreads, newThreads, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
-                while (!isTaskFinished(miniGraph)) {
-                    if (pause) {
+                if (!miniGraph.isFinishedSuccessfully()) {
+                    ThreadPoolExecutor threadExecutor = new ThreadPoolExecutor(newThreads, newThreads, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+                    createTaskFolder("Compilation", XMLFilePath);
+                    while (!isTaskFinished(miniGraph)) {
+                        if (pause) {
 //                    threadExecutor.shutdown();
 //                    try {
 //                        threadExecutor.awaitTermination(runTime * 5, TimeUnit.MILLISECONDS);
 //                    } catch (InterruptedException e) {
 //                        e.printStackTrace();
 //                    }
-                        while (pause) {
-                            System.out.println("IN PAUSE");
+                            while (pause) {
+                                System.out.println("IN PAUSE");
+                            }
+                            System.out.println("OUT OF PAUSE");
+                            if (newThreads > oldThreads) {
+                                oldThreads = newThreads;
+                                threadExecutor.setMaximumPoolSize(newThreads);
+                                threadExecutor.setCorePoolSize(newThreads);
+                            } else {
+                                oldThreads = newThreads;
+                                threadExecutor.setCorePoolSize(newThreads);
+                                threadExecutor.setMaximumPoolSize(newThreads);
+                            }
                         }
-                        System.out.println("OUT OF PAUSE");
-                        if (newThreads > oldThreads) {
-                            oldThreads = newThreads;
-                            threadExecutor.setMaximumPoolSize(newThreads);
-                            threadExecutor.setCorePoolSize(newThreads);
-                        } else {
-                            oldThreads = newThreads;
-                            threadExecutor.setCorePoolSize(newThreads);
-                            threadExecutor.setMaximumPoolSize(newThreads);
+                        String s = getAvailableTargetBottomsUp();
+                        if (s != null) {
+                            g.getTargetByName(s).setState(State.IN_PROCESS);
+                            miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
+                            threadExecutor.execute(new CompilationTask(miniGraph.getAmountOfTargets(), this, src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
                         }
                     }
-                    String s = getAvailableTargetBottomsUp(miniGraph);
-                    if (s != null) {
-                        g.getTargetByName(s).setState(State.IN_PROCESS);
-                        miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
-                        threadExecutor.execute(new CompilationTask(miniGraph.getAmountOfTargets(), this, javac, log, src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
+                    threadExecutor.shutdown();
+                    System.out.println("SHUTTING DOWN");
+                    while (!threadExecutor.isTerminated()) {
+                        System.out.println("NOT TERMINATED");
                     }
-                }
-                threadExecutor.shutdown();
-                System.out.println("SHUTTING DOWN");
-                while (threadExecutor.isTerminated()) {
-                    System.out.println("NOT TERMINATED");
-                }
-                System.out.println("END COMP");
-                progress = 100;
+                    System.out.println("END COMP");
+                    progress = 100;
+                } else progress = 100;
             }).
 
                     start();
@@ -783,6 +829,14 @@ public class Engine {
         if (t.getState().equals(State.FINISHED_SUCCESS) || t.getState().equals(State.FINISHED_WARNINGS) || t.getState().equals(State.FINISHED_FAILURE)) {
             return makeMStoString(t.getTime());
         } else return "";
+    }
+
+    public void updateJavac(String newJavac) {
+        javac = newJavac;
+    }
+
+    public void updateLog(String newLog) {
+        log = newLog;
     }
 
     public String getJavacLog(String targetName) {

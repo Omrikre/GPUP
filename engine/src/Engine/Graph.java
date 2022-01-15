@@ -494,6 +494,12 @@ public class Graph implements Serializable {
         }
     }
 
+    public Set<String> getRequiredFor(String targetName) {
+        Set<String> res = new HashSet<>();
+        res = getTargetByName(targetName).requiredFor;
+        return res;
+    }
+
     /**
      * This method gets a finished target's name, and returns a set with the names of all the directs which directly depend on it and are currently waiting to run the task on.
      *
