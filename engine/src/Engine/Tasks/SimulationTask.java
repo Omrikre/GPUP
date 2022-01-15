@@ -13,8 +13,9 @@ public class SimulationTask extends Task implements Runnable {
     private Graph.Target t, realTarget;
     private final int success;
     private final int successWithWarnings;
+    private String javac,log;
 
-    public SimulationTask(int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
+    public SimulationTask(String javac, String log, int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
         super("Simulation");
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
@@ -22,6 +23,8 @@ public class SimulationTask extends Task implements Runnable {
         this.realTarget = realTarget;
         this.success = success;
         this.successWithWarnings = successWithWarnings;
+        this.javac=javac;
+        this.log=log;
     }
 
     @Override
@@ -38,6 +41,8 @@ public class SimulationTask extends Task implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        javac="";
+        log="";
         realTarget.setEndingTime(System.currentTimeMillis());
         t.setEndingTime(System.currentTimeMillis());
         realTarget.setTime();

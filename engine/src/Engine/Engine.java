@@ -38,6 +38,7 @@ public class Engine {
     private int progressCounter, progress;
     private boolean pause = false, resume = false;
     private int newThreads;
+    private String javac, log;
 
     public Engine() {
         g = new Graph();
@@ -630,7 +631,7 @@ public class Engine {
                     if (s != null) {
                         g.getTargetByName(s).setState(State.IN_PROCESS);
                         miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
-                        threadExecutor.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
+                        threadExecutor.execute(new SimulationTask(javac, log, runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
                         progressCounter++;
                         progress = calculateProgress(miniGraph.getTargets().size());
                     }
@@ -757,7 +758,7 @@ public class Engine {
                     if (s != null) {
                         g.getTargetByName(s).setState(State.IN_PROCESS);
                         miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
-                        threadExecutor.execute(new CompilationTask(src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
+                        threadExecutor.execute(new CompilationTask(javac, log, src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
                         progressCounter++;
                         progress = calculateProgress(miniGraph.getTargets().size());
                     }
@@ -788,11 +789,11 @@ public class Engine {
     }
 
     public String getJavacLog(String targetName){
-
+        return javac;
     }
 
     public String getTargetLog(String targetName){
-
+        return log;
     }
 
     //TODO print strings and save to file

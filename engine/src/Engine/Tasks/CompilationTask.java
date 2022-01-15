@@ -10,14 +10,17 @@ public class CompilationTask extends Task implements Runnable {
     private String src; //check if exists!
     private String compilationFolder; //create if doesn't exist!
     private String FQN;
+    private String javac, log;
     Graph.Target target, realTarget;
 
-    public CompilationTask(String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
+    public CompilationTask(String javac, String log, String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
         super("Compilation");
         this.src = src;
         this.compilationFolder = compilationFolder;
         this.target = target;
         this.realTarget = realTarget;
+        this.javac=javac;
+        this.log=log;
         FQN = realTarget.getInfo();
         //convert to real path
         FQN = FQN.replace(".", "/");
@@ -43,6 +46,8 @@ public class CompilationTask extends Task implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        javac=result.getOutputStream().toString();
+        log="";
         realTarget.setEndingTime(System.currentTimeMillis());
         target.setEndingTime(System.currentTimeMillis());
         realTarget.setTime();
