@@ -498,16 +498,16 @@ public class Engine {
         for (String s : g.getSerialSets().keySet()) {
             miniGraph.getSerialSets().put(s, g.getSerialSets().get(s));
         }
-        //checking for strays and adding
-        for (String s : targets) {
-            Graph.Target newTarget = miniGraph.getTargetByName(s);
-            for (String str : targets) {
-                if (g.getSetOfAllAffectedTargetsByBond(s, Bond.REQUIRED_FOR).contains(str))
-                    newTarget.addBondedTarget(Bond.REQUIRED_FOR, str);
-                if (g.getSetOfAllAffectedTargetsByBond(s, Bond.DEPENDS_ON).contains(str))
-                    newTarget.addBondedTarget(Bond.DEPENDS_ON, str);
-            }
-        }
+//        //checking for strays and adding
+//        for (String s : targets) {
+//            Graph.Target newTarget = miniGraph.getTargetByName(s);
+//            for (String str : targets) {
+//                if (g.getSetOfAllAffectedTargetsByBond(s, Bond.REQUIRED_FOR).contains(str))
+//                    newTarget.addBondedTarget(Bond.REQUIRED_FOR, str);
+//                if (g.getSetOfAllAffectedTargetsByBond(s, Bond.DEPENDS_ON).contains(str))
+//                    newTarget.addBondedTarget(Bond.DEPENDS_ON, str);
+//            }
+//        }
         miniGraph.setLocationForAllTargets();
         return miniGraph;
     }
@@ -628,15 +628,9 @@ public class Engine {
                     }
                     String s = getAvailableTargetBottomsUp(miniGraph);
                     if (s != null) {
-                        g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
-                        miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                         g.getTargetByName(s).setState(State.IN_PROCESS);
                         miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
                         threadExecutor.execute(new SimulationTask(runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
-                        g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
-                        miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
-                        g.getTargetByName(s).setTime();
-                        miniGraph.getTargetByName(s).setTime();
                         progressCounter++;
                         progress = calculateProgress(miniGraph.getTargets().size());
                     }
@@ -761,15 +755,9 @@ public class Engine {
                     }
                     String s = getAvailableTargetBottomsUp(miniGraph);
                     if (s != null) {
-                        g.getTargetByName(s).setStartingTime(System.currentTimeMillis());
-                        miniGraph.getTargetByName(s).setStartingTime(System.currentTimeMillis());
                         g.getTargetByName(s).setState(State.IN_PROCESS);
                         miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
                         threadExecutor.execute(new CompilationTask(src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
-                        g.getTargetByName(s).setEndingTime(System.currentTimeMillis());
-                        miniGraph.getTargetByName(s).setEndingTime(System.currentTimeMillis());
-                        g.getTargetByName(s).setTime();
-                        miniGraph.getTargetByName(s).setTime();
                         progressCounter++;
                         progress = calculateProgress(miniGraph.getTargets().size());
                     }
@@ -792,9 +780,20 @@ public class Engine {
         return g.getTargetByName(targetName).getState();
     }
 
-    //TODO run on entire graph every time, get a viable target and perform task,
-    // get all serial sets, run on every serial set with 1 thread
+    public String getProsTime(String targetName) {
+        Graph.Target t = g.getTargetByName(targetName);
+        if (t.getState().equals(State.FINISHED_SUCCESS) || t.getState().equals(State.FINISHED_WARNINGS) || t.getState().equals(State.FINISHED_FAILURE)) {
+            return makeMStoString(t.getTime());
+        } else return "";
+    }
 
+    public String getJavacLog(String targetName){
 
-    //TODO test compilation and fix bugs.
+    }
+
+    public String getTargetLog(String targetName){
+
+    }
+
+    //TODO print strings and save to file
 }

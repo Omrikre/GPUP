@@ -31,6 +31,8 @@ public class CompilationTask extends Task implements Runnable {
         processBuilder.directory(new File(src));
         processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
         Process result = null;
+        realTarget.setStartingTime(System.currentTimeMillis());
+        target.setStartingTime(System.currentTimeMillis());
         try {
             result = processBuilder.start();
         } catch (IOException e) {
@@ -41,6 +43,10 @@ public class CompilationTask extends Task implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        realTarget.setEndingTime(System.currentTimeMillis());
+        target.setEndingTime(System.currentTimeMillis());
+        realTarget.setTime();
+        target.setTime();
         if (result.exitValue() == 0) {
                 target.setState(State.FINISHED_SUCCESS);
                 realTarget.setState(State.FINISHED_SUCCESS);

@@ -31,11 +31,17 @@ public class SimulationTask extends Task implements Runnable {
             Random rand = new Random();
             sleepTime = rand.nextInt(runTime);
         } else sleepTime = runTime;
+        realTarget.setStartingTime(System.currentTimeMillis());
+        t.setStartingTime(System.currentTimeMillis());
         try {
             sleep(sleepTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        realTarget.setEndingTime(System.currentTimeMillis());
+        t.setEndingTime(System.currentTimeMillis());
+        realTarget.setTime();
+        t.setTime();
         t.setTargetStateByParameters(success, successWithWarnings);
         realTarget.setTargetStateByParameters(success, successWithWarnings);
     }
