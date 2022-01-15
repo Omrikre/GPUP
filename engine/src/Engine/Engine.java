@@ -40,6 +40,7 @@ public class Engine {
     private boolean pause = false, resume = false;
     private int newThreads;
     private String javac = "", log = "";
+    private Graph miniGraph;
 
     public Engine() {
         g = new Graph();
@@ -605,6 +606,7 @@ public class Engine {
                 } catch (FileException e) {
                     e.printStackTrace();
                 }
+                this.miniGraph = miniGraph;
                 ThreadPoolExecutor threadExecutor = new ThreadPoolExecutor(newThreads, newThreads, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
                 while (!isTaskFinished(miniGraph)) {
                     if (pause) {
@@ -654,8 +656,8 @@ public class Engine {
     public void calculateProgress(int howManyTargets) {
         int res = (progressCounter * 100) / howManyTargets;
         if (res == 100)
-            progress= 99;
-        else progress= res;
+            progress = 99;
+        else progress = res;
     }
 
     public void resetProgress() {
@@ -677,12 +679,12 @@ public class Engine {
         String additionalInfo;
         switch (g.getTargetByName(targetName).getState()) {
             case FROZEN:
-                additionalInfo = "Waiting for: [" + g.getSetOfAllAffectedTargetsByBond(targetName, Bond.DEPENDS_ON) + "] to complete";
+                additionalInfo = "Waiting for: [" + miniGraph.getSetOfAllAffectedTargetsByBond(targetName, Bond.DEPENDS_ON) + "] to complete";
                 break;
             case WAITING:
                 g.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
                 g.getTargetByName(targetName).setTime();
-                additionalInfo = "Waiting for: " + g.getTargetByName(targetName).getTime() + " ms";
+                additionalInfo = "Waiting for: " + miniGraph.getTargetByName(targetName).getTime() + " ms";
                 break;
             case SKIPPED:
                 additionalInfo = "skipped because of: [" +
@@ -691,15 +693,20 @@ public class Engine {
             case IN_PROCESS:
                 g.getTargetByName(targetName).setEndingTime(System.currentTimeMillis());
                 g.getTargetByName(targetName).setTime();
-                additionalInfo = "in process for: " + g.getTargetByName(targetName).getTime() + " ms";
+                additionalInfo = "in process for: " + miniGraph.getTargetByName(targetName).getTime() + " ms";
+                break;
+            case FINISHED_FAILURE:
+                additionalInfo = "the following targets are now open: " + miniGraph.getRequiredFor(targetName) + "\n" +
+                        "the following targets are now skipped: " + miniGraph.getSetOfAllAffectedTargetsByBond(targetName, Bond.REQUIRED_FOR);
+                break;
+            case FINISHED_SUCCESS:
+            case FINISHED_WARNINGS:
+                additionalInfo = "the targets that are now open are: " + miniGraph.getRunnableTargetsNamesFromFinishedTarget(targetName);
                 break;
             default:
                 additionalInfo = g.getTargetByName(targetName).getState().toString();
         }
-        return "Name: " + targetName + "\n" +
-                "Status: " + g.getTargetByName(targetName).getState() + "\n" +
-                "Serial Sets: " + getSerialSetsByTargetName(targetName) + "\n" +
-                additionalInfo;
+        return additionalInfo;
     }
 
 
@@ -730,6 +737,7 @@ public class Engine {
                 } catch (FileException e) {
                     e.printStackTrace();
                 }
+                this.miniGraph = miniGraph;
                 ThreadPoolExecutor threadExecutor = new ThreadPoolExecutor(newThreads, newThreads, 60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
                 while (!isTaskFinished(miniGraph)) {
                     if (pause) {
