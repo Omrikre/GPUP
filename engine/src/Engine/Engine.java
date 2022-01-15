@@ -35,8 +35,8 @@ public class Engine {
     private boolean newRun;
     private final String systemStateFileEnding = ".bin";
     private int maxThreads;
-    private Integer progressCounter;
-    int progress;
+    public int progressCounter;
+    private int progress;
     private boolean pause = false, resume = false;
     private int newThreads;
     private String javac = "", log = "";
@@ -632,8 +632,7 @@ public class Engine {
                     if (s != null) {
                         g.getTargetByName(s).setState(State.IN_PROCESS);
                         miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
-                        threadExecutor.execute(new SimulationTask(progressCounter, javac, log, runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
-                        progress = calculateProgress(miniGraph.getTargets().size());
+                        threadExecutor.execute(new SimulationTask(miniGraph.getAmountOfTargets(), this, javac, log, runTime, randomRunTime, miniGraph.getTargetByName(s), g.getTargetByName(s), success, successWithWarnings));
                     }
                 }
                 threadExecutor.shutdown();
@@ -652,11 +651,11 @@ public class Engine {
     }
 
 
-    private int calculateProgress(int howManyTargets) {
+    public void calculateProgress(int howManyTargets) {
         int res = (progressCounter * 100) / howManyTargets;
         if (res == 100)
-            return 99;
-        else return res;
+            progress= 99;
+        else progress= res;
     }
 
     public void resetProgress() {
@@ -758,8 +757,7 @@ public class Engine {
                     if (s != null) {
                         g.getTargetByName(s).setState(State.IN_PROCESS);
                         miniGraph.getTargetByName(s).setState(State.IN_PROCESS);
-                        threadExecutor.execute(new CompilationTask(progressCounter, javac, log, src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
-                        progress = calculateProgress(miniGraph.getTargets().size());
+                        threadExecutor.execute(new CompilationTask(miniGraph.getAmountOfTargets(), this, javac, log, src, compilationFolder, miniGraph.getTargetByName(s), g.getTargetByName(s)));
                     }
                 }
                 threadExecutor.shutdown();
@@ -794,4 +792,5 @@ public class Engine {
     public String getTargetLog(String targetName) {
         return log;
     }
+
 }

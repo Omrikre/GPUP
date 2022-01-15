@@ -1,5 +1,6 @@
 package Engine.Tasks;
 
+import Engine.Engine;
 import Engine.Enums.State;
 import Engine.Graph;
 
@@ -12,9 +13,11 @@ public class CompilationTask extends Task implements Runnable {
     private String FQN;
     private String javac, log;
     private Integer progressCount;
-    Graph.Target target, realTarget;
+    private Graph.Target target, realTarget;
+    private Engine e;
+    private int amountOfTargets;
 
-    public CompilationTask(Integer progressCounter, String javac, String log, String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
+    public CompilationTask(int amountOfTargets, Engine e, String javac, String log, String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
         super("Compilation");
         this.src = src;
         this.compilationFolder = compilationFolder;
@@ -22,7 +25,8 @@ public class CompilationTask extends Task implements Runnable {
         this.realTarget = realTarget;
         this.javac = javac;
         this.log = log;
-        progressCount = progressCounter;
+        this.e = e;
+        this.amountOfTargets = amountOfTargets;
         FQN = realTarget.getInfo();
         //convert to real path
         FQN = FQN.replace(".", "/");
@@ -50,7 +54,8 @@ public class CompilationTask extends Task implements Runnable {
         }
         javac = result.getOutputStream().toString();
         log = "";
-        progressCount++;
+        e.progressCounter++;
+        e.calculateProgress(amountOfTargets);
         realTarget.setEndingTime(System.currentTimeMillis());
         target.setEndingTime(System.currentTimeMillis());
         realTarget.setTime();

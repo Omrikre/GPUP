@@ -1,5 +1,6 @@
 package Engine.Tasks;
 
+import Engine.Engine;
 import Engine.Enums.State;
 import Engine.Graph;
 
@@ -14,9 +15,10 @@ public class SimulationTask extends Task implements Runnable {
     private final int success;
     private final int successWithWarnings;
     private String javac, log;
-    private Integer progressCount;
+    private Engine e;
+    private int amountOfTargets;
 
-    public SimulationTask(Integer progressCount, String javac, String log, int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
+    public SimulationTask(int amountOfTargets, Engine e, String javac, String log, int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
         super("Simulation");
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
@@ -26,7 +28,8 @@ public class SimulationTask extends Task implements Runnable {
         this.successWithWarnings = successWithWarnings;
         this.javac = javac;
         this.log = log;
-        this.progressCount = progressCount;
+        this.e = e;
+        this.amountOfTargets=amountOfTargets;
     }
 
     @Override
@@ -45,7 +48,8 @@ public class SimulationTask extends Task implements Runnable {
         }
         javac = "";
         log = "";
-        progressCount++;
+        e.progressCounter++;
+        e.calculateProgress(amountOfTargets);
         realTarget.setEndingTime(System.currentTimeMillis());
         t.setEndingTime(System.currentTimeMillis());
         realTarget.setTime();
