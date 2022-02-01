@@ -6,6 +6,8 @@ import Engine.Graph;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CompilationTask extends Task implements Runnable {
     private String src; //check if exists!
@@ -27,18 +29,21 @@ public class CompilationTask extends Task implements Runnable {
         this.amountOfTargets = amountOfTargets;
         FQN = realTarget.getInfo();
         //convert to real path
-        FQN = FQN.replace(".", "/");
+        FQN = FQN.replace(".", "\\");
         FQN += ".java";
+        FQN = src + "\\" + FQN;
 
     }
 
     @Override
     public void run() {
-        String log;
-        String javac;
-        ProcessBuilder processBuilder = new ProcessBuilder();
+        String log = "";
+        String javac = "";
+        ProcessBuilder processBuilder = new ProcessBuilder("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
+
+        //processBuilder.directory(new File("C:\\"));
         processBuilder.directory(new File(src));
-        processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
+        //processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
         Process result = null;
         realTarget.setStartingTime(System.currentTimeMillis());
         target.setStartingTime(System.currentTimeMillis());
@@ -74,11 +79,11 @@ public class CompilationTask extends Task implements Runnable {
             ex.printStackTrace();
         }
         if (result.exitValue() == 0) {
-            target.setState(State.FINISHED_SUCCESS);
-            realTarget.setState(State.FINISHED_SUCCESS);
+            target.setFinishedTargetState(State.FINISHED_SUCCESS);
+            realTarget.setFinishedTargetState(State.FINISHED_SUCCESS);
         } else {
-            target.setState(State.FINISHED_FAILURE);
-            realTarget.setState(State.FINISHED_FAILURE);
+            target.setFinishedTargetState(State.FINISHED_FAILURE);
+            realTarget.setFinishedTargetState(State.FINISHED_FAILURE);
         }
 
     }

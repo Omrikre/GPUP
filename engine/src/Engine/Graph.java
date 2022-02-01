@@ -98,6 +98,13 @@ public class Graph implements Serializable {
         public void setState(State s) {
             this.state = s;
         }
+        public void setFinishedTargetState(State targetState) {
+            Target t = this;
+            t.setState(targetState);
+            if (t.getState().equals(State.FINISHED_FAILURE)) {
+                setAllRequiredTargetsSkipped(t);
+            }
+        }
 
         private void addDependedTarget(Target t) throws FileException {
             if (t.dependsOn.contains(this.getName()))
