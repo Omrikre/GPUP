@@ -8,14 +8,10 @@ import Engine.Enums.State;
 import Exceptions.FileException;
 import components.graphManager.GraphController;
 import components.header.HeaderButtonsController;
-import components.graphManager.info.InfoController;
 import components.graphManager.info.cycleWarningInfo.cycleWarningInfoController;
 import components.home.login.LoginController;
 import components.mainLogin.MainLoginController;
 import components.settings.settingsController;
-import components.graphManager.table.tableController;
-import components.graphManager.task.taskController;
-import components.graphManager.xmlLoader.LoadXMLController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -63,10 +59,6 @@ public class AppController {
     // graph manager
     private BorderPane graphManagerComponent;
     private GraphController graphManagerComponentController;
-
-
-
-
 
 
 
@@ -166,7 +158,7 @@ public class AppController {
 
     // change pane by button press
     //TODO
-    public void showHomePane() {}
+    public void showHomePane() { maimBorderPaneComp.setCenter(mainLoginComp); }
     public void showDashboardPane() {}
     public void showMissionsPane() {}
     public void showGraphPane() { maimBorderPaneComp.setCenter(graphManagerComponent); }

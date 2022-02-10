@@ -2,6 +2,7 @@ package components.graphManager.info;
 
 import Engine.DTO.TargetDTO;
 import components.app.AppController;
+import components.graphManager.GraphController;
 import components.graphManager.info.generalInfo.generalInfoController;
 import components.graphManager.info.targetInfo.targetInfoController;
 import components.graphManager.info.treeViewInfo.treeViewController;
@@ -18,7 +19,6 @@ public class InfoController {
     @FXML private Tab infoByTargetTab;
     @FXML private Tab treeViewTab;
 
-
     @FXML private HBox generalInfoGP;
     @FXML private generalInfoController generalInfoGPController;
     @FXML private VBox infoByTargetGP;
@@ -26,17 +26,17 @@ public class InfoController {
     @FXML private BorderPane treeViewBP;
     @FXML private treeViewController treeViewBPController;
 
-    private AppController mainController;
+    private GraphController parentController;
 
 
-    public void setMainController(AppController mainController) {
-        this.mainController = mainController;
+    public void setParentController(GraphController parentController) {
+        this.parentController = parentController;
     }
     @FXML public void initialize() {
         treeViewBPController.setParentController(this);
         infoByTargetGPController.setParentController(this);
     }
-
+/*
     public void setupData() {
         if(generalInfoGPController != null) {
             generalInfoGPController.setupData(mainController.getGeneralInfoTable(), mainController.getNumOfTargets(), mainController.getGraphContainsCycle(), mainController.getFileName(), mainController.getNumOfSets(), mainController.getSerialSets());
@@ -58,5 +58,5 @@ public class InfoController {
     }
     public TargetDTO getTargetDTO(String targetName) { return mainController.getTargetDTO(targetName); }
 
-    public String getSSByName(String name) { return mainController.getSerialSetByName(name).toString(); }
+    public String getSSByName(String name) { return mainController.getSerialSetByName(name).toString(); }*/
 }

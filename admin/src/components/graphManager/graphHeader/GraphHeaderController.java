@@ -14,12 +14,12 @@ public class GraphHeaderController {
 
     private GraphController graphParentController;
 
-    @FXML void XMLPR(ActionEvent event) {}
-    @FXML void graphPR(ActionEvent event) {}
-    @FXML void targetsPR(ActionEvent event) {}
+    @FXML void XMLPR(ActionEvent event) { graphParentController.showXMLManagerPane(); }
+    @FXML void graphPR(ActionEvent event) { graphParentController.showGraphInfoPane(); }
+    @FXML void targetsPR(ActionEvent event) { graphParentController.showTargetsInfoPane(); }
 
     @FXML public void initialize() {
-        makeButtonsDisable(true);
+        makeButtonsDisable(false);
     }
 
     public void makeButtonsDisable(boolean bool) {

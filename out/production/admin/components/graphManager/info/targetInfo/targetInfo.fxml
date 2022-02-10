@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" prefHeight="493.0" prefWidth="737.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.info.targetInfo.targetInfoController">
+<VBox alignment="TOP_CENTER" prefHeight="493.0" prefWidth="737.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.graphManager.info.targetInfo.targetInfoController">
    <children>
       <GridPane alignment="TOP_CENTER">
         <columnConstraints>

@@ -3,6 +3,7 @@ package components.graphManager.table;
 import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import components.app.AppController;
+import components.graphManager.GraphController;
 import components.graphManager.table.cycle.cycleController;
 import components.graphManager.table.whatIf.whatIfController;
 import javafx.beans.binding.Bindings;
@@ -71,7 +72,7 @@ public class tableController {
     @FXML private TableColumn<TargetDTO, String> targetInfoCOL;//
 
     // in class members
-    private AppController mainController;
+    private GraphController parentController;
     private ObservableList<TargetDTO> OLTargets;
 
     private String firstTargetName;
@@ -105,9 +106,10 @@ public class tableController {
         checkBoxCOL.setStyle( "-fx-alignment: CENTER;");
         targetTypeCOL.setStyle( "-fx-alignment: CENTER;");
     }
-    public void setMainController(AppController mainController) {
-        this.mainController = mainController;
+    public void setParentController(GraphController parentController) {
+        this.parentController = parentController;
     }
+
 
     // data setup
     public void setupData(List<TargetDTO> targets) {
@@ -284,6 +286,7 @@ public class tableController {
         PATHsecondTargetLabel.setText(" -");
         PATHgetPathBt.setDisable(true);
     }
+    /*
     private void pathSetTextBoxes(String a, String b) {
         String lst;
         String noPath = "-- There is no path --";
@@ -303,6 +306,8 @@ public class tableController {
         else
             PATHdepTextBox.appendText(lst);
     }
+
+    */
     private String createListOfTargets(Set<List<String>> lst, Bond whichWay) {
         StringBuilder stringBuild = new StringBuilder("");
         boolean firstTarget = true;
@@ -347,7 +352,7 @@ public class tableController {
         PATHreqTextBox.clear();
     }
     @FXML void pathGetPathPr(ActionEvent event) {
-        pathSetTextBoxes(firstTargetName, secondTargetName);
+        //pathSetTextBoxes(firstTargetName, secondTargetName);
         /*
         PATHdepTextBox.setText(
                 createListOfTargets(
@@ -363,12 +368,15 @@ public class tableController {
          */
     }
 
+/*
 
     public Set<List<String>> getIfInCycle(String selectedTarget) {
         return mainController.getIfInCycle(selectedTarget);
     }
 
     public Set<String> getWhatIf(String selectedTarget, Bond bond) { return mainController.getWhatIf(selectedTarget, bond); }
+*/
+
 }
 
 

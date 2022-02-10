@@ -15,7 +15,7 @@ public class CommonResourcesPaths {
 
 
     // graph manager - back components
-    public final static String INFO_fXML_RESOURCE = "/components/graphManager/GraphManager.fxml";
+    public final static String INFO_XML_RESOURCE = "/components/graphManager/info/Info.fxml";
     public final static String INFO_GENERAL_fXML_RESOURCE = "/components/graphManager/info/generalInfo/generalInfo.fxml";
     public final static String TASK_fXML_RESOURCE = "/components/graphManager/task/task.fxml";
     public final static String TABLE_fXML_RESOURCE = "/components/graphManager/table/table.fxml";

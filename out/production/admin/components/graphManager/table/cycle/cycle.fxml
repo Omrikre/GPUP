@@ -12,8 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox fx:id="cycleVBPane" alignment="TOP_CENTER" prefHeight="613.0" prefWidth="282.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.table.cycle.cycleController">
+<VBox fx:id="cycleVBPane" alignment="TOP_CENTER" prefHeight="613.0" prefWidth="282.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.graphManager.table.cycle.cycleController">
    <children>
       <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Find Cycle" textAlignment="CENTER">
          <VBox.margin>

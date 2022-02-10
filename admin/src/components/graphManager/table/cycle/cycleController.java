@@ -44,10 +44,10 @@ public class cycleController {
     }
     @FXML void cycleGetCyclePr(ActionEvent event) {
         CYCLETextBox.setDisable(false);
-        if(parentController.getIfInCycle(selectedTarget).size() == 0)
+        /*if(parentController.getIfInCycle(selectedTarget).size() == 0)
             CYCLETextBox.setText("-- The target '" + selectedTarget + "' isn't part of a cycle --");
         else
-            CYCLETextBox.setText(parentController.getIfInCycle(selectedTarget).toString());
+            CYCLETextBox.setText(parentController.getIfInCycle(selectedTarget).toString());*/
     }
 
 

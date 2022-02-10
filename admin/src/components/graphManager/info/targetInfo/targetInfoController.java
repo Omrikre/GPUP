@@ -65,7 +65,7 @@ public class targetInfoController {
         choiceTargetBox.setOnAction((event) -> {
             String selectedItem = choiceTargetBox.getSelectionModel().getSelectedItem();
             //TEST System.out.println("Selection target: " + selectedItem);
-            setDataInLabels(parentController.getTargetDTO(selectedItem));
+            //setDataInLabels(parentController.getTargetDTO(selectedItem));
         });
     }
 
@@ -79,6 +79,6 @@ public class targetInfoController {
         requiredNumLabel.setText(String.valueOf(targetInfo.getTargetRequiredFor().size()));
         requiredNamesLabel.setText(targetInfo.getTargetRequiredFor().toString());
         serialSetNameLabel.setText(String.valueOf(targetInfo.getSerialSetsBelongs()));
-        serialSetTargetsLabel.setText(parentController.getSSByName(targetInfo.getTargetName()));
+        //serialSetTargetsLabel.setText(parentController.getSSByName(targetInfo.getTargetName()));
     }
 }

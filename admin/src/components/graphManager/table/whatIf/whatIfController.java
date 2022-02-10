@@ -44,6 +44,7 @@ public class whatIfController {
     @FXML void whatIfClearTextPr(ActionEvent event) {
 
     }
+    /*
     @FXML void whatIfGetWhatIfPr(ActionEvent event) {
         Set<String> res = parentController.getWhatIf(selectedTarget, Bond.DEPENDS_ON);
         if(res.isEmpty())
@@ -57,7 +58,7 @@ public class whatIfController {
             WHATreqTextBox.setText(res.toString());
 
     }
-
+*/
 
 
 
