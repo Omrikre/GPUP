@@ -28,5 +28,7 @@ public class MainLoginController {
 
     public void loggedIn(String userName) {
         userNameNameLB.setText(userName);
+        loginBT.setText("Logged in");
+        loginBT.setDisable(true);
     }
 }

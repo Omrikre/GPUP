@@ -6,9 +6,9 @@ import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
 import Exceptions.FileException;
+import components.dashboard.DashboardController;
 import components.graphManager.GraphController;
 import components.header.HeaderButtonsController;
-import components.graphManager.info.cycleWarningInfo.cycleWarningInfoController;
 import components.home.login.LoginController;
 import components.mainLogin.MainLoginController;
 import components.settings.settingsController;
@@ -39,9 +39,6 @@ public class AppController {
     // Header
     @FXML private VBox headerComponent;
     @FXML private HeaderButtonsController headerComponentController;
-    // login Loader
-    @FXML private ScrollPane mainLoginComp;
-    @FXML private MainLoginController mainLoginCompController;
     // Settings
     private BorderPane settingsComponent;
     private settingsController settingsComponentController;
@@ -50,15 +47,17 @@ public class AppController {
     private GridPane loginComponent;
     private LoginController loginComponentController;
     private Stage loginWin;
-    // cycle msg
-    private BorderPane cycleMsgComponent;
-    private cycleWarningInfoController cycleMsgComponentController;
-    private Stage cycleMsgWin;
 
-
+    // main components:
+    // main - login Loader
+    @FXML private ScrollPane mainLoginComp;
+    @FXML private MainLoginController mainLoginCompController;
     // graph manager
     private BorderPane graphManagerComponent;
     private GraphController graphManagerComponentController;
+    // dashboard
+    private ScrollPane dashboardComponent;
+    private DashboardController dashboardComponentController;
 
 
 
@@ -81,20 +80,6 @@ public class AppController {
     private void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         try {
-/*            // cycle warning
-            fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource(INFO_CYCLE_MSG_fXML_RESOURCE));
-            cycleMsgComponent = fxmlLoader.load();
-            cycleMsgComponentController = fxmlLoader.getController();
-            cycleMsgComponentController.setMainController(this);
-            cycleMsgWin = new Stage();
-            cycleMsgWin.setTitle("Graph Contains Cycle");
-            cycleMsgWin.getIcons().add(new Image("/images/appIcon.png"));
-            cycleMsgWin.setScene(new Scene(cycleMsgComponent));
-            cycleMsgWin.initModality(Modality.APPLICATION_MODAL);
-            cycleMsgWin.setResizable(false);
-            System.out.println(" -- cycle msg done --");*/
-
             // settings pane
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(SETTINGS_fXML_RESOURCE));
@@ -131,6 +116,15 @@ public class AppController {
             graphManagerComponentController.setMainController(this);
             System.out.println(" -- graph manager done --");
 
+            // dashboard
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(DASHBOARD_fXML_RESOURCE));
+            dashboardComponent = fxmlLoader.load();
+            dashboardComponentController = fxmlLoader.getController();
+            dashboardComponentController.setMainController(this);
+            System.out.println(" -- dashboard done --");
+
+
         } catch (Exception e) {
             System.out.println("BIG Problem");
             System.out.println(e.getMessage());
@@ -159,7 +153,7 @@ public class AppController {
     // change pane by button press
     //TODO
     public void showHomePane() { maimBorderPaneComp.setCenter(mainLoginComp); }
-    public void showDashboardPane() {}
+    public void showDashboardPane() { maimBorderPaneComp.setCenter(dashboardComponent); }
     public void showMissionsPane() {}
     public void showGraphPane() { maimBorderPaneComp.setCenter(graphManagerComponent); }
 
@@ -171,7 +165,6 @@ public class AppController {
         loginWin.show();
     }
     public void closeSettingsWin() { settingsWin.close(); }
-    public void closeCycleWarning() { cycleMsgWin.close(); }
 
 
 /*
