@@ -6,11 +6,13 @@ import Engine.Enums.Bond;
 import Engine.Enums.Location;
 import Engine.Enums.State;
 import Exceptions.FileException;
+import components.chat.chatroom.ChatRoomMainController;
 import components.dashboard.DashboardController;
 import components.graphManager.GraphController;
 import components.header.HeaderButtonsController;
 import components.home.login.LoginController;
 import components.mainLogin.MainLoginController;
+import components.missions.MissionsController;
 import components.settings.settingsController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,6 +60,13 @@ public class AppController {
     // dashboard
     private ScrollPane dashboardComponent;
     private DashboardController dashboardComponentController;
+    // missions
+    private ScrollPane missionsComponent;
+    private MissionsController missionsComponentController;
+    // missions
+    private ScrollPane chatComponent;
+    private ChatRoomMainController chatComponentController;
+
 
 
 
@@ -124,6 +133,23 @@ public class AppController {
             dashboardComponentController.setMainController(this);
             System.out.println(" -- dashboard done --");
 
+            // missions
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(MISSIONS_fXML_RESOURCE));
+            missionsComponent = fxmlLoader.load();
+            missionsComponentController = fxmlLoader.getController();
+            //missionsComponentController.setMainController(this);
+            System.out.println(" -- missions done --");
+
+            // chat
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(CHAT_fXML_RESOURCE));
+            chatComponent = fxmlLoader.load();
+            chatComponentController = fxmlLoader.getController();
+            //missionsComponentController.setMainController(this);
+            System.out.println(" -- chat done --");
+
+
 
         } catch (Exception e) {
             System.out.println("BIG Problem");
@@ -154,9 +180,9 @@ public class AppController {
     //TODO
     public void showHomePane() { maimBorderPaneComp.setCenter(mainLoginComp); }
     public void showDashboardPane() { maimBorderPaneComp.setCenter(dashboardComponent); }
-    public void showMissionsPane() {}
+    public void showMissionsPane() { maimBorderPaneComp.setCenter(missionsComponent); }
     public void showGraphPane() { maimBorderPaneComp.setCenter(graphManagerComponent); }
-
+    public void showChatPane() { maimBorderPaneComp.setCenter(chatComponent); }
     public void showSettingsPane() {
         settingsComponentController.setupData(darkModeOn, animationsOn);
         settingsWin.show();
@@ -249,6 +275,8 @@ public class AppController {
         loginWin.close();
         headerComponentController.makeAllButtonsDisable(false);
     }
+    public void logout() { headerComponentController.makeAllButtonsDisable(true); }
+
 
 
 }

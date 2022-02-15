@@ -22,16 +22,21 @@
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="45.0" prefWidth="446.0">
                <children>
-                  <Button fx:id="XMLBT" layoutX="302.0" layoutY="20.0" minWidth="70.0" mnemonicParsing="false" onAction="#XMLPR" text="XML Manager">
+                  <Button fx:id="XMLBT" layoutX="302.0" layoutY="20.0" minWidth="110.0" mnemonicParsing="false" onAction="#XMLPR" text="XML Manager">
                      <HBox.margin>
                         <Insets left="20.0" />
                      </HBox.margin></Button>
-                  <Button fx:id="graphBT" mnemonicParsing="false" onAction="#graphPR" text="Graph Info">
+                  <Button fx:id="graphBT" minWidth="110.0" mnemonicParsing="false" onAction="#graphPR" text="Graph Info">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="targetsBT" mnemonicParsing="false" onAction="#targetsPR" text="Targets Info" />
+                  <Button fx:id="targetsBT" minWidth="110.0" mnemonicParsing="false" onAction="#targetsPR" text="Targets Info" />
+                  <Button fx:id="missionCreatorBT" layoutX="273.0" layoutY="15.0" minWidth="110.0" mnemonicParsing="false" onAction="#missionCreatorPR" text="Mission Creator">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
          </children>

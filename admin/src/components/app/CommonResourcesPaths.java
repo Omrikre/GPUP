@@ -10,19 +10,20 @@ public class CommonResourcesPaths {
     public final static String SETTINGS_fXML_RESOURCE = "/components/settings/settings.fxml";
     public final static String GRAPH_MANAGER_fXML_RESOURCE = "/components/graphManager/GraphManager.fxml";
     public final static String DASHBOARD_fXML_RESOURCE = "/components/dashboard/dashboard.fxml";
+    public final static String MISSIONS_fXML_RESOURCE = "/components/missions/missions.fxml";
+    public final static String CHAT_fXML_RESOURCE = "/components/chat/chatroom/chat-room-main.fxml";
 
 
     // graph manager - back components
     public final static String INFO_XML_RESOURCE = "/components/graphManager/info/Info.fxml";
-    public final static String INFO_GENERAL_fXML_RESOURCE = "/components/graphManager/info/generalInfo/generalInfo.fxml";
-    public final static String TASK_fXML_RESOURCE = "/components/graphManager/task/task.fxml";
+    public final static String MISSION_CREATOR_fXML_RESOURCE = "/components/graphManager/missionCreator/task.fxml";
     public final static String TABLE_fXML_RESOURCE = "/components/graphManager/table/table.fxml";
     // table - back components
     public final static String TABLE_CYCLE_fXML_RESOURCE = "/components/graphManager/table/cycle/cycle.fxml";
     public final static String TABLE_WHATIF_fXML_RESOURCE = "/components/graphManager/table/whatIf/whatif.fxml";
     // task - back components
-    public final static String TASK_COMPILATION_fXML_RESOURCE = "/components/graphManager/task/compilation/compilation.fxml";
-    public final static String TASK_SIMULATION_fXML_RESOURCE = "/components/graphManager/task/simulation/simulation.fxml";
+    public final static String TASK_COMPILATION_fXML_RESOURCE = "/components/graphManager/missionCreator/compilation/compilation.fxml";
+    public final static String TASK_SIMULATION_fXML_RESOURCE = "/components/graphManager/missionCreator/simulation/simulation.fxml";
 
     // spacial messages
     public final static String INFO_CYCLE_MSG_fXML_RESOURCE = "/components/graphManager/info/cycleWarningInfo/cycleWarningInfo.fxml";
