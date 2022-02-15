@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml" />
-      <module fileurl="file://$PROJECT_DIR$/javafxUI/javafxUI.iml" filepath="$PROJECT_DIR$/javafxUI/javafxUI.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ui/ui.iml" filepath="$PROJECT_DIR$/ui/ui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/webServer.iml" filepath="$PROJECT_DIR$/webServer.iml" />
-    </modules>
-  </component>
+    <component name="ProjectModuleManager">
+        <modules>
+            <module fileurl="file://$PROJECT_DIR$/GPUP3.iml" filepath="$PROJECT_DIR$/GPUP3.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/admin/admin.iml" filepath="$PROJECT_DIR$/admin/admin.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/javafxUI/javafxUI.iml"
+                    filepath="$PROJECT_DIR$/javafxUI/javafxUI.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/ui/ui.iml" filepath="$PROJECT_DIR$/ui/ui.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/gpupWebApp/gpupWebApp.iml"
+                    filepath="$PROJECT_DIR$/gpupWebApp/gpupWebApp.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/ver2/javafxUI/javafxUI.iml"
+                    filepath="$PROJECT_DIR$/ver2/javafxUI/javafxUI.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/ver1/ui/ui.iml" filepath="$PROJECT_DIR$/ver1/ui/ui.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/worker/worker.iml" filepath="$PROJECT_DIR$/worker/worker.iml"/>
+            <module fileurl="file://$PROJECT_DIR$/webServer.iml" filepath="$PROJECT_DIR$/webServer.iml"/>
+        </modules>
+    </component>
+    -
 </project>
