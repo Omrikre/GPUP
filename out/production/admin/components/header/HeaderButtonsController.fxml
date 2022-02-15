@@ -33,23 +33,28 @@
                         <Insets left="20.0" right="5.0" />
                      </HBox.margin>
                   </Separator>
-                  <Button fx:id="dashboardBT" layoutX="302.0" layoutY="20.0" minWidth="70.0" mnemonicParsing="false" onAction="#dashboardPR" text="Dashboard">
+                  <Button fx:id="dashboardBT" layoutX="302.0" layoutY="20.0" minWidth="110.0" mnemonicParsing="false" onAction="#dashboardPR" text="Dashboard">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin></Button>
-                  <Button fx:id="missionsBT" mnemonicParsing="false" onAction="#missionsPR" text="Missions">
+                  <Button fx:id="missionsBT" minWidth="110.0" mnemonicParsing="false" onAction="#missionsPR" text="Missions">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="GraphBT" mnemonicParsing="false" onAction="#GraphPR" text="Graph Manager" />
+                  <Button fx:id="GraphBT" minWidth="110.0" mnemonicParsing="false" onAction="#GraphPR" text="Graph Manager" />
                </children>
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="224.0" GridPane.columnIndex="1">
                <children>
+                  <Button fx:id="chatBT" alignment="CENTER" contentDisplay="RIGHT" layoutX="214.0" layoutY="15.0" minWidth="70.0" mnemonicParsing="false" onAction="#ChatPR" text="Chat" textAlignment="RIGHT">
+                     <HBox.margin>
+                        <Insets left="70.0" />
+                     </HBox.margin>
+                  </Button>
                   <Button fx:id="settingsBt" alignment="CENTER" contentDisplay="RIGHT" minWidth="70.0" mnemonicParsing="false" onAction="#settingsPr" text="Settings" textAlignment="RIGHT">
                      <HBox.margin>
-                        <Insets left="70.0" right="20.0" />
+                        <Insets left="10.0" right="20.0" />
                      </HBox.margin>
                   </Button>
                </children>
