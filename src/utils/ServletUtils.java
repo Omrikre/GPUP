@@ -2,6 +2,9 @@ package utils;
 
 import Engine.users.UserManager;
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+
+import static constants.Constants.INT_PARAMETER_ERROR;
 
 public class ServletUtils {
     private static final String USER_MANAGER_ATTRIBUTE_NAME = "userManager";
@@ -20,14 +23,14 @@ public class ServletUtils {
         return (UserManager) servletContext.getAttribute(USER_MANAGER_ATTRIBUTE_NAME);
     }
 
-    public static ChatManager getChatManager(ServletContext servletContext) {
-        synchronized (chatManagerLock) {
-            if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
-                servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManager());
-            }
-        }
-        return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
-    }
+//    public static ChatManager getChatManager(ServletContext servletContext) {
+//        synchronized (chatManagerLock) {
+//            if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
+//                servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManager());
+//            }
+//        }
+//        return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
+//    }
 
     public static int getIntParameter(HttpServletRequest request, String name) {
         String value = request.getParameter(name);

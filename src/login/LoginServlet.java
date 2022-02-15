@@ -1,7 +1,9 @@
 package login;
 
 import Engine.users.UserManager;
+import constants.Constants;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +12,9 @@ import utils.SessionUtils;
 
 import java.io.IOException;
 
+import static constants.Constants.USERNAME;
+
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private final String SIGN_UP_URL = "../signup/signup.html";
     private final String CHAT_ROOM_URL = "../chatroom/chatroom.html";
