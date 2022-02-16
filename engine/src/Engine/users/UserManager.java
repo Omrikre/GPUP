@@ -1,29 +1,37 @@
 package Engine.users;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class UserManager {
-    private final Set<String> usersSet;
+    public static class User {
+        private String name;
+        private int threads;
 
-    public UserManager() {
-        usersSet = new HashSet<>();
+        public User(String name, int threads) {
+            this.name = name;
+            this.threads = threads;
+        }
     }
 
-    public synchronized void addUser(String username) {
-        usersSet.add(username);
+    private final Map<String, User> usersMap;
+
+    public UserManager() {
+        usersMap = new HashMap<>();
+    }
+
+    public synchronized void addUser(String username, int threads) {
+        usersMap.put(username, new User(username, threads));
     }
 
     public synchronized void removeUser(String username) {
-        usersSet.remove(username);
+        usersMap.remove(username);
     }
 
-    public synchronized Set<String> getUsers() {
-        return Collections.unmodifiableSet(usersSet);
+    public synchronized Map<String, User> getUsers() {
+        return usersMap;
     }
 
     public boolean isUserExists(String username) {
-        return usersSet.contains(username);
+        return usersMap.containsKey(username);
     }
 }
