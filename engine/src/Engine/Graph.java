@@ -13,6 +13,7 @@ import java.util.*;
 public class Graph implements Serializable {
     private Map<String, Target> targets; //database that can find a target by its name
     private Map<String, Set<String>> serialSets; //a collection of all the serial sets in the graph, each set containing target names and has a name
+    private String graphName;
 
     public Graph() {
         targets = new HashMap<>();
@@ -98,6 +99,7 @@ public class Graph implements Serializable {
         public void setState(State s) {
             this.state = s;
         }
+
         public void setFinishedTargetState(State targetState) {
             Target t = this;
             t.setState(targetState);
@@ -180,6 +182,14 @@ public class Graph implements Serializable {
             return Objects.hash(name);
         }
     } //Target
+
+    public void setGraphName(String name) {
+        graphName = name;
+    }
+
+    public String getGraphName() {
+        return graphName;
+    }
 
     public Map<String, Target> getTargets() {
         return targets;

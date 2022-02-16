@@ -17,25 +17,37 @@ public class LoginServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/plain;charset=UTF-8");
-        UserManager userManager = ServletUtils.getUserManager(getServletContext());
+        //     UserManager userManager = ServletUtils.getUserManager(getServletContext());
         try (PrintWriter out = resp.getWriter()) {
             String userName = req.getParameter("username");
             String role = req.getParameter("role");
             String threads = req.getParameter("threadSize");
-            shouldAddUser(userName);
-            userManager.addUser(userName, Integer.parseInt(threads));
             out.println("Guest [" + userName + ", " + role + ", " + threads + "] was added successfully to the guest list");
-            System.out.println("Guest [" + userName + ", " + role + ", " + threads + "] was added successfully to the guest list");
+            System.out.println("1");
+            out.println("1");
+            if (!shouldAddUser(userName, out)) {
+                out.println("2");
+                System.out.println("2");
+                ServletUtils.getUserManager(getServletContext()).addUser(userName, Integer.parseInt(threads));
+                out.println("3");
+                System.out.println("3");
+                System.out.println("Guest [" + userName + ", " + role + ", " + threads + "] was added successfully to the guest list");
+            } else out.println("FINISHED");
         }
     }
 
-    private void shouldAddUser(String userName) throws ServletException {
-        if (userName == null || userName.isEmpty())
-            throw new ServletException("username doesn't exist!");
-        synchronized (this) {
-            if (ServletUtils.getUserManager(getServletContext()).isUserExists(userName))
-                throw new ServletException("user already logged in!");
+    private boolean shouldAddUser(String userName, PrintWriter out) throws ServletException {
+        if (userName == null || userName.isEmpty()) {
+            out.println("username doesn't exist!");
+            return false;
         }
+        synchronized (this) {
+            if (ServletUtils.getUserManager(getServletContext()).isUserExists(userName)) {
+                out.println("user already logged in!");
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

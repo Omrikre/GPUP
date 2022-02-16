@@ -7,7 +7,6 @@ import Engine.users.UserManager;
 public class ServletUtils {
     private static final String USER_MANAGER_ATTRIBUTE_NAME = "userManager";
     private static final String CHAT_MANAGER_ATTRIBUTE_NAME = "chatManager";
-
     private static final Object userManagerLock = new Object();
     private static final Object chatManagerLock = new Object();
     public static UserManager getUserManager(ServletContext servletContext) {
