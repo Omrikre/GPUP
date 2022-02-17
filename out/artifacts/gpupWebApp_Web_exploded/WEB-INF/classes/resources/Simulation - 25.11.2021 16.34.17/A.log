@@ -1,0 +1,7 @@
+ target name: A
+ target info: freeText
+ running result: failure 
+
+ The following targets become 'skipped' because the target A failed 
+ >> D, E
+

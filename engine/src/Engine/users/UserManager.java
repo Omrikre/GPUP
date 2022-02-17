@@ -11,6 +11,14 @@ public class UserManager {
             this.name = name;
             this.threads = threads;
         }
+
+        public int getThreads() {
+            return threads;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     private final Map<String, User> usersMap;

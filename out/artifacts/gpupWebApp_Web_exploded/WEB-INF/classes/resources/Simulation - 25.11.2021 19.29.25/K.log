@@ -1,0 +1,4 @@
+ running result: failure 
+
+ The following targets become 'skipped' because the target K failed 
+ >> A, B, C, F, H

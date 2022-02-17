@@ -6,7 +6,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import Engine.users.UserManager;
 import utils.ServletUtils;
 
 import java.io.IOException;
@@ -22,28 +21,24 @@ public class LoginServlet extends HttpServlet {
             String userName = req.getParameter("username");
             String role = req.getParameter("role");
             String threads = req.getParameter("threadSize");
-            out.println("Guest [" + userName + ", " + role + ", " + threads + "] was added successfully to the guest list");
-            System.out.println("1");
-            out.println("1");
-            if (!shouldAddUser(userName, out)) {
-                out.println("2");
-                System.out.println("2");
+            if (shouldAddUser(userName, out, resp)) {
+                resp.setStatus(200);
                 ServletUtils.getUserManager(getServletContext()).addUser(userName, Integer.parseInt(threads));
-                out.println("3");
-                System.out.println("3");
-                System.out.println("Guest [" + userName + ", " + role + ", " + threads + "] was added successfully to the guest list");
-            } else out.println("FINISHED");
+                out.write("User [" + userName + ", " + role + ", " + threads + "] was logged in successfully");
+            }
         }
     }
 
-    private boolean shouldAddUser(String userName, PrintWriter out) throws ServletException {
+    private boolean shouldAddUser(String userName, PrintWriter out, HttpServletResponse resp) {
         if (userName == null || userName.isEmpty()) {
-            out.println("username doesn't exist!");
+            out.write("username doesn't exist!");
+            resp.setStatus(404);
             return false;
         }
         synchronized (this) {
             if (ServletUtils.getUserManager(getServletContext()).isUserExists(userName)) {
-                out.println("user already logged in!");
+                out.write("user already logged in!");
+                resp.setStatus(406);
                 return false;
             }
         }
