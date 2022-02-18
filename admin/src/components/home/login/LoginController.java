@@ -31,6 +31,10 @@ public class LoginController {
     private Stage mainAppStage;
     private String userName;
 
+    public String getUserName() {
+        return userName;
+    }
+
     @FXML void loginPR(ActionEvent event) throws IOException {
         userName = "";
         loginMsgLB.setText("");

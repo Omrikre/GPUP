@@ -136,24 +136,24 @@ public class LoadXMLController {
 
 
     @FXML
-    void uploadXMLPR(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Resource File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML file", "*.xml"));
-        Stage chooser = new Stage();
-        chooser.initModality(Modality.APPLICATION_MODAL);
-        File file = fileChooser.showOpenDialog(chooser);
-        try {
-            if (file == null || !mainController.checkFileIsValid(file.getAbsolutePath())) {
-                uploadInfo1LB.setText("Please select file");
-                return;
-            }
-        } catch (Exception e) {
-            uploadInfo1LB.setText("Unable to load the file: ");
-            return;
-        }
-        uploadInfo1LB.setText("The XML file has been loaded");
-    }
+//    void uploadXMLPR(ActionEvent event) {
+//        FileChooser fileChooser = new FileChooser();
+//        fileChooser.setTitle("Open Resource File");
+//        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML file", "*.xml"));
+//        Stage chooser = new Stage();
+//        chooser.initModality(Modality.APPLICATION_MODAL);
+//        File file = fileChooser.showOpenDialog(chooser);
+//        try {
+//            if (file == null || !mainController.checkFileIsValid(file.getAbsolutePath())) {
+//                uploadInfo1LB.setText("Please select file");
+//                return;
+//            }
+//        } catch (Exception e) {
+//            uploadInfo1LB.setText("Unable to load the file: ");
+//            return;
+//        }
+//        uploadInfo1LB.setText("The XML file has been loaded");
+//    }
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;

@@ -2,19 +2,21 @@ package Engine.DTO;
 
 import javafx.scene.control.CheckBox;
 
+import java.util.Map;
+
 
 public class GraphDTO {
     // members
     private String graphName;
     private String uploadByAdminName;
-    private Integer pricePerTarget;
+    private Map<String, Integer> pricePerTarget;
     private Integer independenceCount;
     private Integer leafCount;
     private Integer middleCount;
     private Integer rootCount;
     private CheckBox selectedState;
 
-    public GraphDTO(String graphName, String uploadByAdminName, Integer pricePerTarget, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount, CheckBox selectedState) {
+    public GraphDTO(String graphName, String uploadByAdminName, Map<String,Integer> pricePerTarget, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount, CheckBox selectedState) {
         this.graphName = graphName;
         this.uploadByAdminName = uploadByAdminName;
         this.pricePerTarget = pricePerTarget;
@@ -22,7 +24,7 @@ public class GraphDTO {
         this.leafCount = leafCount;
         this.middleCount = middleCount;
         this.rootCount = rootCount;
-        this.selectedState = selectedState;
+        this.selectedState=selectedState;
     }
 
     public CheckBox getSelectedState() {
@@ -49,11 +51,11 @@ public class GraphDTO {
         this.uploadByAdminName = uploadByAdminName;
     }
 
-    public Integer getPricePerTarget() {
+    public Map<String,Integer> getPricePerTarget() {
         return pricePerTarget;
     }
 
-    public void setPricePerTarget(Integer pricePerTarget) {
+    public void setPricePerTarget(Map<String, Integer> pricePerTarget) {
         this.pricePerTarget = pricePerTarget;
     }
 

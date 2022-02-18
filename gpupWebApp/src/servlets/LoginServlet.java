@@ -21,17 +21,27 @@ public class LoginServlet extends HttpServlet {
             String userName = req.getParameter("username");
             String role = req.getParameter("role");
             String threads = req.getParameter("threadSize");
-            if (shouldAddUser(userName, out, resp)) {
+            if (shouldAddUser(userName, role, threads, out, resp)) {
                 resp.setStatus(200);
-                ServletUtils.getUserManager(getServletContext()).addUser(userName, Integer.parseInt(threads));
+                ServletUtils.getUserManager(getServletContext()).addUser(userName, Integer.parseInt(threads), role);
                 out.write("User [" + userName + ", " + role + ", " + threads + "] was logged in successfully");
             }
         }
     }
 
-    private boolean shouldAddUser(String userName, PrintWriter out, HttpServletResponse resp) {
+    private boolean shouldAddUser(String userName, String role, String threadSize, PrintWriter out, HttpServletResponse resp) {
         if (userName == null || userName.isEmpty()) {
             out.write("username doesn't exist!");
+            resp.setStatus(404);
+            return false;
+        }
+        if (role == null || role.isEmpty()) {
+            out.write("role doesn't exist!");
+            resp.setStatus(404);
+            return false;
+        }
+        if (threadSize == null || threadSize.isEmpty()) {
+            out.write("threadSize doesn't exist!");
             resp.setStatus(404);
             return false;
         }

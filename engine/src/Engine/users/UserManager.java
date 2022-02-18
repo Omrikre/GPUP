@@ -6,10 +6,12 @@ public class UserManager {
     public static class User {
         private String name;
         private int threads;
+        private String role;
 
-        public User(String name, int threads) {
+        public User(String name, int threads, String role) {
             this.name = name;
             this.threads = threads;
+            this.role=role;
         }
 
         public int getThreads() {
@@ -19,6 +21,19 @@ public class UserManager {
         public String getName() {
             return name;
         }
+
+        public String getRole(){
+            return role;
+        }
+
+        @Override
+        public String toString() {
+            return "User{" +
+                    "name='" + name + '\'' +
+                    ", threads=" + threads +
+                    ", role='" + role + '\'' +
+                    '}';
+        }
     }
 
     private final Map<String, User> usersMap;
@@ -27,8 +42,8 @@ public class UserManager {
         usersMap = new HashMap<>();
     }
 
-    public synchronized void addUser(String username, int threads) {
-        usersMap.put(username, new User(username, threads));
+    public synchronized void addUser(String username, int threads, String role) {
+        usersMap.put(username, new User(username, threads, role));
     }
 
     public synchronized void removeUser(String username) {

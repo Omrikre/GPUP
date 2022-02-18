@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Set;
 
-@WebServlet
+@WebServlet ("/userslist")
 public class UsersServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         //returning JSON objects, not HTML

@@ -7,6 +7,7 @@ import Engine.Enums.State;
 import Engine.Tasks.CompilationTask;
 import Engine.Tasks.SimulationTask;
 import Engine.Tasks.Task;
+import Engine.XML.GPUPConfiguration;
 import Engine.XML.GPUPDescriptor;
 import Engine.XML.GPUPTarget;
 import Engine.XML.GPUPTargetDependencies;
@@ -45,6 +46,10 @@ public class Engine {
     public Engine() {
         g = new Graph();
         newRun = true;
+    }
+
+    public Graph getG() {
+        return g;
     }
 
     /**
@@ -153,57 +158,65 @@ public class Engine {
      * @throws FileNotFoundException In case the file doesn't exist
      * @throws FileException         In case the file is not valid
      */
-    public void loadFile(String filePath) throws JAXBException, IOException, FileException {
+    public void loadFile(String filePath, String username) throws JAXBException, IOException, FileException {
         if (!filePath.endsWith(".xml"))
             throw new FileException(1, filePath);
         InputStream inputStream = new FileInputStream(filePath);
         GPUPDescriptor gp = deserializeFrom(inputStream);
-        XMLFilePath = Paths.get(gp.getGPUPConfiguration().getGPUPWorkingDirectory());
+        XMLFilePath = Paths.get("c:\\gpup-working-dir");
         if (!Files.isDirectory(XMLFilePath))
             Files.createDirectory(XMLFilePath);
         if (XMLFilePath.toString().contains("\\"))
             slash = "\\";
         else slash = "/";
         Graph res = new Graph();
-
-        List<GPUPTarget> targetsList = gp.getGPUPTargets().getGPUPTarget();
-        Set<String> serialSetsNames = new HashSet<>();
-        Set<GPUPDescriptor.GPUPSerialSets.GPUPSerialSet> serialSets = new HashSet<>();
-        if (gp.getGPUPSerialSets() != null)
-            for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet ss : gp.getGPUPSerialSets().getGPUPSerialSet()) { //checking if the serial sets are fine and adding them to a set
-                if (serialSetsNames.contains(ss.getName()))
-                    //exception
-                    throw new FileException(3, ss.getName());
-                else {
-                    serialSetsNames.add(ss.getName());
-                    serialSets.add(ss);
-                }
+        res.setUsername(username);
+        res.setGraphName(gp.getGPUPConfiguration().getGPUPGraphName());
+        for (GPUPConfiguration.GPUPPricing.GPUPTask t : gp.getGPUPConfiguration().getGPUPPricing().getGPUPTask()) {
+            if (t.getName().equals("Simulation")) {
+                res.setSimulationPrice(t.getPricePerTarget());
+            } else if (t.getName().equals("Compilation")) {
+                res.setCompilationPrice(t.getPricePerTarget());
             }
+        }
+        List<GPUPTarget> targetsList = gp.getGPUPTargets().getGPUPTarget();
+        // Set<String> serialSetsNames = new HashSet<>();
+        // Set<GPUPDescriptor.GPUPSerialSets.GPUPSerialSet> serialSets = new HashSet<>();
+        // if (gp.getGPUPSerialSets() != null)
+//            for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet ss : gp.getGPUPSerialSets().getGPUPSerialSet()) { //checking if the serial sets are fine and adding them to a set
+//                if (serialSetsNames.contains(ss.getName()))
+//                    //exception
+//                    throw new FileException(3, ss.getName());
+//                else {
+//                    serialSetsNames.add(ss.getName());
+//                    serialSets.add(ss);
+//                }
+//            }
         for (GPUPTarget t : targetsList) { //adding all the targets to a graph, if there are two targets with the same name the exception will be thrown from the target constructor
             res.new Target(t.getName(), t.getGPUPUserData());
         }
-        for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet s : serialSets) { //checking if the targets in the serial sets are well-defined and adding their serial set to the graph
-            String[] split = s.getTargets().split(",");
-            for (String str : split) {
-                if (!res.isTargetInGraphByName(str))
-                    throw new FileException(4, str);
-                else {
-                    res.getTargetByName(str).addTargetToSerialSet();
-                    if (res.getSerialSets().isEmpty() || !res.getSerialSets().containsKey(s.getName())) { //serial set doesnt exist
-                        Set<String> names = new HashSet<>();
-                        names.add(str);
-                        res.getSerialSets().put(s.getName(), names);
-                    } else { //serial set exists
-                        res.getSerialSets().get(s.getName()).add(str);
-                    }
-                }
-            }
-        }
+//        for (GPUPDescriptor.GPUPSerialSets.GPUPSerialSet s : serialSets) { //checking if the targets in the serial sets are well-defined and adding their serial set to the graph
+//            String[] split = s.getTargets().split(",");
+//            for (String str : split) {
+//                if (!res.isTargetInGraphByName(str))
+//                    throw new FileException(4, str);
+//                else {
+//                    res.getTargetByName(str).addTargetToSerialSet();
+//                    if (res.getSerialSets().isEmpty() || !res.getSerialSets().containsKey(s.getName())) { //serial set doesnt exist
+//                        Set<String> names = new HashSet<>();
+//                        names.add(str);
+//                        res.getSerialSets().put(s.getName(), names);
+//                    } else { //serial set exists
+//                        res.getSerialSets().get(s.getName()).add(str);
+//                    }
+//                }
+//            }
+//        }
 
         fileName = Paths.get(filePath).getFileName().toString();
-        maxThreads = gp.getGPUPConfiguration().
-
-                getGPUPMaxParallelism();
+//        maxThreads = gp.getGPUPConfiguration().
+//
+//                getGPUPMaxParallelism();
         for (
                 GPUPTarget t : targetsList) { //adding all the dependencies
             List<GPUPTargetDependencies.GPUGDependency> dependencies;
@@ -218,6 +231,7 @@ public class Engine {
             }
         }
         res.setLocationForAllTargets();
+
         g = res;
         miniGraph = g;
     }

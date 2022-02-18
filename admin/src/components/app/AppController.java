@@ -37,10 +37,13 @@ import static components.app.CommonResourcesPaths.*;
 public class AppController {
 
     // components:
-    @FXML private BorderPane maimBorderPaneComp;
+    @FXML
+    private BorderPane maimBorderPaneComp;
     // Header
-    @FXML private VBox headerComponent;
-    @FXML private HeaderButtonsController headerComponentController;
+    @FXML
+    private VBox headerComponent;
+    @FXML
+    private HeaderButtonsController headerComponentController;
     // Settings
     private BorderPane settingsComponent;
     private settingsController settingsComponentController;
@@ -52,8 +55,10 @@ public class AppController {
 
     // main components:
     // main - login Loader
-    @FXML private ScrollPane mainLoginComp;
-    @FXML private MainLoginController mainLoginCompController;
+    @FXML
+    private ScrollPane mainLoginComp;
+    @FXML
+    private MainLoginController mainLoginCompController;
     // graph manager
     private BorderPane graphManagerComponent;
     private GraphController graphManagerComponentController;
@@ -68,8 +73,6 @@ public class AppController {
     private ChatRoomMainController chatComponentController;
 
 
-
-
     // members
     public static final Engine engine = new Engine();
     public boolean isLoggedIn;
@@ -80,10 +83,15 @@ public class AppController {
 
     // methods:
     // initializers
-    @FXML public void initialize() {
+    @FXML
+    public void initialize() {
         isLoggedIn = false;
         setMainInSubComponents();
         loadBackComponents();
+    }
+
+    public String getUsername() {
+        return loginComponentController.getUserName();
     }
 
     private void loadBackComponents() {
@@ -150,12 +158,12 @@ public class AppController {
             System.out.println(" -- chat done --");
 
 
-
         } catch (Exception e) {
             System.out.println("BIG Problem");
             System.out.println(e.getMessage());
         }
     }
+
     private void setMainInSubComponents() {
         if (headerComponentController != null && mainLoginCompController != null) {
             mainLoginCompController.setMainController(this);
@@ -178,19 +186,38 @@ public class AppController {
 
     // change pane by button press
     //TODO
-    public void showHomePane() { maimBorderPaneComp.setCenter(mainLoginComp); }
-    public void showDashboardPane() { maimBorderPaneComp.setCenter(dashboardComponent); }
-    public void showMissionsPane() { maimBorderPaneComp.setCenter(missionsComponent); }
-    public void showGraphPane() { maimBorderPaneComp.setCenter(graphManagerComponent); }
-    public void showChatPane() { maimBorderPaneComp.setCenter(chatComponent); }
+    public void showHomePane() {
+        maimBorderPaneComp.setCenter(mainLoginComp);
+    }
+
+    public void showDashboardPane() {
+        maimBorderPaneComp.setCenter(dashboardComponent);
+    }
+
+    public void showMissionsPane() {
+        maimBorderPaneComp.setCenter(missionsComponent);
+    }
+
+    public void showGraphPane() {
+        maimBorderPaneComp.setCenter(graphManagerComponent);
+    }
+
+    public void showChatPane() {
+        maimBorderPaneComp.setCenter(chatComponent);
+    }
+
     public void showSettingsPane() {
         settingsComponentController.setupData(darkModeOn, animationsOn);
         settingsWin.show();
     }
+
     public void openLoginWin() {
         loginWin.show();
     }
-    public void closeSettingsWin() { settingsWin.close(); }
+
+    public void closeSettingsWin() {
+        settingsWin.close();
+    }
 
 
 /*
@@ -214,69 +241,146 @@ public class AppController {
 */
 
 
-
     // getters setters
-    public boolean isDarkModeOn() { return darkModeOn; }
-    public boolean isAnimationsOn() { return animationsOn; }
-    public void setAnimationsOn(boolean animationsOn) { this.animationsOn = animationsOn; }
-    public void setDarkModeOn(boolean darkModeOn) { this.darkModeOn = darkModeOn; }
-    public int getNumOfTargets() { return engine.getAmountOfTargets(); }
-    public boolean getGraphContainsCycle() { return graphContainsCycle; }
-    private void setGraphContainsCycle() { graphContainsCycle = engine.checkIfTheGraphContainsCycle(); }
+    public boolean isDarkModeOn() {
+        return darkModeOn;
+    }
 
+    public boolean isAnimationsOn() {
+        return animationsOn;
+    }
+
+    public void setAnimationsOn(boolean animationsOn) {
+        this.animationsOn = animationsOn;
+    }
+
+    public void setDarkModeOn(boolean darkModeOn) {
+        this.darkModeOn = darkModeOn;
+    }
+
+    public int getNumOfTargets() {
+        return engine.getAmountOfTargets();
+    }
+
+    public boolean getGraphContainsCycle() {
+        return graphContainsCycle;
+    }
+
+    private void setGraphContainsCycle() {
+        graphContainsCycle = engine.checkIfTheGraphContainsCycle();
+    }
 
 
     // engine methods
     public List<TargetDTO> getTargetList() {
-       return engine.getListOfAllTargetsDTOsInGraph();
+        return engine.getListOfAllTargetsDTOsInGraph();
     }
-    public TargetDTO getTargetDTO(String targetName) { return engine.getTargetDataTransferObjectByName(targetName); }
-    public Set<List<String>> getPathDepends(String a, String b) { return engine.getPathBetweenTargets(a,b, Bond.DEPENDS_ON); }
-    public Set<List<String>> getPathRequired(String a, String b) { return engine.getPathBetweenTargets(a,b, Bond.REQUIRED_FOR); }
-    public Map<Location, Integer> getGeneralInfoTable() { return engine.howManyTargetsInEachLocation(); }
-    public boolean checkFileIsValid(String path) throws FileException, JAXBException, IOException {
-        engine.loadFile(path);
+
+    public TargetDTO getTargetDTO(String targetName) {
+        return engine.getTargetDataTransferObjectByName(targetName);
+    }
+
+    public Set<List<String>> getPathDepends(String a, String b) {
+        return engine.getPathBetweenTargets(a, b, Bond.DEPENDS_ON);
+    }
+
+    public Set<List<String>> getPathRequired(String a, String b) {
+        return engine.getPathBetweenTargets(a, b, Bond.REQUIRED_FOR);
+    }
+
+    public Map<Location, Integer> getGeneralInfoTable() {
+        return engine.howManyTargetsInEachLocation();
+    }
+
+    public boolean checkFileIsValid(String path, String username) throws FileException, JAXBException, IOException {
+        engine.loadFile(path, username);
         return true;
     }
-    public int getMaxThreads() { return engine.getMaxThreads(); }
+
+    public int getMaxThreads() {
+        return engine.getMaxThreads();
+    }
+
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
                               int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
         engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum, fromScratch);
     }
-    public String getFileName() { return engine.getFileName(); }
-    public int getNumOfSets() { return engine.getSerialSets().size(); }
-    public Map<String, Set<String>> getSerialSets() { return engine.getSerialSets();}
-    public Map<String, Set<String>> getSerialSetByName(String name) { return engine.getSerialSetsByTargetName(name);}
-    public Set<List<String>> getIfInCycle(String selectedTarget) { return engine.isTargetInCircleByName(selectedTarget); }
-    public Set<String> getWhatIf(String selectedTarget, Bond bond) { return engine.getSetOfAllAffectedTargetsByBond(selectedTarget, bond); }
-    public void setPause() { engine.pause(); }
-    public  Map<State, Set<String>> getSimulationResult() { return engine.getTargetsInEachState(); }
-    public void setAllTargetsFrozen() { engine.setAllTargetsFrozen(); }
-    public int getProgress() { return engine.getProgress(); }
+
+    public String getFileName() {
+        return engine.getFileName();
+    }
+
+    public int getNumOfSets() {
+        return engine.getSerialSets().size();
+    }
+
+    public Map<String, Set<String>> getSerialSets() {
+        return engine.getSerialSets();
+    }
+
+    public Map<String, Set<String>> getSerialSetByName(String name) {
+        return engine.getSerialSetsByTargetName(name);
+    }
+
+    public Set<List<String>> getIfInCycle(String selectedTarget) {
+        return engine.isTargetInCircleByName(selectedTarget);
+    }
+
+    public Set<String> getWhatIf(String selectedTarget, Bond bond) {
+        return engine.getSetOfAllAffectedTargetsByBond(selectedTarget, bond);
+    }
+
+    public void setPause() {
+        engine.pause();
+    }
+
+    public Map<State, Set<String>> getSimulationResult() {
+        return engine.getTargetsInEachState();
+    }
+
+    public void setAllTargetsFrozen() {
+        engine.setAllTargetsFrozen();
+    }
+
+    public int getProgress() {
+        return engine.getProgress();
+    }
+
     public void resetProgress() {
-    //    engine.resetProgress();
+        //    engine.resetProgress();
 
     }
 
-    public State getStateByTargetName(String targetName) {return engine.getStateByTargetName(targetName);}
+    public State getStateByTargetName(String targetName) {
+        return engine.getStateByTargetName(targetName);
+    }
 
-    public void setResume(int threadNum) { engine.resume(threadNum); }
-    public String getInRunTargetInfo(String targetName) { return engine.getTargetInfo(targetName); }
+    public void setResume(int threadNum) {
+        engine.resume(threadNum);
+    }
+
+    public String getInRunTargetInfo(String targetName) {
+        return engine.getTargetInfo(targetName);
+    }
 
     public void runCompilation(Integer threads, ArrayList<String> targets, boolean fromScratch,
                                String inputPath, String outputPath) {
-        engine.runCompilation(targets,inputPath,outputPath,threads,fromScratch);
+        engine.runCompilation(targets, inputPath, outputPath, threads, fromScratch);
     }
 
-    public Engine getEngine() { return engine; }
+    public Engine getEngine() {
+        return engine;
+    }
 
     public void closeLogin(String userName) {
         mainLoginCompController.loggedIn(userName);
         loginWin.close();
         headerComponentController.makeAllButtonsDisable(false);
     }
-    public void logout() { headerComponentController.makeAllButtonsDisable(true); }
 
+    public void logout() {
+        headerComponentController.makeAllButtonsDisable(true);
+    }
 
 
 }

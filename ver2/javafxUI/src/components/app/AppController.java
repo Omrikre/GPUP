@@ -205,10 +205,10 @@ public class AppController {
     public Set<List<String>> getPathDepends(String a, String b) { return engine.getPathBetweenTargets(a,b, Bond.DEPENDS_ON); }
     public Set<List<String>> getPathRequired(String a, String b) { return engine.getPathBetweenTargets(a,b, Bond.REQUIRED_FOR); }
     public Map<Location, Integer> getGeneralInfoTable() { return engine.howManyTargetsInEachLocation(); }
-    public boolean checkFileIsValid(String path) throws FileException, JAXBException, IOException {
-        engine.loadFile(path);
-        return true;
-    }
+//    public boolean checkFileIsValid(String path) throws FileException, JAXBException, IOException {
+//        engine.loadFile(path);
+//        return true;
+//    }
     public int getMaxThreads() { return engine.getMaxThreads(); }
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
                               int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {

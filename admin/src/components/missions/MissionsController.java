@@ -1,13 +1,20 @@
 package components.missions;
 
 import Engine.DTO.MissionDTO;
+import http.HttpClientUtil;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import okhttp3.HttpUrl;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.IOException;
+
+import static components.app.HttpResourcesPaths.ADD_MISSION;
 
 public class MissionsController {
 
@@ -39,5 +46,44 @@ public class MissionsController {
     @FXML void resumePR(ActionEvent event) {}
     @FXML void startPR(ActionEvent event) {}
     @FXML void stopPR(ActionEvent event) {}
+
+    String finalUrl = HttpUrl
+            .parse(ADD_MISSION)
+            .newBuilder()
+            .addQueryParameter("mission-name", missionName)
+            .addQueryParameter("creator-name",missionCreator)
+            .addQueryParameter("graph-name",missionGraph)
+            .build()
+            .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            Platform.runLater(() ->
+                    .setText("Something went wrong: " + e.getMessage())
+            );
+        }
+
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            if (response.code() != 200) {
+                String responseBody = response.body().string();
+                Platform.runLater(() ->
+                        .setText("Something went wrong: " + responseBody)
+                );
+            } else {
+                Platform.runLater(() -> {
+
+                    try {
+                        String responseBody = response.body().string();
+                        System.out.println(responseBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+    });
+
 
 }

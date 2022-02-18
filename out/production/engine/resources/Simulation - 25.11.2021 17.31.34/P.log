@@ -1,7 +1,0 @@
- target name: P
- no additional info for this target
- running result: failure 
-
- The following targets become 'skipped' because the target P failed 
- >> D, E, J
-

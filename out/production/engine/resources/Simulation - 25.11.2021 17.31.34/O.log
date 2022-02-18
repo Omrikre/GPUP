@@ -1,7 +1,0 @@
- target name: O
- no additional info for this target
- running result: success 
-
- The following targets become 'waiting' because the target O succeed 
- >> J
-

@@ -36,6 +36,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GPUPConfiguration }
+     * 
+     */
+    public GPUPConfiguration createGPUPConfiguration() {
+        return new GPUPConfiguration();
+    }
+
+    /**
      * Create an instance of {@link GPUPTargetDependencies }
      * 
      */
@@ -60,11 +68,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GPUPConfiguration }
+     * Create an instance of {@link GPUPConfiguration.GPUPPricing }
      * 
      */
-    public GPUPConfiguration createGPUPConfiguration() {
-        return new GPUPConfiguration();
+    public GPUPConfiguration.GPUPPricing createGPUPConfigurationGPUPPricing() {
+        return new GPUPConfiguration.GPUPPricing();
     }
 
     /**
@@ -97,6 +105,14 @@ public class ObjectFactory {
      */
     public GPUPDescriptor.GPUPSerialSets.GPUPSerialSet createGPUPDescriptorGPUPSerialSetsGPUPSerialSet() {
         return new GPUPDescriptor.GPUPSerialSets.GPUPSerialSet();
+    }
+
+    /**
+     * Create an instance of {@link GPUPConfiguration.GPUPPricing.GPUPTask }
+     * 
+     */
+    public GPUPConfiguration.GPUPPricing.GPUPTask createGPUPConfigurationGPUPPricingGPUPTask() {
+        return new GPUPConfiguration.GPUPPricing.GPUPTask();
     }
 
     /**

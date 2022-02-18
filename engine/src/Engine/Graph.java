@@ -1,5 +1,6 @@
 package Engine;
 
+import Engine.DTO.GraphDTO;
 import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
@@ -14,6 +15,8 @@ public class Graph implements Serializable {
     private Map<String, Target> targets; //database that can find a target by its name
     private Map<String, Set<String>> serialSets; //a collection of all the serial sets in the graph, each set containing target names and has a name
     private String graphName;
+    private String username;
+    private int simulationPrice, compilationPrice;
 
     public Graph() {
         targets = new HashMap<>();
@@ -189,6 +192,38 @@ public class Graph implements Serializable {
 
     public String getGraphName() {
         return graphName;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public int getSimulationPrice() {
+        return simulationPrice;
+    }
+
+    public int getCompilationPrice() {
+        return compilationPrice;
+    }
+
+    public void setSimulationPrice(int simulationPrice) {
+        this.simulationPrice = simulationPrice;
+    }
+
+    public void setCompilationPrice(int compilationPrice) {
+        this.compilationPrice = compilationPrice;
+    }
+
+    public GraphDTO getGraphDTO() {
+        Map<String, Integer> prices = new HashMap<>();
+        prices.put("Compilation", compilationPrice);
+        prices.put("Simulation", simulationPrice);
+        Map<Location, Integer> locations = howManyTargetsInEachLocation();
+        return new GraphDTO(graphName, username, prices, locations.get(Location.INDEPENDENT), locations.get(Location.LEAF), locations.get(Location.MIDDLE), locations.get(Location.ROOT), null);
     }
 
     public Map<String, Target> getTargets() {
