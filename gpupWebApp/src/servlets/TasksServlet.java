@@ -13,6 +13,8 @@ import utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet("/missionlist")
@@ -22,10 +24,8 @@ public class TasksServlet extends HttpServlet {
         resp.setContentType("application/json");
         try (PrintWriter out = resp.getWriter()) {
             Gson gson = new Gson();
-            ServletUtils.getTaskManager(getServletContext()).addTask(new MissionDTO(0,"ss",
-                    1,true,2,3, "ds", MissionState.FINISHED,3,4,5,
-                    "noam","no",null,1,2,null));
-            String json = gson.toJson(ServletUtils.getTaskManager(getServletContext()).getTaskDTOList());
+            List<MissionDTO> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
+            String json = gson.toJson(lst);
             out.println(json);
             out.flush();
         }

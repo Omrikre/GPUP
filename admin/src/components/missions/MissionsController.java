@@ -60,7 +60,6 @@ public class MissionsController {
 //    .addQueryParameter("name",missionName)
 //    .addQueryParameter("creator",creatorName)
 //    .addQueryParameter("graph-name",graphName)
-//    .addQueryParameter("waiting-targets", waitingTargets)
 //            .build()
 //            .toString();
 
