@@ -1,5 +1,6 @@
 package servlets;
 
+import Engine.users.User;
 import com.google.gson.Gson;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,6 +11,7 @@ import utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +23,7 @@ public class UsersServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             Gson gson = new Gson();
             UserManager userManager = ServletUtils.getUserManager(getServletContext());
-            Map<String, UserManager.User> usersList = userManager.getUsers();
+            List<User> usersList = userManager.getUsers();
             String json = gson.toJson(usersList);
             out.println(json);
             out.flush();
