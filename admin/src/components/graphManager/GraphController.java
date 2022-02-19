@@ -34,6 +34,9 @@ public class GraphController {
     @FXML private ScrollPane XMLComp;
     @FXML private LoadXMLController XMLCompController;
 
+    // selected graph\
+    private String selectedGraphName;
+
     // graph info
     private BorderPane infoComponent;
     private InfoController infoComponentController;
@@ -60,6 +63,8 @@ public class GraphController {
     @FXML public void initialize() {
         setMainInSubComponents();
         loadBackComponents();
+        showAllHeaderBt(false);
+        selectedGraphName = "";
     }
 
     private void setMainInSubComponents() {
@@ -116,6 +121,8 @@ public class GraphController {
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
+
+    public void showAllHeaderBt(boolean bool) {headerCompController.makeButtonsDisable(bool);}
 
     public void showXMLManagerPane() { graphBP.setCenter(XMLComp); }
     public void showGraphInfoPane() {

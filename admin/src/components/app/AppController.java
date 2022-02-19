@@ -411,6 +411,7 @@ public class AppController implements Closeable {
 
     public void closeLogin(String userName) {
         mainLoginCompController.loggedIn(userName);
+        setRefreshersActive();
         loginWin.close();
         headerComponentController.makeAllButtonsDisable(false);
     }
@@ -424,6 +425,8 @@ public class AppController implements Closeable {
     public void close() throws IOException {
 
     }
+
+    public BooleanProperty getAutoUpdate() { return autoUpdate; }
 }
 
 

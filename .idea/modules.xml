@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/admin/admin.iml" filepath="$PROJECT_DIR$/admin/admin.iml" />
       <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml" />
       <module fileurl="file://$PROJECT_DIR$/gpupWebApp/gpupWebApp.iml" filepath="$PROJECT_DIR$/gpupWebApp/gpupWebApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ver2/javafxUI/javafxUI.iml" filepath="$PROJECT_DIR$/ver2/javafxUI/javafxUI.iml" />
       <module fileurl="file://$PROJECT_DIR$/ver1/ui/ui.iml" filepath="$PROJECT_DIR$/ver1/ui/ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/worker/worker.iml" filepath="$PROJECT_DIR$/worker/worker.iml" />
     </modules>

@@ -1,5 +1,7 @@
 package components.dashboard;
 
+import Engine.DTO.MissionDTO;
+import Engine.users.User;
 import Engine.users.UserManager;
 import http.HttpClientUtil;
 import javafx.application.Platform;
@@ -11,9 +13,9 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.TimerTask;
 import java.util.function.Consumer;
 
@@ -21,23 +23,23 @@ import static components.app.HttpResourcesPaths.*;
 
 public class DashboardRefresher extends TimerTask {
 
-    private Consumer<List<UserManager.User>> usersListConsumer = null;
-    private int requestNumber;
+    private Consumer<List<User>> usersListConsumer;
+    private Consumer<List<MissionDTO>> missionConsumer;
     private final BooleanProperty shouldUpdate;
 
 
-    public DashboardRefresher(BooleanProperty shouldUpdate, Consumer<List<UserManager.User>> dashboardConsumer) {
+    public DashboardRefresher(BooleanProperty shouldUpdate, Consumer<List<User>> userConsumer, Consumer<List<MissionDTO>> missionConsumer) {
         this.shouldUpdate = shouldUpdate;
-        this.usersListConsumer = usersListConsumer;
-        requestNumber = 0;
+        this.usersListConsumer = userConsumer;
+        this.missionConsumer = missionConsumer;
     }
 
     @Override
     public void run() {
-
-        if (!shouldUpdate.get()) {
+//TODO
+/*        if (!shouldUpdate.get()) {
             return;
-        }
+        }*/
 
         String userUrl = HttpUrl
                 .parse(USERS_LIST)
@@ -70,11 +72,41 @@ public class DashboardRefresher extends TimerTask {
                     Platform.runLater(() -> {
                         try {
                             String responseBody = response.body().string();
-                            System.out.println(responseBody);
-                            //List<UserManager.User> lst = GSON.fromJson(responseBody, UserManager.User.class);
-                            //System.out.println(lst.size());//TODO
+                            User[] lst = GSON.fromJson(responseBody, User[].class);
+                            usersListConsumer.accept(Arrays.asList(lst));
                         } catch (IOException e) {
                             e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
+
+        HttpClientUtil.runAsync(missionUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println("error missionUrl table update")
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println("error missionUrl table update with code: " + response.code())
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        try {
+                            System.out.println(" goodddd ");
+                            String responseBody = response.body().string();
+                            System.out.println(responseBody);
+                            MissionDTO[] lst = GSON.fromJson(responseBody, MissionDTO[].class);
+                            missionConsumer.accept(Arrays.asList(lst));
+                        } catch (IOException e) {
+                            System.out.println(e.getMessage());
                         }
                     });
                 }
