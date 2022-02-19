@@ -2,6 +2,7 @@ package servlets;
 
 import Engine.DTO.GraphDTO;
 import Engine.DTO.MissionDTO;
+import Engine.DTO.MissionDTOWithoutCB;
 import Engine.Enums.MissionState;
 import Engine.GraphManager;
 import jakarta.servlet.ServletException;
@@ -40,7 +41,7 @@ public class LoadTaskServlet extends HttpServlet {
                 price = waitingTargets * graph.getSimPricePerTarget();
             else
                 price = waitingTargets * graph.getCompPricePerTarget();
-            MissionDTO task = new MissionDTO(amountOfTargets, compilationFolder, runtime, randomRunTime, success, successWithWarnings, missionName, MissionState.READY, 0, 0,
+            MissionDTOWithoutCB task = new MissionDTOWithoutCB(amountOfTargets, compilationFolder, runtime, randomRunTime, success, successWithWarnings, missionName, MissionState.READY.toString(), 0, 0,
                     price, creatorName, graphName, 0, 0);
             ServletUtils.getTaskManager(getServletContext()).addTask(task);
             resp.setStatus(200);

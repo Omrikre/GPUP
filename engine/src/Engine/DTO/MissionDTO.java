@@ -23,7 +23,7 @@ public class MissionDTO {
     private String graphName;
     private int executedTargets;
     private int waitingTargets;
-    //private CheckBox selectedState;
+    private CheckBox selectedState;
 
     public MissionDTO(Integer amountOfTargets, String compilationFolder, Integer runTime, Boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, MissionState status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets) {
         this.amountOfTargets = amountOfTargets;
@@ -41,7 +41,63 @@ public class MissionDTO {
         this.graphName = graphName;
         this.executedTargets = executedTargets;
         this.waitingTargets = waitingTargets;
-        //this.selectedState = selectedState;
+        this.selectedState = selectedState;
+    }
+
+    public void setAmountOfTargets(int amountOfTargets) {
+        this.amountOfTargets = amountOfTargets;
+    }
+
+    public void setRunTime(int runTime) {
+        this.runTime = runTime;
+    }
+
+    public boolean isRandomRunTime() {
+        return randomRunTime;
+    }
+
+    public void setRandomRunTime(boolean randomRunTime) {
+        this.randomRunTime = randomRunTime;
+    }
+
+    public void setSuccess(int success) {
+        this.success = success;
+    }
+
+    public void setSuccessWithWarnings(int successWithWarnings) {
+        this.successWithWarnings = successWithWarnings;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
+
+    public void setWorkers(int workers) {
+        this.workers = workers;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setExecutedTargets(int executedTargets) {
+        this.executedTargets = executedTargets;
+    }
+
+    public void setWaitingTargets(int waitingTargets) {
+        this.waitingTargets = waitingTargets;
+    }
+
+    public CheckBox getSelectedState() {
+        return selectedState;
+    }
+
+    public void setSelectedState(CheckBox selectedState) {
+        this.selectedState = selectedState;
     }
 
     public Integer getAmountOfTargets() {
@@ -100,21 +156,8 @@ public class MissionDTO {
         this.missionName = missionName;
     }
 
-    public MissionState getStatus() {
-        switch (status) {
-            case "Paused":
-                return MissionState.PAUSED;
-            case "Stopped":
-                return MissionState.STOPPED;
-            case "Finished":
-                return MissionState.FINISHED;
-            case "Ready":
-                return MissionState.READY;
-            case "Execution":
-                return MissionState.EXECUTION;
-            default:
-                return null;
-        }
+    public String getStatus() {
+        return this.status;
     }
 
     public void setStatus(MissionState status) {
@@ -177,13 +220,6 @@ public class MissionDTO {
         this.waitingTargets = waitingTargets;
     }
 
-//    public CheckBox getSelectedState() {
-//        return selectedState;
-//    }
-//
-//    public void setSelectedState(CheckBox selectedState) {
-//        this.selectedState = selectedState;
-//    }
 
     @Override
     public String toString() {

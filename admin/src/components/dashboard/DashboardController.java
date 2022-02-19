@@ -1,6 +1,7 @@
 package components.dashboard;
 
 import Engine.DTO.MissionDTO;
+import Engine.DTO.MissionDTOWithoutCB;
 import Engine.users.User;
 import components.app.AppController;
 import javafx.application.Platform;
@@ -31,9 +32,9 @@ public class DashboardController implements Closeable {
     @FXML private Label totalUsersLB;
     @FXML private Label adminsLB;
     @FXML private Label workersLB;
-    @FXML private TableView<MissionDTO> missionListTV;
-    @FXML private TableColumn<String, MissionDTO> missionNameCOL;
-    @FXML private TableColumn<String, MissionDTO> missionStatusCOL;
+    @FXML private TableView<MissionDTOWithoutCB> missionListTV;
+    @FXML private TableColumn<String, MissionDTOWithoutCB> missionNameCOL;
+    @FXML private TableColumn<String, MissionDTOWithoutCB> missionStatusCOL;
     @FXML private Label totalMissionsLB;
     @FXML private Label executionLB;
     @FXML private Label waitingLB;
@@ -72,20 +73,20 @@ public class DashboardController implements Closeable {
             updateUsersLabels(userNames);
         });
     }
-    private void updateMissionsList(List<MissionDTO> missions) {
+    private void updateMissionsList(List<MissionDTOWithoutCB> missions) {
         Platform.runLater(() -> {
-            ObservableList<MissionDTO> missionsTV = missionListTV.getItems();
+            ObservableList<MissionDTOWithoutCB> missionsTV = missionListTV.getItems();
             missionsTV.clear();
             missionsTV.addAll(missions);
             updateMissionLabels(missions);
         });
     }
 
-    private void updateMissionLabels(List<MissionDTO> missions) {
+    private void updateMissionLabels(List<MissionDTOWithoutCB> missions) {
         Platform.runLater(() -> {
             Integer numOfExecution = 0, numberOfPaused = 0, numOfStopped = 0, numOfFinished = 0, numOfReady = 0, totalCount = 0;
-            for (MissionDTO mission : missions) {
-                MissionState tempMissionStatus = mission.getStatus();
+            for (MissionDTOWithoutCB mission : missions) {
+                MissionState tempMissionStatus = MissionState.valueOf(mission.getStatus());
                 if (tempMissionStatus == PAUSED || tempMissionStatus == READY)
                     numOfReady++;
                 else if (tempMissionStatus == STOPPED || tempMissionStatus == FINISHED)

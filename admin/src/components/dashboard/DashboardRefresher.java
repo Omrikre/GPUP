@@ -1,6 +1,7 @@
 package components.dashboard;
 
 import Engine.DTO.MissionDTO;
+import Engine.DTO.MissionDTOWithoutCB;
 import Engine.users.User;
 import Engine.users.UserManager;
 import http.HttpClientUtil;
@@ -24,11 +25,11 @@ import static components.app.HttpResourcesPaths.*;
 public class DashboardRefresher extends TimerTask {
 
     private Consumer<List<User>> usersListConsumer;
-    private Consumer<List<MissionDTO>> missionConsumer;
+    private Consumer<List<MissionDTOWithoutCB>> missionConsumer;
     private final BooleanProperty shouldUpdate;
 
 
-    public DashboardRefresher(BooleanProperty shouldUpdate, Consumer<List<User>> userConsumer, Consumer<List<MissionDTO>> missionConsumer) {
+    public DashboardRefresher(BooleanProperty shouldUpdate, Consumer<List<User>> userConsumer, Consumer<List<MissionDTOWithoutCB>> missionConsumer) {
         this.shouldUpdate = shouldUpdate;
         this.usersListConsumer = userConsumer;
         this.missionConsumer = missionConsumer;
@@ -80,7 +81,7 @@ public class DashboardRefresher extends TimerTask {
                 }
             }
         });
-/*
+
         HttpClientUtil.runAsync(missionUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -99,17 +100,15 @@ public class DashboardRefresher extends TimerTask {
                 } else {
                     Platform.runLater(() -> {
                         try {
-                            System.out.println(" goodddd ");
                             String responseBody = response.body().string();
-                            System.out.println(responseBody);
-                            //MissionDTO[] lst = GSON.fromJson(responseBody, MissionDTO[].class);
-                            //missionConsumer.accept(Arrays.asList(lst)); //TODO - FIX
+                            MissionDTOWithoutCB[] lst = GSON.fromJson(responseBody, MissionDTOWithoutCB[].class);
+                            missionConsumer.accept(Arrays.asList(lst)); //TODO - FIX
                         } catch (IOException e) {
                             System.out.println(e.getMessage());
                         }
                     });
                 }
             }
-        });*/
+        });
     }
 }

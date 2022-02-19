@@ -75,7 +75,6 @@ public class LoginController {
                         mainController.closeLogin(userName);
                         try {
                             String responseBody = response.body().string();
-                            System.out.println(responseBody);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }

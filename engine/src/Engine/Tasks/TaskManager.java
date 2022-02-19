@@ -1,21 +1,22 @@
 package Engine.Tasks;
 
 import Engine.DTO.MissionDTO;
+import Engine.DTO.MissionDTOWithoutCB;
 
 import java.util.*;
 
 public class TaskManager {
-    private List<MissionDTO> taskList;
+    private List<MissionDTOWithoutCB> taskList;
 
     public TaskManager() {
         taskList = new ArrayList<>();
     }
 
-    public synchronized void addTask(MissionDTO task) {
+    public synchronized void addTask(MissionDTOWithoutCB task) {
         taskList.add(task);
     }
 
-    public synchronized List<MissionDTO> getTaskDTOList() {
+    public synchronized List<MissionDTOWithoutCB> getTaskDTOList() {
         return taskList;
     }
 

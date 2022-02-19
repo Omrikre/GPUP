@@ -1,6 +1,7 @@
 package servlets;
 
 import Engine.DTO.MissionDTO;
+import Engine.DTO.MissionDTOWithoutCB;
 import Engine.Enums.MissionState;
 import Engine.users.UserManager;
 import com.google.gson.Gson;
@@ -24,7 +25,7 @@ public class TasksServlet extends HttpServlet {
         resp.setContentType("application/json");
         try (PrintWriter out = resp.getWriter()) {
             Gson gson = new Gson();
-            List<MissionDTO> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
+            List<MissionDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
             String json = gson.toJson(lst);
             out.println(json);
             out.flush();

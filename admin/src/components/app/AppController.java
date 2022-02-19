@@ -408,10 +408,12 @@ public class AppController implements Closeable {
         loginWin.close();
         headerComponentController.makeAllButtonsDisable(false);
         setAllDataInPanes();
+        autoUpdate.setValue(true);
     }
 
     public void logout() {
         headerComponentController.makeAllButtonsDisable(true);
+
     }
 
 

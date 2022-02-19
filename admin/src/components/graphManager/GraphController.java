@@ -158,6 +158,7 @@ public class GraphController {
                 .parse(GRAPH_LIST)
                 .newBuilder()
                 .addQueryParameter("graphname",graphName)
+                //TODO -  .addQueryParameter("targets","true")
                 .build()
                 .toString();
 

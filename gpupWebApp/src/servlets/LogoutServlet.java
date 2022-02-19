@@ -22,7 +22,7 @@ public class LogoutServlet extends HttpServlet {
         if (usernameFromSession != null) {
             System.out.println("Clearing session for " + usernameFromSession);
             userManager.removeUser(usernameFromSession);
-            SessionUtils.clearSession(req);
+            //SessionUtils.clearSession(req);
         }
     }
 }

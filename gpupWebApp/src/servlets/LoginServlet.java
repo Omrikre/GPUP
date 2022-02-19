@@ -24,6 +24,7 @@ public class LoginServlet extends HttpServlet {
             if (shouldAddUser(userName, role, threads, out, resp)) {
                 resp.setStatus(200);
                 ServletUtils.getUserManager(getServletContext()).addUser(userName, Integer.parseInt(threads), role);
+                req.getSession(true).setAttribute("username", userName);
                 out.write("User [" + userName + ", " + role + ", " + threads + "] was logged in successfully");
             }
         }

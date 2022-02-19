@@ -35,6 +35,8 @@ public class ChatAreaRefresher extends TimerTask {
 
     @Override
     public void run() {
+        if(!shouldUpdate.getValue())
+            return;
 
         String finalUrl = HttpUrl
                 .parse(CHAT_LINES_LIST)
@@ -54,7 +56,7 @@ public class ChatAreaRefresher extends TimerTask {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
+                if (response.code() == 200) {
                     String rawBody = response.body().string();
                     ChatLinesWithVersion clwv = GSON.fromJson(rawBody, ChatLinesWithVersion.class);
                     chatlinesConsumer.accept(clwv);
