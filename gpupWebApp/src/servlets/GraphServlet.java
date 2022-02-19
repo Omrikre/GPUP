@@ -14,6 +14,7 @@ import utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet("/graphlist")
@@ -31,8 +32,8 @@ public class GraphServlet extends HttpServlet {
                 if (!(isCycle != null || targetA != null || targetB != null || bond != null)) {
                     Gson gson = new Gson();
                     GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
-                    Map<String, GraphDTO> graphMap = graphManager.getGraphsAsDTOs();
-                    String json = gson.toJson(graphMap);
+                    List<GraphDTO> graphList = graphManager.getGraphsAsDTOs();
+                    String json = gson.toJson(graphList);
                     resp.setStatus(200);
                     out.println(json);
                     out.flush();

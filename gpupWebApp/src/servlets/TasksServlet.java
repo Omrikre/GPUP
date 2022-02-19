@@ -20,7 +20,7 @@ public class TasksServlet extends HttpServlet {
         resp.setContentType("application/json");
         try (PrintWriter out = resp.getWriter()) {
             Gson gson = new Gson();
-            String json = gson.toJson(ServletUtils.getTaskManager(getServletContext()).getTaskDTOMap());
+            String json = gson.toJson(ServletUtils.getTaskManager(getServletContext()).getTaskDTOList());
             out.println(json);
             out.flush();
         }
