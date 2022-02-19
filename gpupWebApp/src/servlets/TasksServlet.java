@@ -1,5 +1,7 @@
 package servlets;
 
+import Engine.DTO.MissionDTO;
+import Engine.Enums.MissionState;
 import Engine.users.UserManager;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
@@ -11,6 +13,8 @@ import utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet("/missionlist")
@@ -20,7 +24,8 @@ public class TasksServlet extends HttpServlet {
         resp.setContentType("application/json");
         try (PrintWriter out = resp.getWriter()) {
             Gson gson = new Gson();
-            String json = gson.toJson(ServletUtils.getTaskManager(getServletContext()).getTaskDTOList());
+            List<MissionDTO> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
+            String json = gson.toJson(lst);
             out.println(json);
             out.flush();
         }

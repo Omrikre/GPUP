@@ -7,26 +7,25 @@ import javafx.scene.control.CheckBox;
 
 public class MissionDTO {
     //simulation/compilation infos:
-    private Integer amountOfTargets;
+    private int amountOfTargets;
     private String compilationFolder; //for compilation task, else null
-    private Integer runTime;
-    private Boolean randomRunTime;
-    private Integer success;
-    private Integer successWithWarnings;
+    private int runTime;
+    private boolean randomRunTime;
+    private int success;
+    private int successWithWarnings;
     //the rest are for the display:
     private String missionName;
-    private MissionState status;
-    private Integer progress;
-    private Integer workers;
-    private Integer totalPrice;
+    private String status;
+    private int progress;
+    private int workers;
+    private int totalPrice;
     private String creatorName;
     private String graphName;
-    private GraphDTO missionGraph;
-    private Integer executedTargets;
-    private Integer waitingTargets;
-    private CheckBox selectedState;
+    private int executedTargets;
+    private int waitingTargets;
+    //private CheckBox selectedState;
 
-    public MissionDTO(Integer amountOfTargets, String compilationFolder, Integer runTime, Boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, MissionState status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, GraphDTO missionGraph, Integer executedTargets, Integer waitingTargets, CheckBox selectedState) {
+    public MissionDTO(Integer amountOfTargets, String compilationFolder, Integer runTime, Boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, MissionState status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets) {
         this.amountOfTargets = amountOfTargets;
         this.compilationFolder = compilationFolder;
         this.runTime = runTime;
@@ -34,16 +33,15 @@ public class MissionDTO {
         this.success = success;
         this.successWithWarnings = successWithWarnings;
         this.missionName = missionName;
-        this.status = status;
+        this.status = status.toString();
         this.progress = progress;
         this.workers = workers;
         this.totalPrice = totalPrice;
         this.creatorName = creatorName;
         this.graphName = graphName;
-        this.missionGraph = missionGraph;
         this.executedTargets = executedTargets;
         this.waitingTargets = waitingTargets;
-        this.selectedState = selectedState;
+        //this.selectedState = selectedState;
     }
 
     public Integer getAmountOfTargets() {
@@ -102,12 +100,12 @@ public class MissionDTO {
         this.missionName = missionName;
     }
 
-    public MissionState getStatus() {
+    public String getStatus() {
         return status;
     }
 
     public void setStatus(MissionState status) {
-        this.status = status;
+        this.status = status.toString();
     }
 
     public Integer getProgress() {
@@ -150,14 +148,6 @@ public class MissionDTO {
         this.graphName = graphName;
     }
 
-    public GraphDTO getMissionGraph() {
-        return missionGraph;
-    }
-
-    public void setMissionGraph(GraphDTO missionGraph) {
-        this.missionGraph = missionGraph;
-    }
-
     public Integer getExecutedTargets() {
         return executedTargets;
     }
@@ -174,11 +164,32 @@ public class MissionDTO {
         this.waitingTargets = waitingTargets;
     }
 
-    public CheckBox getSelectedState() {
-        return selectedState;
-    }
+//    public CheckBox getSelectedState() {
+//        return selectedState;
+//    }
+//
+//    public void setSelectedState(CheckBox selectedState) {
+//        this.selectedState = selectedState;
+//    }
 
-    public void setSelectedState(CheckBox selectedState) {
-        this.selectedState = selectedState;
+    @Override
+    public String toString() {
+        return "MissionDTO{" +
+                "amountOfTargets=" + amountOfTargets +
+                ", compilationFolder='" + compilationFolder + '\'' +
+                ", runTime=" + runTime +
+                ", randomRunTime=" + randomRunTime +
+                ", success=" + success +
+                ", successWithWarnings=" + successWithWarnings +
+                ", missionName='" + missionName + '\'' +
+                ", status=" + status +
+                ", progress=" + progress +
+                ", workers=" + workers +
+                ", totalPrice=" + totalPrice +
+                ", creatorName='" + creatorName + '\'' +
+                ", graphName='" + graphName + '\'' +
+                ", executedTargets=" + executedTargets +
+                ", waitingTargets=" + waitingTargets +
+                '}';
     }
 }

@@ -14,9 +14,9 @@ public class GraphDTO {
     private Integer leafCount;
     private Integer middleCount;
     private Integer rootCount;
-    private CheckBox selectedState;
+   // private CheckBox selectedState;
 
-    public GraphDTO(String graphName, String uploadByAdminName, Map<String,Integer> pricePerTarget, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount, CheckBox selectedState) {
+    public GraphDTO(String graphName, String uploadByAdminName, Map<String,Integer> pricePerTarget, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.graphName = graphName;
         this.uploadByAdminName = uploadByAdminName;
         this.pricePerTarget = pricePerTarget;
@@ -24,16 +24,16 @@ public class GraphDTO {
         this.leafCount = leafCount;
         this.middleCount = middleCount;
         this.rootCount = rootCount;
-        this.selectedState=selectedState;
+        //this.selectedState=selectedState;
     }
 
-    public CheckBox getSelectedState() {
-        return selectedState;
-    }
-
-    public void setSelectedState(CheckBox selectedState) {
-        this.selectedState = selectedState;
-    }
+//    public CheckBox getSelectedState() {
+//        return selectedState;
+//    }
+//
+//    public void setSelectedState(CheckBox selectedState) {
+//        this.selectedState = selectedState;
+//    }
 
     public String getGraphName() {
         return graphName;
