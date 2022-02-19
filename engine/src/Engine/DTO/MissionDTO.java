@@ -1,9 +1,19 @@
 package Engine.DTO;
 
+import Engine.Engine;
 import Engine.Enums.MissionState;
+import Engine.Graph;
 import javafx.scene.control.CheckBox;
 
 public class MissionDTO {
+    //simulation/compilation infos:
+    private Integer amountOfTargets;
+    private String compilationFolder; //for compilation task, else null
+    private Integer runTime;
+    private Boolean randomRunTime;
+    private Integer success;
+    private Integer successWithWarnings;
+    //the rest are for the display:
     private String missionName;
     private MissionState status;
     private Integer progress;
@@ -16,7 +26,13 @@ public class MissionDTO {
     private Integer waitingTargets;
     private CheckBox selectedState;
 
-    public MissionDTO(String missionName, MissionState status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, GraphDTO missionGraph, Integer executedTargets, Integer waitingTargets, CheckBox selectedState) {
+    public MissionDTO(Integer amountOfTargets, String compilationFolder, Integer runTime, Boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, MissionState status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, GraphDTO missionGraph, Integer executedTargets, Integer waitingTargets, CheckBox selectedState) {
+        this.amountOfTargets = amountOfTargets;
+        this.compilationFolder = compilationFolder;
+        this.runTime = runTime;
+        this.randomRunTime = randomRunTime;
+        this.success = success;
+        this.successWithWarnings = successWithWarnings;
         this.missionName = missionName;
         this.status = status;
         this.progress = progress;
@@ -28,6 +44,54 @@ public class MissionDTO {
         this.executedTargets = executedTargets;
         this.waitingTargets = waitingTargets;
         this.selectedState = selectedState;
+    }
+
+    public Integer getAmountOfTargets() {
+        return amountOfTargets;
+    }
+
+    public void setAmountOfTargets(Integer amountOfTargets) {
+        this.amountOfTargets = amountOfTargets;
+    }
+
+    public String getCompilationFolder() {
+        return compilationFolder;
+    }
+
+    public void setCompilationFolder(String compilationFolder) {
+        this.compilationFolder = compilationFolder;
+    }
+
+    public Integer getRunTime() {
+        return runTime;
+    }
+
+    public void setRunTime(Integer runTime) {
+        this.runTime = runTime;
+    }
+
+    public Boolean getRandomRunTime() {
+        return randomRunTime;
+    }
+
+    public void setRandomRunTime(Boolean randomRunTime) {
+        this.randomRunTime = randomRunTime;
+    }
+
+    public Integer getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Integer success) {
+        this.success = success;
+    }
+
+    public Integer getSuccessWithWarnings() {
+        return successWithWarnings;
+    }
+
+    public void setSuccessWithWarnings(Integer successWithWarnings) {
+        this.successWithWarnings = successWithWarnings;
     }
 
     public String getMissionName() {

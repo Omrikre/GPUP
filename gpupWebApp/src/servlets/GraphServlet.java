@@ -1,6 +1,7 @@
 package servlets;
 
 import Engine.DTO.GraphDTO;
+import Engine.Enums.Bond;
 import Engine.GraphManager;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
@@ -45,30 +46,32 @@ public class GraphServlet extends HttpServlet {
                         resp.setContentType("application/json");
                         Gson gson = new Gson();
                         GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
-                        String json = gson.toJson(graphManager.getPathBetweenTwoTargets(name, targetA, targetB, bond));
+                        Bond b = null;
+                        if (bond.equals("req"))
+                            b = Bond.REQUIRED_FOR;
+                        else if (bond.equals("dep"))
+                            b = Bond.DEPENDS_ON;
+                        String json = gson.toJson(graphManager.getPathBetweenTwoTargets(name, targetA, targetB, b));
                         out.println(json);
                         out.flush();
                     } else {
-                        if (targetA == null&&targetB!=null) {
+                        if (targetA == null && targetB != null) {
                             out.write("target A doesn't exist!");
                             resp.setStatus(404);
-                        } else if (targetB == null&&targetA!=null) {
+                        } else if (targetB == null && targetA != null) {
                             out.write("target B doesn't exist!");
                             resp.setStatus(404);
-                        } else if(bond==null&&(targetA!=null||targetB!=null||(targetA==null&&targetB==null))){
+                        } else if (bond == null && (targetA != null || targetB != null || (targetA == null && targetB == null))) {
                             out.write("bond doesn't exist!");
                             resp.setStatus(404);
-                        }
-                        else if(targetA==null&&targetB==null&&bond==null){ //specific graph
-                            try (PrintWriter out = resp.getWriter()) {
-                                Gson gson = new Gson();
-                                GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
-                                resp.setContentType("application/json");
-                                GraphDTO graphDTO = graphManager.getGraphDTOByName(name);
-                                String json = gson.toJson(graphDTO);
-                                out.println(json);
-                                out.flush();
-                            }
+                        } else if (targetA == null && targetB == null && bond == null) { //specific graph
+                            Gson gson = new Gson();
+                            GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
+                            resp.setContentType("application/json");
+                            GraphDTO graphDTO = graphManager.getGraphDTOByName(name);
+                            String json = gson.toJson(graphDTO);
+                            out.println(json);
+                            out.flush();
                         }
                     }
                 }

@@ -154,7 +154,7 @@ public class GraphController {
             .newBuilder()
             .addQueryParameter("graphname",graphName)
             .addQueryParameter("cycle", "true")
-            .addQueryParameter("target-a",)
+            .addQueryParameter("target-a",targetA)
             .build()
             .toString();
 
