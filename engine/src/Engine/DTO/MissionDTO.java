@@ -100,8 +100,21 @@ public class MissionDTO {
         this.missionName = missionName;
     }
 
-    public String getStatus() {
-        return status;
+    public MissionState getStatus() {
+        switch (status) {
+            case "Paused":
+                return MissionState.PAUSED;
+            case "Stopped":
+                return MissionState.STOPPED;
+            case "Finished":
+                return MissionState.FINISHED;
+            case "Ready":
+                return MissionState.READY;
+            case "Execution":
+                return MissionState.EXECUTION;
+            default:
+                return null;
+        }
     }
 
     public void setStatus(MissionState status) {
