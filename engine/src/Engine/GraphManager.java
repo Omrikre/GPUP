@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 
 import java.util.HashMap;
@@ -23,6 +24,10 @@ public class GraphManager {
             res.put(g.getGraphName(), g.getGraphDTO());
         }
         return res;
+    }
+
+    public synchronized TargetDTO getTargetDTO(String graphname, String targetName) {
+        return new TargetDTO(graphMap.get(graphname).getTargetByName(targetName));
     }
 
     public synchronized GraphDTO getGraphDTOByName(String name) {

@@ -1,6 +1,7 @@
 package servlets;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.GraphManager;
 import com.google.gson.Gson;
@@ -32,6 +33,7 @@ public class GraphServlet extends HttpServlet {
                     GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                     Map<String, GraphDTO> graphMap = graphManager.getGraphsAsDTOs();
                     String json = gson.toJson(graphMap);
+                    resp.setStatus(200);
                     out.println(json);
                     out.flush();
                 } else {
@@ -52,18 +54,32 @@ public class GraphServlet extends HttpServlet {
                         else if (bond.equals("dep"))
                             b = Bond.DEPENDS_ON;
                         String json = gson.toJson(graphManager.getPathBetweenTwoTargets(name, targetA, targetB, b));
+                        resp.setStatus(200);
                         out.println(json);
                         out.flush();
                     } else {
-                        if (targetA == null && targetB != null) {
-                            out.write("target A doesn't exist!");
-                            resp.setStatus(404);
-                        } else if (targetB == null && targetA != null) {
-                            out.write("target B doesn't exist!");
-                            resp.setStatus(404);
-                        } else if (bond == null && (targetA != null || targetB != null || (targetA == null && targetB == null))) {
+                        if(bond==null){
                             out.write("bond doesn't exist!");
                             resp.setStatus(404);
+                        }
+                        else if (targetA == null && targetB != null) {
+                            Gson gson = new Gson();
+                            GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
+                            resp.setContentType("application/json");
+                            TargetDTO targetDTO = graphManager.getTargetDTO(name,targetB);
+                            String json = gson.toJson(targetDTO);
+                            resp.setStatus(200);
+                            out.println(json);
+                            out.flush();
+                        } else if (targetB == null && targetA != null) {
+                            Gson gson = new Gson();
+                            GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
+                            resp.setContentType("application/json");
+                            TargetDTO targetDTO = graphManager.getTargetDTO(name,targetA);
+                            String json = gson.toJson(targetDTO);
+                            resp.setStatus(200);
+                            out.println(json);
+                            out.flush();
                         } else if (targetA == null && targetB == null && bond == null) { //specific graph
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
@@ -85,6 +101,7 @@ public class GraphServlet extends HttpServlet {
                         if (targetA == null)
                             json = gson.toJson(graphManager.getCycle(name, targetB));
                         else json = gson.toJson(graphManager.getCycle(name, targetA));
+                        resp.setStatus(200);
                         out.println(json);
                         out.flush();
                     } else {
