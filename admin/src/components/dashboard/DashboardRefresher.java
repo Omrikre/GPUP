@@ -100,11 +100,13 @@ public class DashboardRefresher extends TimerTask {
                 } else {
                     Platform.runLater(() -> {
                         try {
+                            System.out.println(" goodddd ");
                             String responseBody = response.body().string();
+                            System.out.println(responseBody);
                             MissionDTO[] lst = GSON.fromJson(responseBody, MissionDTO[].class);
                             missionConsumer.accept(Arrays.asList(lst));
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            System.out.println(e.getMessage());
                         }
                     });
                 }

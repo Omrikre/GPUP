@@ -35,41 +35,24 @@ import static components.app.HttpResourcesPaths.LOGIN_PAGE;
 
 public class LoadXMLController {
 
-    @FXML
-    private Label loadResponseLB;
-    @FXML
-    private Button loginBT;
-    @FXML
-    private Label userNameLB;
-    @FXML
-    private Label userNameNameLB;
+    @FXML private Label loadResponseLB;
+    @FXML private Button loginBT;
+    @FXML private Label userNameLB;
+    @FXML private Label userNameNameLB;
 
-    @FXML
-    private TableView<GraphDTO> graphTable;
-    @FXML
-    private TableColumn<GraphDTO, CheckBox> checkBoxCOL;
-    @FXML
-    private TableColumn<GraphDTO, String> nameCOL;
-    @FXML
-    private TableColumn<GraphDTO, String> uploadByCol;
-    @FXML
-    private TableColumn<GraphDTO, Integer> priceCol;
-    @FXML
-    private TableColumn<GraphDTO, Integer> independCOL;
-    @FXML
-    private TableColumn<GraphDTO, Integer> leafCOL;
-    @FXML
-    private TableColumn<GraphDTO, Integer> middleCOL;
-    @FXML
-    private TableColumn<GraphDTO, Integer> rootCol;
-    @FXML
-    private Label selectedGraphLB;
-    @FXML
-    private Label uploadInfo1LB;
-    @FXML
-    private Label uploadInfo2LB;
-    @FXML
-    private Button uploadXMLBT;
+    @FXML private TableView<GraphDTO> graphTable;
+    @FXML private TableColumn<GraphDTO, CheckBox> checkBoxCOL;
+    @FXML private TableColumn<GraphDTO, String> nameCOL;
+    @FXML private TableColumn<GraphDTO, String> uploadByCol;
+    @FXML private TableColumn<GraphDTO, Integer> priceCol;
+    @FXML private TableColumn<GraphDTO, Integer> independCOL;
+    @FXML private TableColumn<GraphDTO, Integer> leafCOL;
+    @FXML private TableColumn<GraphDTO, Integer> middleCOL;
+    @FXML private TableColumn<GraphDTO, Integer> rootCol;
+    @FXML private Label selectedGraphLB;
+    @FXML private Label uploadInfo1LB;
+    @FXML private Label uploadInfo2LB;
+    @FXML private Button uploadXMLBT;
 
 
     private GraphController graphParentController;
@@ -80,6 +63,8 @@ public class LoadXMLController {
     private ObservableList<GraphDTO> OLGraphs;
     private ObservableSet<CheckBox> selectedCheckBoxes;
     private ObservableSet<CheckBox> unselectedCheckBoxes;
+
+    private String selectedGraph;
 
 
     @FXML
@@ -97,7 +82,6 @@ public class LoadXMLController {
 
         selectedGraphLB.setText("-");
 
-        setupData();
     }
 
 
