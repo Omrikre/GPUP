@@ -25,6 +25,7 @@ public class GraphServlet extends HttpServlet {
         String isCycle = req.getParameter("cycle");
         String targetA = req.getParameter("target-a");
         String targetB = req.getParameter("target-b");
+        String targets = req.getParameter("targets");
         String bond = req.getParameter("bond");
         if (name == null) { //no graph specified, returns the entire list
             resp.setContentType("application/json");
@@ -85,9 +86,15 @@ public class GraphServlet extends HttpServlet {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
-                            GraphDTO graphDTO = graphManager.getGraphDTOByName(name);
+                            if(targets!=null){
+                                String json = gson.toJson(graphManager.getTargetDTOList(name));
+                                out.println(json);
+                            }
+                            else{
+                                GraphDTO graphDTO = graphManager.getGraphDTOByName(name);
                             String json = gson.toJson(graphDTO);
                             out.println(json);
+                            }
                             out.flush();
                         }
                     }
