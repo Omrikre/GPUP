@@ -19,6 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import static components.app.CommonResourcesPaths.*;
+import static components.app.HttpResourcesPaths.GRAPH_LIST;
 
 public class GraphController {
 
@@ -129,5 +130,76 @@ public class GraphController {
     public void showMissionCreatorPane() { graphBP.setCenter(missionCreateComponent); }
 
     public void closeCycleWarning() { cycleMsgWin.close(); }
+
+
+    /*
+    if user asks for the entire graph list:
+    String finalUrl = HttpUrl
+            .parse(GRAPH_LIST)
+            .newBuilder()
+            .build()
+            .toString();
+
+    if user asks for a specific graph (need to pass on the graph name):
+    String finalUrl = HttpUrl
+            .parse(GRAPH_LIST)
+            .newBuilder()
+            .addQueryParameter("graphname",graphName)
+            .build()
+            .toString();
+
+    if user asks for a target's cycle:
+    String finalUrl = HttpUrl
+            .parse(GRAPH_LIST)
+            .newBuilder()
+            .addQueryParameter("graphname",graphName)
+            .addQueryParameter("cycle", "true")
+            .addQueryParameter("target-a",targetA)
+            .build()
+            .toString();
+
+    if user asks for a path between two targets:
+    String finalUrl = HttpUrl
+            .parse(GRAPH_LIST)
+            .newBuilder()
+            .addQueryParameter("graphname",graphName)
+            .addQueryParameter("target-a",targetA)
+            .addQueryParameter("target-b",targetB)
+            .addQueryParameter("bond",bond)
+            .build()
+            .toString();
+
+
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+        @Override
+        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            Platform.runLater(() ->
+                    .setText("Something went wrong: " + e.getMessage())
+            );
+        }
+
+        @Override
+        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            if (response.code() != 200) {
+                String responseBody = response.body().string();
+                Platform.runLater(() ->
+                        .setText("Something went wrong: " + responseBody)
+                );
+            } else {
+                Platform.runLater(() -> {
+
+                    try {
+                        String responseBody = response.body().string();
+                        System.out.println(responseBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+    });
+     */
+
 
 }

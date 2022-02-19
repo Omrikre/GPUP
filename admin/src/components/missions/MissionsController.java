@@ -47,43 +47,51 @@ public class MissionsController {
     @FXML void startPR(ActionEvent event) {}
     @FXML void stopPR(ActionEvent event) {}
 
-    String finalUrl = HttpUrl
-            .parse(ADD_MISSION)
-            .newBuilder()
-            .addQueryParameter("mission-name", missionName)
-            .addQueryParameter("creator-name",missionCreator)
-            .addQueryParameter("graph-name",missionGraph)
-            .build()
-            .toString();
+//    String finalUrl = HttpUrl
+//            .parse(ADD_MISSION)
+//            .newBuilder()
+//            .addQueryParameter("amount-of-targets", amountOfTargets)
+//            .addQueryParameter("compilation-folder", compilationFolder) //for compilation task, else null
+//    .addQueryParameter("runtime", runTime)
+//    .addQueryParameter("random-runtime",randomRunTime)
+//    .addQueryParameter("success", success)
+//    .addQueryParameter("success-warnings", successWithWarnings)
+//    //the rest are for the display:
+//    .addQueryParameter("name",missionName)
+//    .addQueryParameter("creator",creatorName)
+//    .addQueryParameter("graph-name",graphName)
+    //.addQueryParameter("waiting-targets", waitingTargets)
+//            .build()
+//            .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-        @Override
-        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-            Platform.runLater(() ->
-                    .setText("Something went wrong: " + e.getMessage())
-            );
-        }
-
-        @Override
-        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-            if (response.code() != 200) {
-                String responseBody = response.body().string();
-                Platform.runLater(() ->
-                        .setText("Something went wrong: " + responseBody)
-                );
-            } else {
-                Platform.runLater(() -> {
-
-                    try {
-                        String responseBody = response.body().string();
-                        System.out.println(responseBody);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-        }
-    });
+//        HttpClientUtil.runAsync(finalUrl, new Callback() {
+//        @Override
+//        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//            Platform.runLater(() ->
+//                    .setText("Something went wrong: " + e.getMessage())
+//            );
+//        }
+//
+//        @Override
+//        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//            if (response.code() != 200) {
+//                String responseBody = response.body().string();
+//                Platform.runLater(() ->
+//                        .setText("Something went wrong: " + responseBody)
+//                );
+//            } else {
+//                Platform.runLater(() -> {
+//
+//                    try {
+//                        String responseBody = response.body().string();
+//                        System.out.println(responseBody);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//            }
+//        }
+//    });
 
 
 }
