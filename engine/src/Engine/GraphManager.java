@@ -4,7 +4,9 @@ import Engine.DTO.GraphDTO;
 import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GraphManager {
@@ -18,10 +20,10 @@ public class GraphManager {
         graphMap.put(g.getGraphName(), g);
     }
 
-    public synchronized Map<String, GraphDTO> getGraphsAsDTOs() {
-        Map<String, GraphDTO> res = new HashMap<>();
+    public synchronized List<GraphDTO> getGraphsAsDTOs() {
+        List<GraphDTO> res = new ArrayList<>();
         for (Graph g : graphMap.values()) {
-            res.put(g.getGraphName(), g.getGraphDTO());
+            res.add(g.getGraphDTO());
         }
         return res;
     }

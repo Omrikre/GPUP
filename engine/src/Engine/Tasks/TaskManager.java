@@ -2,24 +2,21 @@ package Engine.Tasks;
 
 import Engine.DTO.MissionDTO;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TaskManager {
-    private Map<String, MissionDTO> taskMap;
+    private List<MissionDTO> taskList;
 
     public TaskManager() {
-        taskMap = new HashMap<>();
+        taskList = new ArrayList<>();
     }
 
     public synchronized void addTask(MissionDTO task) {
-        taskMap.put(task.getMissionName(), task);
+        taskList.add(task);
     }
 
-    public synchronized Map<String, MissionDTO> getTaskDTOMap() {
-        return taskMap;
+    public synchronized List<MissionDTO> getTaskDTOList() {
+        return taskList;
     }
 
 }
