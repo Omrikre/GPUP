@@ -24,5 +24,11 @@ public enum MissionState {
         public String toString() {
             return "Ready";
         }
+    },
+    EXECUTION {
+        @Override
+        public String toString() {
+            return "Execution";
+        }
     }
 }

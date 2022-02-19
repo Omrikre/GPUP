@@ -11,6 +11,18 @@ public class User {
         this.role=role;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setThreads(int threads) {
+        this.threads = threads;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public int getThreads() {
         return threads;
     }
