@@ -12,6 +12,7 @@ public class ChatManager {
 
     public synchronized void addChatString(String chatString, String username) {
         chatDataList.add(new SingleChatEntry(chatString, username));
+
     }
 
     public synchronized List<SingleChatEntry> getChatEntries(int fromIndex){

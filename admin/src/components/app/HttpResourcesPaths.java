@@ -33,6 +33,8 @@ public class HttpResourcesPaths {
     // Chat
     public final static String SEND_CHAT_LINE = FULL_SERVER_PATH + "/pages/chatroom/sendChat";
     public final static String CHAT_LINES_LIST = FULL_SERVER_PATH + "/chat";
+    public final static String CHAT_LINE_FORMATTING = "%tH:%tM:%tS | %.10s: %s%n";
+
 
     //GSON
     public final static Gson GSON = new Gson();

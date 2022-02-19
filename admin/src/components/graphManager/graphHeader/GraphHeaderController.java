@@ -10,6 +10,7 @@ public class GraphHeaderController {
     @FXML private Button XMLBT;
     @FXML private Button graphBT;
     @FXML private Button targetsBT;
+    @FXML private Button missionCreatorBT;
 
     private GraphController graphParentController;
 
@@ -25,6 +26,7 @@ public class GraphHeaderController {
     public void makeButtonsDisable(boolean bool) {
         graphBT.setDisable(bool);
         targetsBT.setDisable(bool);
+        missionCreatorBT.setDisable(bool);
     }
 
     public void setGraphParentController(GraphController graphController) { this.graphParentController = graphController;}

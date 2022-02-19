@@ -1,5 +1,7 @@
 package components.graphManager.info;
 
+import Engine.DTO.GraphDTO;
+import Engine.DTO.TargetDTO;
 import components.graphManager.GraphController;
 import components.graphManager.info.generalInfo.generalInfoController;
 import components.graphManager.info.targetInfo.targetInfoController;
@@ -13,29 +15,43 @@ import javafx.scene.layout.VBox;
 
 public class InfoController {
 
-    @FXML private Tab generalInfoTab;
-    @FXML private Tab infoByTargetTab;
-    @FXML private Tab treeViewTab;
+    @FXML
+    private Tab generalInfoTab;
+    @FXML
+    private Tab infoByTargetTab;
+    @FXML
+    private Tab treeViewTab;
 
-    @FXML private HBox generalInfoGP;
-    @FXML private generalInfoController generalInfoGPController;
-    @FXML private VBox infoByTargetGP;
-    @FXML private targetInfoController infoByTargetGPController;
-    @FXML private BorderPane treeViewBP;
-    @FXML private treeViewController treeViewBPController;
+    @FXML
+    private HBox generalInfoGP;
+    @FXML
+    private generalInfoController generalInfoGPController;
+    @FXML
+    private VBox infoByTargetGP;
+    @FXML
+    private targetInfoController infoByTargetGPController;
+    @FXML
+    private BorderPane treeViewBP;
+    @FXML
+    private treeViewController treeViewBPController;
 
     private GraphController parentController;
+    private GraphDTO graph;
 
 
     public void setParentController(GraphController parentController) {
         this.parentController = parentController;
     }
-    @FXML public void initialize() {
+
+    @FXML
+    public void initialize() {
         treeViewBPController.setParentController(this);
         infoByTargetGPController.setParentController(this);
     }
+
+    public void setupData(GraphDTO graph) {
+        this.graph = graph;
 /*
-    public void setupData() {
         if(generalInfoGPController != null) {
             generalInfoGPController.setupData(mainController.getGeneralInfoTable(), mainController.getNumOfTargets(), mainController.getGraphContainsCycle(), mainController.getFileName(), mainController.getNumOfSets(), mainController.getSerialSets());
         } else System.out.println("null fuck 1");
@@ -56,5 +72,7 @@ public class InfoController {
     }
     public TargetDTO getTargetDTO(String targetName) { return mainController.getTargetDTO(targetName); }
 
-    public String getSSByName(String name) { return mainController.getSerialSetByName(name).toString(); }*/
+    public String getSSByName(String name) { return mainController.getSerialSetByName(name).toString(); }
+*/ //TODO - get data from engine
+    }
 }

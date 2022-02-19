@@ -1,5 +1,6 @@
 package components.graphManager;
 
+import Engine.DTO.GraphDTO;
 import components.app.AppController;
 import components.graphManager.graphHeader.GraphHeaderController;
 import components.graphManager.info.InfoController;
@@ -7,6 +8,9 @@ import components.graphManager.info.cycleWarningInfo.cycleWarningInfoController;
 import components.graphManager.missionCreator.taskController;
 import components.graphManager.table.tableController;
 import components.graphManager.xmlLoader.LoadXMLController;
+import http.HttpClientUtil;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,9 +21,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 import static components.app.CommonResourcesPaths.*;
 import static components.app.HttpResourcesPaths.GRAPH_LIST;
+import static components.app.HttpResourcesPaths.GSON;
 
 public class GraphController {
 
@@ -63,7 +75,7 @@ public class GraphController {
     @FXML public void initialize() {
         setMainInSubComponents();
         loadBackComponents();
-        showAllHeaderBt(false);
+        disableAllHeaderBt(true);
         selectedGraphName = "";
     }
 
@@ -122,11 +134,10 @@ public class GraphController {
         this.mainController = mainController;
     }
 
-    public void showAllHeaderBt(boolean bool) {headerCompController.makeButtonsDisable(bool);}
+    public void disableAllHeaderBt(boolean bool) {headerCompController.makeButtonsDisable(bool);}
 
     public void showXMLManagerPane() { graphBP.setCenter(XMLComp); }
     public void showGraphInfoPane() {
-        //infoComponentController.setupData();
         graphBP.setCenter(infoComponent);
         if(!cycleMsgShownAlready && graphContainsCycle) {
             cycleMsgWin.show();
@@ -137,6 +148,53 @@ public class GraphController {
     public void showMissionCreatorPane() { graphBP.setCenter(missionCreateComponent); }
 
     public void closeCycleWarning() { cycleMsgWin.close(); }
+    public void startDataRefresher(BooleanProperty autoUpdate) {
+        XMLCompController.startXMLGraphTableRefresher(autoUpdate);
+    }
+
+
+    public void setData(String graphName) {
+        String finalUrl = HttpUrl
+                .parse(GRAPH_LIST)
+                .newBuilder()
+                .addQueryParameter("graphname",graphName)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println(" error setData Graph tabs info")
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println(" error setData Graph tabs info, code: " + response.code())
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        try {
+                            String responseBody = response.body().string();
+                            System.out.println(responseBody);
+                            GraphDTO graph = GSON.fromJson(responseBody, GraphDTO.class);
+                            infoComponentController.setupData(graph);
+                            //tableComponentController.setupData(graph);
+                            //missionCreateComponentController.setupData(graph.get);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+
 
 
     /*

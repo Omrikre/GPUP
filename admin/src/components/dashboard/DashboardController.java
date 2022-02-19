@@ -117,13 +117,14 @@ public class DashboardController implements Closeable {
         });
     }
 
-    public void startListRefresher() {
+    public void startListRefresher(BooleanProperty autoUpdate) {
+        this.autoUpdate = autoUpdate;
         dashboardRefresher = new DashboardRefresher(
-                autoUpdate, this::updateUsersList, this::updateMissionsList);
+                this.autoUpdate, this::updateUsersList, this::updateMissionsList);
         timer = new Timer();
         timer.schedule(dashboardRefresher, REFRESH_RATE, REFRESH_RATE);
-
     }
+
     public void close() {
         if (dashboardRefresher != null && timer != null) {
             dashboardRefresher.cancel();

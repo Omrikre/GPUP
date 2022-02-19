@@ -14,7 +14,6 @@ import components.home.login.LoginController;
 import components.mainLogin.MainLoginController;
 import components.missions.MissionsController;
 import components.settings.settingsController;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -27,12 +26,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
-
 import javax.xml.bind.JAXBException;
 import java.io.Closeable;
 import java.io.IOException;
@@ -98,8 +91,9 @@ public class AppController implements Closeable {
 
     // Refreshers
     public void setRefreshersActive() {
-        autoUpdate.setValue(true);
-        dashboardComponentController.startListRefresher();
+        dashboardComponentController.startListRefresher(autoUpdate);
+        chatComponentController.startChatRefresher(autoUpdate);
+        //graphManagerComponentController.startDataRefresher(autoUpdate);
 /*        graphAdminComponentController.startGraphListRefresher();
         starChatRefresher();
         starMissionRefresher();*/
@@ -108,11 +102,11 @@ public class AppController implements Closeable {
     public void setInActive() {
         try {
             autoUpdate.setValue(false);
-            close();
             //usersListComponentController.close();
             //graphAdminComponentController.close();
         } catch (Exception ignored) {}
     }
+
 /*
     @Override public void logout() {
         String finalUrl = HttpUrl
@@ -246,7 +240,7 @@ public class AppController implements Closeable {
         setGraphContainsCycle();
         headerComponentController.makeAllButtonsDisable(false);
         //TODO - start All refreshers
-
+        setRefreshersActive();
     }
 
 
@@ -411,9 +405,9 @@ public class AppController implements Closeable {
 
     public void closeLogin(String userName) {
         mainLoginCompController.loggedIn(userName);
-        setRefreshersActive();
         loginWin.close();
         headerComponentController.makeAllButtonsDisable(false);
+        setAllDataInPanes();
     }
 
     public void logout() {
@@ -422,7 +416,10 @@ public class AppController implements Closeable {
 
 
     @Override
-    public void close() throws IOException {
+    public void close() throws IOException { //TODO - FIX
+        autoUpdate.setValue(false);
+        System.out.println(autoUpdate);
+        System.out.println("exit!!!");
 
     }
 

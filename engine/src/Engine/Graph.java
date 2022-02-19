@@ -219,11 +219,8 @@ public class Graph implements Serializable {
     }
 
     public GraphDTO getGraphDTO() {
-        Map<String, Integer> prices = new HashMap<>();
-        prices.put("Compilation", compilationPrice);
-        prices.put("Simulation", simulationPrice);
         Map<Location, Integer> locations = howManyTargetsInEachLocation();
-        return new GraphDTO(graphName, username, prices, locations.get(Location.INDEPENDENT), locations.get(Location.LEAF), locations.get(Location.MIDDLE), locations.get(Location.ROOT), null);
+        return new GraphDTO(graphName, username, simulationPrice, compilationPrice, locations.get(Location.INDEPENDENT), locations.get(Location.LEAF), locations.get(Location.MIDDLE), locations.get(Location.ROOT), null);
     }
 
     public Map<String, Target> getTargets() {

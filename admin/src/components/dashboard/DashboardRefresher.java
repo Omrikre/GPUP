@@ -40,7 +40,6 @@ public class DashboardRefresher extends TimerTask {
 /*        if (!shouldUpdate.get()) {
             return;
         }*/
-
         String userUrl = HttpUrl
                 .parse(USERS_LIST)
                 .newBuilder()
@@ -81,7 +80,7 @@ public class DashboardRefresher extends TimerTask {
                 }
             }
         });
-
+/*
         HttpClientUtil.runAsync(missionUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
@@ -103,14 +102,14 @@ public class DashboardRefresher extends TimerTask {
                             System.out.println(" goodddd ");
                             String responseBody = response.body().string();
                             System.out.println(responseBody);
-                            MissionDTO[] lst = GSON.fromJson(responseBody, MissionDTO[].class);
-                            missionConsumer.accept(Arrays.asList(lst));
+                            //MissionDTO[] lst = GSON.fromJson(responseBody, MissionDTO[].class);
+                            //missionConsumer.accept(Arrays.asList(lst)); //TODO - FIX
                         } catch (IOException e) {
                             System.out.println(e.getMessage());
                         }
                     });
                 }
             }
-        });
+        });*/
     }
 }

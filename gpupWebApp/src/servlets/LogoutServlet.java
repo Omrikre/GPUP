@@ -18,6 +18,7 @@ public class LogoutServlet extends HttpServlet {
         String usernameFromSession = SessionUtils.getUsername(req);
         UserManager userManager = ServletUtils.getUserManager(getServletContext());
 
+        System.out.println(usernameFromSession);
         if (usernameFromSession != null) {
             System.out.println("Clearing session for " + usernameFromSession);
             userManager.removeUser(usernameFromSession);

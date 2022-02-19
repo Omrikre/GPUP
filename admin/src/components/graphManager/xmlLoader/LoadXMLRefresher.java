@@ -1,6 +1,7 @@
 package components.graphManager.xmlLoader;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.MissionDTO;
 import http.HttpClientUtil;
 import javafx.application.Platform;
@@ -22,11 +23,11 @@ import static components.app.HttpResourcesPaths.GSON;
 
 public class LoadXMLRefresher extends TimerTask {
 
-    private Consumer<List<GraphDTO>> graphListConsumer;
+    private Consumer<List<GraphDTOWithoutCB>> graphListConsumer;
     private BooleanProperty shouldUpdate;
 
 
-    public LoadXMLRefresher(BooleanProperty shouldUpdate, Consumer<List<GraphDTO>> graphListConsumer) {
+    public LoadXMLRefresher(BooleanProperty shouldUpdate, Consumer<List<GraphDTOWithoutCB>> graphListConsumer) {
         this.shouldUpdate = shouldUpdate;
         this.graphListConsumer = graphListConsumer;
     }
@@ -63,7 +64,7 @@ public class LoadXMLRefresher extends TimerTask {
                     Platform.runLater(() -> {
                         try {
                             String responseBody = response.body().string();
-                            GraphDTO[] lst = GSON.fromJson(responseBody, GraphDTO[].class);
+                            GraphDTOWithoutCB[] lst = GSON.fromJson(responseBody, GraphDTOWithoutCB[].class);
                             graphListConsumer.accept(Arrays.asList(lst));
                         } catch (IOException e) {
                             e.printStackTrace();

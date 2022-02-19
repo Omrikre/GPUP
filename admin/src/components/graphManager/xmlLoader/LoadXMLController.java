@@ -1,12 +1,14 @@
 package components.graphManager.xmlLoader;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.GraphDTOWithoutCB;
 import components.app.AppController;
 import components.graphManager.GraphController;
 import http.HttpClientUtil;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -25,16 +27,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
+import static components.app.CommonResourcesPaths.REFRESH_RATE;
 import static components.app.HttpResourcesPaths.GRAPH;
-import static components.app.HttpResourcesPaths.LOGIN_PAGE;
 
 public class LoadXMLController {
 
+    //TODO - DELETE
     @FXML private Label loadResponseLB;
     @FXML private Button loginBT;
     @FXML private Label userNameLB;
@@ -44,28 +47,32 @@ public class LoadXMLController {
     @FXML private TableColumn<GraphDTO, CheckBox> checkBoxCOL;
     @FXML private TableColumn<GraphDTO, String> nameCOL;
     @FXML private TableColumn<GraphDTO, String> uploadByCol;
-    @FXML private TableColumn<GraphDTO, Integer> priceCol;
+    @FXML private TableColumn<GraphDTO, Integer> simPriceCol;
+    @FXML private TableColumn<GraphDTO, Integer> compPriceCol;
     @FXML private TableColumn<GraphDTO, Integer> independCOL;
     @FXML private TableColumn<GraphDTO, Integer> leafCOL;
     @FXML private TableColumn<GraphDTO, Integer> middleCOL;
     @FXML private TableColumn<GraphDTO, Integer> rootCol;
-    @FXML private Label selectedGraphLB;
+
+    @FXML private Label selectedGraphLB; //TODO
     @FXML private Label uploadInfo1LB;
     @FXML private Label uploadInfo2LB;
-    @FXML private Button uploadXMLBT;
+    @FXML private Button uploadXMLBT; //TODO
 
 
     private GraphController graphParentController;
     private AppController mainController;
 
     private IntegerBinding numCheckBoxesSelected;
-
     private ObservableList<GraphDTO> OLGraphs;
     private ObservableSet<CheckBox> selectedCheckBoxes;
     private ObservableSet<CheckBox> unselectedCheckBoxes;
 
     private String selectedGraph;
-
+    private Timer timer;
+    private BooleanProperty autoUpdate;
+    private LoadXMLRefresher xmlRefresher;
+    private int numOfGraphs;
 
     @FXML
     public void initialize() {
@@ -73,26 +80,48 @@ public class LoadXMLController {
         unselectedCheckBoxes = FXCollections.observableSet();
         numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
 
-        checkBoxCOL.setStyle("-fx-alignment: CENTER;");
-        priceCol.setStyle("-fx-alignment: CENTER;");
-        independCOL.setStyle("-fx-alignment: CENTER;");
-        leafCOL.setStyle("-fx-alignment: CENTER;");
-        middleCOL.setStyle("-fx-alignment: CENTER;");
-        rootCol.setStyle("-fx-alignment: CENTER;");
-
-        selectedGraphLB.setText("-");
-
+        selectedGraph = "-";
+        selectedGraphLB.setText(selectedGraph);
+        numOfGraphs = 0;
     }
 
+    public void startXMLGraphTableRefresher(BooleanProperty autoUpdate) {
+        this.autoUpdate = autoUpdate;
+        xmlRefresher = new LoadXMLRefresher(
+                this.autoUpdate, this::updateGraphList);
+        timer = new Timer();
+        timer.schedule(xmlRefresher, REFRESH_RATE, REFRESH_RATE);
+    }
+
+    public void updateGraphList(List<GraphDTOWithoutCB> lst) {
+        Platform.runLater(() -> {
+            if (!(lst.size() == numOfGraphs))
+                return;
+            numOfGraphs = lst.size();
+
+            List<GraphDTO> newGraphList = new ArrayList();
+            ObservableList<GraphDTO> graphTV = graphTable.getItems();
+            GraphDTO tempDTO;
+            CheckBox tempCheckBox;
+
+            for (GraphDTOWithoutCB graph : lst) {
+                tempCheckBox = new CheckBox();
+                if (selectedGraph == graph.getGraphName()) {
+                    tempCheckBox.setSelected(true);
+                }
+                configureCheckBox(tempCheckBox, graph.getGraphName());
+                tempDTO = new GraphDTO(graph.getGraphName(), graph.getUploadByAdminName(), graph.getSimPricePerTarget(), graph.getCompPricePerTarget(), graph.getIndependenceCount(), graph.getLeafCount(), graph.getMiddleCount(), graph.getMiddleCount(), tempCheckBox);
+                newGraphList.add(tempDTO);
+            }
+            ObservableList<GraphDTO> OLGraph = FXCollections.observableArrayList(newGraphList);
+            //OLGraphs.clear();
+            OLGraphs = OLGraph;
+            graphTable.setItems(OLGraphs);
+            graphTable.refresh();
+        });
+    }
 
     public void setupData(List<GraphDTO> graphs) {
-
-        CheckBox tempCB;
-        for (GraphDTO graph : graphs) {
-            tempCB = new CheckBox();
-            graph.setSelectedState(tempCB);
-            configureCheckBox(tempCB, graph.getGraphName());
-        }
 
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> {
             if (newSelectedCount.intValue() == 1) {
@@ -102,23 +131,41 @@ public class LoadXMLController {
             }
         });
 
-        OLGraphs = FXCollections.observableArrayList(graphs);
+
         setTable();
 
     }
 
+    private void setGraphSelected(String graphName, boolean bool) {
+        if (graphName == selectedGraph)
+            return;
 
-    private void configureCheckBox(CheckBox checkBox, String targetName) {
-        if (checkBox.isSelected())
+        selectedGraph = graphName;
+        selectedGraphLB.setText(selectedGraph);
+        if(bool) {
+            graphParentController.setData(graphName);
+            graphParentController.disableAllHeaderBt(true);
+        }
+        else {
+            graphParentController.disableAllHeaderBt(false);
+        }
+    }
+
+    private void configureCheckBox(CheckBox checkBox, String GraphName) {
+        if (checkBox.isSelected()) {
             selectedCheckBoxes.add(checkBox);
-        else
+            setGraphSelected(GraphName, true);
+        }
+        else {
             unselectedCheckBoxes.add(checkBox);
+            setGraphSelected("-", false);
+        }
 
         checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
             if (isNowSelected) {
                 unselectedCheckBoxes.remove(checkBox);
                 selectedCheckBoxes.add(checkBox);
-                setupNames(targetName);
+                setupNames(GraphName);
             } else {
                 selectedCheckBoxes.remove(checkBox);
                 unselectedCheckBoxes.add(checkBox);
@@ -127,32 +174,36 @@ public class LoadXMLController {
         });
     }
 
-    private void clearLastName() {
-        selectedGraphLB.setText("-");
-    }
+    private void clearLastName() {selectedGraphLB.setText("-");}
 
-    private void setupNames(String graphName) {
-        selectedGraphLB.setText(graphName);
-    }
+    private void setupNames(String graphName) {selectedGraphLB.setText(graphName);}
 
     public void setTable() {
 
+        checkBoxCOL.setStyle("-fx-alignment: CENTER;");
+        simPriceCol.setStyle("-fx-alignment: CENTER;");
+        compPriceCol.setStyle("-fx-alignment: CENTER;");
+        independCOL.setStyle("-fx-alignment: CENTER;");
+        leafCOL.setStyle("-fx-alignment: CENTER;");
+        middleCOL.setStyle("-fx-alignment: CENTER;");
+        rootCol.setStyle("-fx-alignment: CENTER;");
+        nameCOL.setStyle("-fx-alignment: CENTER;");
+        uploadByCol.setStyle("-fx-alignment: CENTER;");
+
         nameCOL.setCellValueFactory(new PropertyValueFactory<GraphDTO, String>("graphName"));
         uploadByCol.setCellValueFactory(new PropertyValueFactory<GraphDTO, String>("uploadByAdminName"));
-        priceCol.setCellValueFactory(new PropertyValueFactory<GraphDTO, Integer>("pricePerTarget"));
+        simPriceCol.setCellValueFactory(new PropertyValueFactory<GraphDTO, Integer>("simPricePerTarget"));
+        compPriceCol.setCellValueFactory(new PropertyValueFactory<GraphDTO, Integer>("compPricePerTarget"));
         independCOL.setCellValueFactory(new PropertyValueFactory<GraphDTO, Integer>("independenceCount"));
         leafCOL.setCellValueFactory(new PropertyValueFactory<GraphDTO, Integer>("leafCount"));
         middleCOL.setCellValueFactory(new PropertyValueFactory<GraphDTO, Integer>("middleCount"));
         rootCol.setCellValueFactory(new PropertyValueFactory<GraphDTO, Integer>("rootCount"));
-
         checkBoxCOL.setCellValueFactory(new PropertyValueFactory<GraphDTO, CheckBox>("selectedState"));
-
-        graphTable.setItems(OLGraphs);
     }
 
-
     @FXML
-    void uploadXMLPR(ActionEvent event) throws MalformedURLException {
+    void uploadXMLPR(ActionEvent event) throws MalformedURLException { //TODO - send the file to the server
+        clearFileUploadLB();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML file", "*.xml"));
@@ -205,13 +256,14 @@ public class LoadXMLController {
         });
     }
 
-    public void setMainController(AppController mainController) {
-        this.mainController = mainController;
+    private void clearFileUploadLB() {
+        uploadInfo1LB.setText("");
+        uploadInfo2LB.setText("");
     }
 
-    public void setGraphParentController(GraphController graphController) {
-        this.graphParentController = graphController;
-    }
+    public void setMainController(AppController mainController) {this.mainController = mainController;}
+
+    public void setGraphParentController(GraphController graphController) {this.graphParentController = graphController;}
 
     public void setupData() {
         //TODO get graph data from server

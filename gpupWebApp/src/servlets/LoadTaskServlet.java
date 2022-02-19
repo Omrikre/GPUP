@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 
 @WebServlet("/mission/add")
 public class LoadTaskServlet extends HttpServlet {
-    protected void procecssRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("object/task");
         try (PrintWriter out = resp.getWriter()) {
             Integer amountOfTargets = Integer.parseInt(req.getParameter("amount-of-targets"));
@@ -37,8 +37,9 @@ public class LoadTaskServlet extends HttpServlet {
             GraphDTO graph = graphManager.getGraphDTOByName(graphName);
             Integer price;
             if (compilationFolder == null)
-                price = waitingTargets * graph.getPricePerTarget().get("Simulation");
-            else price = waitingTargets * graph.getPricePerTarget().get("Compilation");
+                price = waitingTargets * graph.getSimPricePerTarget();
+            else
+                price = waitingTargets * graph.getCompPricePerTarget();
             MissionDTO task = new MissionDTO(amountOfTargets, compilationFolder, runtime, randomRunTime, success, successWithWarnings, missionName, MissionState.READY, 0, 0,
                     price, creatorName, graphName, graph, 0, waitingTargets, null);
             ServletUtils.getTaskManager(getServletContext()).addTask(task);
@@ -49,11 +50,11 @@ public class LoadTaskServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        procecssRequest(req, resp);
+        processRequest(req, resp);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        procecssRequest(req, resp);
+        processRequest(req, resp);
     }
 }

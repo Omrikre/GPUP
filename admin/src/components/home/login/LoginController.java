@@ -46,9 +46,6 @@ public class LoginController {
         }
         System.out.println("LoginController: " + userName );
 
-
-        //TODO - add logout
-
         String finalUrl = HttpUrl
                 .parse(LOGIN_PAGE)
                 .newBuilder()

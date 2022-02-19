@@ -36,8 +36,9 @@
                         <TableColumn fx:id="checkBoxCOL" maxWidth="30.0" minWidth="30.0" prefWidth="34.0" resizable="false" />
                       <TableColumn fx:id="nameCOL" editable="false" maxWidth="-1.0" minWidth="120.0" prefWidth="107.0" text="Graph Name" />
                       <TableColumn fx:id="uploadByCol" editable="false" minWidth="90.0" prefWidth="98.0" text="Uploded By" />
-                        <TableColumn fx:id="priceCol" editable="false" minWidth="40.0" prefWidth="38.0" text="Price" />
-                        <TableColumn editable="false" maxWidth="318.0" minWidth="244.0" prefWidth="318.0" text="Targets">
+                        <TableColumn fx:id="simPriceCol" editable="false" minWidth="110.0" prefWidth="60.0" text="Simulation Price" />
+                        <TableColumn fx:id="compPriceCol" editable="false" minWidth="110.0" prefWidth="60.0" text="Compilation Price" />
+                        <TableColumn editable="false" maxWidth="318.0" minWidth="206.0" prefWidth="227.0" text="Targets">
                            <columns>
                               <TableColumn fx:id="independCOL" editable="false" minWidth="20.0" prefWidth="88.0" text="Independ." />
                               <TableColumn fx:id="leafCOL" editable="false" prefWidth="62.0" text="Leaf" />
