@@ -14,6 +14,9 @@ import components.home.login.LoginController;
 import components.mainLogin.MainLoginController;
 import components.missions.MissionsController;
 import components.settings.settingsController;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -24,8 +27,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
 import javax.xml.bind.JAXBException;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,16 +43,13 @@ import java.util.Set;
 
 import static components.app.CommonResourcesPaths.*;
 
-public class AppController {
+public class AppController implements Closeable {
 
     // components:
-    @FXML
-    private BorderPane maimBorderPaneComp;
+    @FXML private BorderPane maimBorderPaneComp;
     // Header
-    @FXML
-    private VBox headerComponent;
-    @FXML
-    private HeaderButtonsController headerComponentController;
+    @FXML private VBox headerComponent;
+    @FXML private HeaderButtonsController headerComponentController;
     // Settings
     private BorderPane settingsComponent;
     private settingsController settingsComponentController;
@@ -55,10 +61,8 @@ public class AppController {
 
     // main components:
     // main - login Loader
-    @FXML
-    private ScrollPane mainLoginComp;
-    @FXML
-    private MainLoginController mainLoginCompController;
+    @FXML private ScrollPane mainLoginComp;
+    @FXML private MainLoginController mainLoginCompController;
     // graph manager
     private BorderPane graphManagerComponent;
     private GraphController graphManagerComponentController;
@@ -80,20 +84,86 @@ public class AppController {
     private boolean graphContainsCycle;
     private boolean darkModeOn = false;   //TODO dark mode
     private boolean animationsOn = false; //TODO animations
+    private BooleanProperty autoUpdate;
 
     // methods:
     // initializers
     @FXML
     public void initialize() {
         isLoggedIn = false;
+        autoUpdate = new SimpleBooleanProperty(true);
         setMainInSubComponents();
         loadBackComponents();
     }
 
+    // Refreshers
+    public void setRefreshersActive() {
+        autoUpdate.setValue(true);
+        dashboardComponentController.startListRefresher();
+/*        graphAdminComponentController.startGraphListRefresher();
+        starChatRefresher();
+        starMissionRefresher();*/
+    }
+
+    public void setInActive() {
+        try {
+            autoUpdate.setValue(false);
+            close();
+            //usersListComponentController.close();
+            //graphAdminComponentController.close();
+        } catch (Exception ignored) {}
+    }
+/*
+    @Override public void logout() {
+        String finalUrl = HttpUrl
+                .parse(LOGOUT_PAGE)
+                .newBuilder()
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> new errorMain("error - admin logout"+e.getMessage()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> new errorMain("admin logout  - Response code: "+response.code()+"\nResponse body: "+responseBody));
+                } else {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                        System.out.println(responseBody);
+                        adminAppMainController.switchToLogin();
+                        setInActive();
+                        HttpClientUtil.removeCookiesOf(BASE_DOMAIN);
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (timerChatRefresher != null) {
+            chatAreaRefresher.cancel();
+            timerChatRefresher.cancel();
+        }
+        if (timerMissionRefresher != null) {
+            missionRefresher.cancel();
+            timerMissionRefresher.cancel();
+        }
+        chatVersion.set(0);
+        chatLineTextArea.clear();
+        tableViewMission.getItems().clear();
+    }
+*/
+
     public String getUsername() {
         return loginComponentController.getUserName();
     }
-
     private void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         try {
@@ -163,7 +233,6 @@ public class AppController {
             System.out.println(e.getMessage());
         }
     }
-
     private void setMainInSubComponents() {
         if (headerComponentController != null && mainLoginCompController != null) {
             mainLoginCompController.setMainController(this);
@@ -176,45 +245,34 @@ public class AppController {
     public void setAllDataInPanes() {
         setGraphContainsCycle();
         headerComponentController.makeAllButtonsDisable(false);
+        //TODO - start All refreshers
 
-        //FXMLComponentController.setupData(xmlPath);
-        //infoComponentController.setupData();
-        //taskComponentController.setupData(engine.getListOfAllTargetsDTOsInGraph());
-        //tableComponentController.setupData(engine.getListOfAllTargetsDTOsInGraph());
     }
 
 
     // change pane by button press
-    //TODO
     public void showHomePane() {
         maimBorderPaneComp.setCenter(mainLoginComp);
     }
-
     public void showDashboardPane() {
         maimBorderPaneComp.setCenter(dashboardComponent);
     }
-
     public void showMissionsPane() {
         maimBorderPaneComp.setCenter(missionsComponent);
     }
-
     public void showGraphPane() {
         maimBorderPaneComp.setCenter(graphManagerComponent);
     }
-
     public void showChatPane() {
         maimBorderPaneComp.setCenter(chatComponent);
     }
-
     public void showSettingsPane() {
         settingsComponentController.setupData(darkModeOn, animationsOn);
         settingsWin.show();
     }
-
     public void openLoginWin() {
         loginWin.show();
     }
-
     public void closeSettingsWin() {
         settingsWin.close();
     }
@@ -245,67 +303,46 @@ public class AppController {
     public boolean isDarkModeOn() {
         return darkModeOn;
     }
-
     public boolean isAnimationsOn() {
         return animationsOn;
     }
-
     public void setAnimationsOn(boolean animationsOn) {
         this.animationsOn = animationsOn;
     }
-
     public void setDarkModeOn(boolean darkModeOn) {
         this.darkModeOn = darkModeOn;
     }
-
-    public int getNumOfTargets() {
-        return engine.getAmountOfTargets();
-    }
-
+    public int getNumOfTargets() {return engine.getAmountOfTargets();}
     public boolean getGraphContainsCycle() {
         return graphContainsCycle;
     }
-
     private void setGraphContainsCycle() {
         graphContainsCycle = engine.checkIfTheGraphContainsCycle();
     }
-
 
     // engine methods
     public List<TargetDTO> getTargetList() {
         return engine.getListOfAllTargetsDTOsInGraph();
     }
-
     public TargetDTO getTargetDTO(String targetName) {
         return engine.getTargetDataTransferObjectByName(targetName);
     }
-
-    public Set<List<String>> getPathDepends(String a, String b) {
-        return engine.getPathBetweenTargets(a, b, Bond.DEPENDS_ON);
-    }
-
-    public Set<List<String>> getPathRequired(String a, String b) {
-        return engine.getPathBetweenTargets(a, b, Bond.REQUIRED_FOR);
-    }
-
+    public Set<List<String>> getPathDepends(String a, String b) {return engine.getPathBetweenTargets(a, b, Bond.DEPENDS_ON);}
+    public Set<List<String>> getPathRequired(String a, String b) {return engine.getPathBetweenTargets(a, b, Bond.REQUIRED_FOR);}
     public Map<Location, Integer> getGeneralInfoTable() {
         return engine.howManyTargetsInEachLocation();
     }
-
     public boolean checkFileIsValid(String path, String username) throws FileException, JAXBException, IOException {
         engine.loadFile(path, username);
         return true;
     }
-
     public int getMaxThreads() {
         return engine.getMaxThreads();
     }
-
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
                               int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
         engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum, fromScratch);
     }
-
     public String getFileName() {
         return engine.getFileName();
     }
@@ -383,6 +420,10 @@ public class AppController {
     }
 
 
+    @Override
+    public void close() throws IOException {
+
+    }
 }
 
 

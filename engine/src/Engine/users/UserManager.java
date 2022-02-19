@@ -8,6 +8,19 @@ public class UserManager {
         private int threads;
         private String role;
 
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setThreads(int threads) {
+            this.threads = threads;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+
+
         public User(String name, int threads, String role) {
             this.name = name;
             this.threads = threads;

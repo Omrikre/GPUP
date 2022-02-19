@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="gpupWebApp:Web exploded">
+  <artifact type="exploded-war" build-on-make="true" name="gpupWebApp:Web exploded">
     <output-path>$PROJECT_DIR$/out/artifacts/gpupWebApp_Web_exploded</output-path>
     <root id="root">
       <element id="javaee-facet-resources" facet="gpupWebApp/web/Web" />
@@ -10,6 +10,7 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="google-gson-2" />
+          <element id="library" level="project" name="okHttp" />
         </element>
       </element>
     </root>

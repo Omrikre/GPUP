@@ -240,6 +240,10 @@ public class AppController {
     }
 
     public Engine getEngine() { return engine; }
+
+    public boolean checkFileIsValid(String absolutePath) {
+        return true;
+    }
 }
 
 

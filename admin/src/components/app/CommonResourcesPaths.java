@@ -36,6 +36,9 @@ public class CommonResourcesPaths {
     public final static String APP_ICON_RESOURCE = "/images/Manchester-United-icon.png";
 
 
+    // refresh
+    public final static int REFRESH_RATE = 1500;
+
 
 
 }

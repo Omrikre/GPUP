@@ -184,8 +184,8 @@ public class GraphController {
             if (response.code() != 200) {
                 String responseBody = response.body().string();
                 Platform.runLater(() ->
-                        .setText("Something went wrong: " + responseBody)
-                );
+                                sout
+                       );
             } else {
                 Platform.runLater(() -> {
 
