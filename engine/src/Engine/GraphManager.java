@@ -3,6 +3,7 @@ package Engine;
 import Engine.DTO.GraphDTO;
 import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Enums.Bond;
 
 import java.lang.annotation.Target;
@@ -30,14 +31,14 @@ public class GraphManager {
         return res;
     }
 
-    public synchronized TargetDTO getTargetDTO(String graphname, String targetName) {
-        return new TargetDTO(graphMap.get(graphname).getTargetByName(targetName));
+    public synchronized TargetDTOWithoutCB getTargetDTO(String graphname, String targetName) {
+        return new TargetDTOWithoutCB(graphMap.get(graphname).getTargetByName(targetName));
     }
 
-    public synchronized List<TargetDTO> getTargetDTOList(String graphname) {
-        List<TargetDTO> res = new ArrayList<>();
+    public synchronized List<TargetDTOWithoutCB> getTargetDTOList(String graphname) {
+        List<TargetDTOWithoutCB> res = new ArrayList<>();
         for (Graph.Target t : graphMap.get(graphname).getTargets().values()) {
-            res.add(new TargetDTO(t));
+            res.add(new TargetDTOWithoutCB(t));
         }
         return res;
     }

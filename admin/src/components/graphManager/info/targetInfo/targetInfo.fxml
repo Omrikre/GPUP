@@ -17,8 +17,8 @@
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="15.0" prefWidth="15.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="163.0" minWidth="10.0" prefWidth="163.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="137.0" minWidth="10.0" prefWidth="121.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="10.0" prefWidth="119.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="167.0" minWidth="10.0" prefWidth="167.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="223.0" minWidth="10.0" prefWidth="223.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="167.0" minWidth="10.0" prefWidth="142.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="15.0" prefWidth="15.0" />
         </columnConstraints>
         <rowConstraints>
@@ -32,7 +32,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <ChoiceBox fx:id="choiceTargetBox" prefHeight="25.0" prefWidth="168.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+            <ChoiceBox fx:id="choiceTargetBox" prefHeight="31.0" prefWidth="216.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="5.0" />
                </GridPane.margin>
@@ -45,8 +45,8 @@
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="15.0" minWidth="15.0" prefWidth="15.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.0" minWidth="15.0" prefWidth="101.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="134.0" minWidth="10.0" prefWidth="83.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="294.0" minWidth="10.0" prefWidth="279.0" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="138.0" minWidth="79.0" prefWidth="96.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="294.0" minWidth="10.0" prefWidth="260.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="138.0" minWidth="79.0" prefWidth="119.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.0" minWidth="10.0" prefWidth="137.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="15.0" prefWidth="15.0" />
         </columnConstraints>
@@ -124,21 +124,6 @@
                </font>
             </Label>
             <Label fx:id="requiredNamesLabel" layoutX="391.0" layoutY="198.0" text="Label" GridPane.columnIndex="5" GridPane.rowIndex="8">
-               <font>
-                  <Font name="System Bold" size="13.0" />
-               </font>
-            </Label>
-            <Label layoutX="60.0" layoutY="104.0" text="Serial set" GridPane.columnIndex="2" GridPane.rowIndex="10">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Label>
-            <Label fx:id="serialSetNameLabel" layoutX="161.0" layoutY="104.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="10">
-               <font>
-                  <Font name="System Bold" size="13.0" />
-               </font>
-            </Label>
-            <Label fx:id="serialSetTargetsLabel" layoutX="161.0" layoutY="144.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="12">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>

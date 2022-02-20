@@ -1,6 +1,5 @@
 package components.graphManager.info.targetInfo;
 
-import Engine.DTO.TargetDTO;
 import Engine.DTO.TargetDTOWithoutCB;
 import components.graphManager.info.InfoController;
 import javafx.fxml.FXML;
@@ -20,8 +19,6 @@ public class targetInfoController {
     @FXML private Label dependsNamesLabel;
     @FXML private Label requiredNumLabel;
     @FXML private Label requiredNamesLabel;
-    @FXML private Label serialSetNameLabel;
-    @FXML private Label serialSetTargetsLabel;
 
     private List<TargetDTOWithoutCB> targetDTOList;
     private InfoController parentController;
@@ -37,9 +34,6 @@ public class targetInfoController {
         dependsNamesLabel.setText(" - ");
         requiredNumLabel.setText(" - ");
         requiredNamesLabel.setText(" - ");
-        serialSetNameLabel.setText(" - ");
-        serialSetTargetsLabel.setText(" - ");
-
 
     }
     public void resetData() {
@@ -50,8 +44,6 @@ public class targetInfoController {
         dependsNamesLabel.setText(" - ");
         requiredNumLabel.setText(" - ");
         requiredNamesLabel.setText(" - ");
-        serialSetNameLabel.setText(" - ");
-        serialSetTargetsLabel.setText(" - ");
         if(!choiceTargetBox.getItems().isEmpty())
             choiceTargetBox.getItems().clear();
     }
@@ -66,12 +58,16 @@ public class targetInfoController {
         choiceTargetBox.setOnAction((event) -> {
             String selectedItem = choiceTargetBox.getSelectionModel().getSelectedItem();
             //TEST System.out.println("Selection target: " + selectedItem);
-            //setDataInLabels(parentController.getTargetDTO(selectedItem));
+            for (TargetDTOWithoutCB t : targetDTOS) {
+                if(t.getTargetName().equals(selectedItem))
+                    setDataInLabels((t));
+            }
+
         });
     }
 
 
-    public void setDataInLabels(TargetDTO targetInfo) {
+    public void setDataInLabels(TargetDTOWithoutCB targetInfo) {
         nameLabel.setText(targetInfo.getTargetName());
         typeLabel.setText(targetInfo.getTargetLocation().toString());
         infoLabel.setText(targetInfo.getTargetInfo());
@@ -79,7 +75,5 @@ public class targetInfoController {
         dependsNamesLabel.setText(targetInfo.getTargetDependsOn().toString());
         requiredNumLabel.setText(String.valueOf(targetInfo.getTargetRequiredFor().size()));
         requiredNamesLabel.setText(targetInfo.getTargetRequiredFor().toString());
-        serialSetNameLabel.setText(String.valueOf(targetInfo.getSerialSetsBelongs()));
-        //serialSetTargetsLabel.setText(parentController.getSSByName(targetInfo.getTargetName()));
     }
 }

@@ -3,6 +3,7 @@ package servlets;
 import Engine.DTO.GraphDTO;
 import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Enums.Bond;
 import Engine.GraphManager;
 import com.google.gson.Gson;
@@ -69,7 +70,7 @@ public class GraphServlet extends HttpServlet {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
-                            TargetDTO targetDTO = graphManager.getTargetDTO(name,targetB);
+                            TargetDTOWithoutCB targetDTO = graphManager.getTargetDTO(name,targetB);
                             String json = gson.toJson(targetDTO);
                             resp.setStatus(200);
                             out.println(json);
@@ -78,7 +79,7 @@ public class GraphServlet extends HttpServlet {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
-                            TargetDTO targetDTO = graphManager.getTargetDTO(name,targetA);
+                            TargetDTOWithoutCB targetDTO = graphManager.getTargetDTO(name,targetA);
                             String json = gson.toJson(targetDTO);
                             resp.setStatus(200);
                             out.println(json);

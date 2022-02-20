@@ -21,6 +21,12 @@ public class whatIfController {
     private tableController parentController;
     private String selectedTarget;
 
+
+    @FXML
+    void whatIfGetWhatIfPr(ActionEvent event) {
+
+    }
+
     public void clearSelectedTargetLabel() {
         WHATselectedTargetLabel.setText(" -");
         selectedTarget = null;

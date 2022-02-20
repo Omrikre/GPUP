@@ -144,6 +144,7 @@ public class simulationController {
         runIsDone = false;
         parentController.resetTargetsStatus();
 
+        parentController.getGraphName(); //TODO - graph name
 
         runBT.setDisable(true);
         //parentController.setDisableTaskType(true);

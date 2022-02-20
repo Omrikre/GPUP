@@ -45,6 +45,7 @@ public class LoginController {
             return;
         }
         System.out.println("LoginController: " + userName );
+        loginBT.setDisable(true);
 
         String finalUrl = HttpUrl
                 .parse(LOGIN_PAGE)
@@ -58,8 +59,10 @@ public class LoginController {
         HttpClientUtil.runAsync(finalUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        loginMsgLB.setText("Something went wrong: " + e.getMessage())
+                Platform.runLater(() -> {
+                            loginMsgLB.setText("Something went wrong: " + e.getMessage());
+                            loginBT.setDisable(false);
+                        }
                 );
             }
 
@@ -67,18 +70,19 @@ public class LoginController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() ->
-                            loginMsgLB.setText("Something went wrong: " + responseBody)
+                    Platform.runLater(() -> {
+                                loginMsgLB.setText("Something went wrong: " + responseBody);
+                                loginBT.setDisable(false);
+
+                            }
+
                     );
                 } else {
                     Platform.runLater(() -> {
-                        mainController.closeLogin(userName);
-                        try {
-                            String responseBody = response.body().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+                                mainController.closeLogin(userName);
+                                loginBT.setDisable(false);
+                            }
+                    );
                 }
             }
         });

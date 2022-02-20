@@ -56,6 +56,7 @@ public class taskController {
     @FXML private TableColumn<TargetDTO, String> targetInfoCOL;
     @FXML private TableColumn<TargetDTO, String> statusCOL;
     @FXML private TableColumn<TargetDTO, String> targetTypeCOL;
+    private GraphController parentController;
 
 
     public AppController getMainController() {return mainController;}
@@ -360,6 +361,7 @@ public class taskController {
         moreInfoWin.close();
     }
 
-    public void setParentController(GraphController graphController) {
-    }
+    public void setParentController(GraphController graphController) { this.parentController = graphController; }
+
+    public String getGraphName() { return parentController.getSelectedGraphName(); }
 }

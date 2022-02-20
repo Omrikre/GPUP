@@ -166,20 +166,20 @@ public class tableController {
     public void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         try {
-            // what if pane
+            // cycle
             fxmlLoader.setLocation(getClass().getResource(TABLE_CYCLE_fXML_RESOURCE));
             cycleVBPane = fxmlLoader.load();
             cycleVBPaneController = fxmlLoader.getController();
             cycleVBPaneController.setParentController(this);
-            System.out.println(" -- table (what if) done --");
+            System.out.println(" -- table (cycle) done --");
 
-            // task pane
+            // what if
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(TABLE_WHATIF_fXML_RESOURCE));
             whatIfVBPane = fxmlLoader.load();
             whatIfVBPaneController = fxmlLoader.getController();
             whatIfVBPaneController.setParentController(this);
-            System.out.println(" -- table (find cycle) done --");
+            System.out.println(" -- table (what if) done --");
 
         } catch (Exception e) {
             System.out.println("BIG (table) Problem");

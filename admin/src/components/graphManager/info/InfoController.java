@@ -50,7 +50,7 @@ public class InfoController {
         this.targets = targets;
         this.graph = graph;
         if(generalInfoGPController != null) {
-            generalInfoGPController.setupData(graph); //TODO
+            generalInfoGPController.setupData(graph, targets); //TODO
         } else System.out.println("null fuck 1");
         if(infoByTargetGPController != null) {
             infoByTargetGPController.resetData();

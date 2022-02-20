@@ -114,7 +114,6 @@ public class LoadXMLController {
                 newGraphList.add(tempDTO);
             }
             ObservableList<GraphDTO> OLGraph = FXCollections.observableArrayList(newGraphList);
-            //OLGraphs.clear();
             OLGraphs = OLGraph;
             graphTable.setItems(OLGraphs);
             graphTable.refresh();
@@ -154,16 +153,15 @@ public class LoadXMLController {
     private void configureCheckBox(CheckBox checkBox, String GraphName) {
         if (checkBox.isSelected()) {
             selectedCheckBoxes.add(checkBox);
-            setGraphSelected(GraphName, true);
             for (GraphDTO g : OLGraphs) {
-                if (g.getGraphName() == GraphName)
+                if (g.getGraphName().equals(GraphName))
                     selectedGraphDTO = g;
             }
+            setGraphSelected(GraphName, true);
         }
         else {
             unselectedCheckBoxes.add(checkBox);
             setGraphSelected("-", false);
-            selectedGraphDTO = null;
         }
 
         checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
@@ -171,11 +169,17 @@ public class LoadXMLController {
                 unselectedCheckBoxes.remove(checkBox);
                 selectedCheckBoxes.add(checkBox);
                 setupNames(GraphName);
+                for (GraphDTO g : OLGraphs) {
+                    System.out.println(g.getGraphName() + " " + GraphName);
+                    if (g.getGraphName().equals(GraphName))
+                        selectedGraphDTO = g;
+                }
                 setGraphSelected(GraphName, true);
             } else {
                 selectedCheckBoxes.remove(checkBox);
                 unselectedCheckBoxes.add(checkBox);
                 clearLastName();
+                selectedGraphDTO = null;
                 setGraphSelected("", false);
             }
         });
@@ -272,6 +276,12 @@ public class LoadXMLController {
         }
         graphTable.getItems().clear();
         graphTable.refresh();
+    }
+
+    public void clear() {
+        if(!selectedCheckBoxes.isEmpty()) {
+            selectedCheckBoxes.forEach(cb -> cb.setSelected(false));
+        }
     }
 }
 

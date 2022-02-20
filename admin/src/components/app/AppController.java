@@ -415,6 +415,7 @@ public class AppController implements Closeable {
 
     public void logout() {
         headerComponentController.makeAllButtonsDisable(true);
+        graphManagerComponentController.clearAfterLogout();
     }
 
 

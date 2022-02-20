@@ -205,6 +205,14 @@ public class GraphController {
         XMLCompController.closeXMLLoader();
         //TODO - close all
     }
+
+    public void clearAfterLogout() {
+        showXMLManagerPane();
+        XMLCompController.clear();
+
+    }
+
+    public String getSelectedGraphName() { return selectedGraphName;}
 }
 
 
