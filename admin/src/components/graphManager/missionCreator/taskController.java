@@ -364,4 +364,12 @@ public class taskController {
     public void setParentController(GraphController graphController) { this.parentController = graphController; }
 
     public String getGraphName() { return parentController.getSelectedGraphName(); }
+
+    public void CreateNewMissionWin(boolean isSimulation ,String targetsArr, String amountOfTargets, String src, String compFolder, String graphName,
+                                        String runTime, String randomRunTime, String success, String successWithWarnings) {
+    mainController.openCreateNewMissionWin( isSimulation , targetsArr,  amountOfTargets,  src,  compFolder,  graphName,
+                 runTime,  randomRunTime,  success,  successWithWarnings);
+    }
+
+
 }

@@ -16,7 +16,6 @@ import components.missions.MissionsController;
 import components.missions.createNewMission.NewMissionCreatorController;
 import components.settings.settingsController;
 import http.HttpClientUtil;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -245,38 +244,25 @@ public class AppController implements Closeable {
     public void closeSettingsWin() {
         settingsWin.close();
     }
-    public void openCreateNewMissionWin(boolean isDup, boolean isFromScratch, String oldMission, String newName) {
+
+    public void openCreateNewMissionWin(boolean isSimulation ,String targetsArr, String amountOfTargets, String src, String compFolder, String graphName,
+                                        String runTime, String randomRunTime, String success, String successWithWarnings) {
         createMissionComponentController.cleanup();
-        createMissionComponentController.setupData(isDup, isFromScratch, oldMission, newName);
+        if(isSimulation)
+            createMissionComponentController.setupDataSimulation(targetsArr, amountOfTargets, runTime, randomRunTime, success ,successWithWarnings , graphName);
+        else
+            createMissionComponentController.setupDataCompilation(targetsArr, amountOfTargets, src, compFolder, graphName);
         createMissionWin.show();
     }
-    public void openCreateNewMissionWin(String httpURL) {
+    public void openCreateNewMissionWin(boolean isFromScratch, String oldName) {
         createMissionComponentController.cleanup();
-        createMissionComponentController.setupData(httpURL);
+        createMissionComponentController.setupDataCompilation(isFromScratch, oldName);
         createMissionWin.show();
     }
+
     public void closeCreateNewMissionWin() { createMissionWin.close();
     }
 
-/*
-    public void showInfoPane() {
-        infoComponentController.setupData();
-        maimBorderPaneComp.setCenter(infoComponent);
-        if(!cycleMsgShownAlready && graphContainsCycle) {
-            cycleMsgWin.show();
-            cycleMsgShownAlready = true;
-        }
-    }
-    public void showDashboardPane() { maimBorderPaneComp.setCenter(tableComponent); }
-    public void showGraphPane() { maimBorderPaneComp.setCenter(tableComponent); }
-    public void showMissionsPane() { maimBorderPaneComp.setCenter(tableComponent); }
-    public void showXMLLoadPane() {
-        FXMLComponentController.whenGetToPane();
-        maimBorderPaneComp.setCenter(FXMLComponent);
-    }
-    public void showTaskPane() { maimBorderPaneComp.setCenter(taskComponent); }
-    public void showTablePane() { maimBorderPaneComp.setCenter(tableComponent); }
-*/
 
 
     // getters setters

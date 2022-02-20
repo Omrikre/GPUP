@@ -30,35 +30,20 @@ import static components.app.HttpResourcesPaths.ADD_MISSION;
 public class compilationController {
 
 
-    @FXML
-    private BorderPane simulationBP;
-    @FXML
-    private VBox upVB;
-    @FXML
-    private ToggleButton useWhatIfBT;
-    @FXML
-    private ToggleButton depOnBT;
-    @FXML
-    private ToggleButton reqForBT;
-    @FXML
-    private Button selectAllTargetsBT;
-    @FXML
-    private Button unselectAllTargetsBT;
-    @FXML
-    private TextField selectedTargetsTB;
-    @FXML
-    private VBox downVB;
-    @FXML
-    private Button runBT;
-    @FXML
-    private Button inputPathBT;
-    @FXML
-    private Button outputPathBt;
-    @FXML
-    private CheckBox outputPathCB;
-    @FXML
-    private CheckBox inputPathCB;
-
+    @FXML private BorderPane simulationBP;
+    @FXML private VBox upVB;
+    @FXML private ToggleButton useWhatIfBT;
+    @FXML private ToggleButton depOnBT;
+    @FXML private ToggleButton reqForBT;
+    @FXML private Button selectAllTargetsBT;
+    @FXML private Button unselectAllTargetsBT;
+    @FXML private TextField selectedTargetsTB;
+    @FXML private VBox downVB;
+    @FXML private Button runBT;
+    @FXML private Button inputPathBT;
+    @FXML private Button outputPathBt;
+    @FXML private CheckBox outputPathCB;
+    @FXML private CheckBox inputPathCB;
 
     private taskController parentController;
     private ArrayList<String> runTargetsArray;
@@ -68,7 +53,6 @@ public class compilationController {
     private String inputPath;
     private String outputPath;
     private int SelectedNum;
-    private String name;
 
     private boolean runningCompilation;
     private boolean firstRun;
@@ -94,18 +78,21 @@ public class compilationController {
 
         useWhatIfBT.setOnAction((event) -> {
             if (useWhatIfBT.isSelected()) {
-                //whatIfGP.setDisable(false);
+                depOnBT.setDisable(false);
+                reqForBT.setDisable(false);
+
             } else {
-                //whatIfGP.setDisable(true);
+                depOnBT.setDisable(true);
+                reqForBT.setDisable(true);
             }
         });
+
+
     }
 
     public void setupData() {
         runTargetsArray.clear();
         selectedTargetsTB.setText(runTargetsArray.toString());
-
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, parentController.getMaxThreads(), 1, 1);
     }
 
 
@@ -170,7 +157,6 @@ public class compilationController {
     @FXML
     void runBTPr(ActionEvent event) {
 
-
         runBT.setDisable(true);
         //parentController.setDisableTaskType(true);
         upVB.setDisable(true);
@@ -188,56 +174,15 @@ public class compilationController {
         firstRun = false;
 
 
-        String graphName = parentController.getGraphName();
         Gson gson = new Gson();
         String targetsArr = gson.toJson(runTargetsArray);
-        String amountOfTargets= String.valueOf(runTargetsArray.size());
-        String compilationFolder=outputPath;
-        String src=inputPath;
-        String missionName=name;
-        String finalUrl = HttpUrl
-                .parse(ADD_MISSION)
-                .newBuilder()
-                .addQueryParameter("targets-array", targetsArr)
-                .addQueryParameter("amount-of-targets", amountOfTargets)
-                .addQueryParameter("src",src)
-                .addQueryParameter("compilation-folder", compilationFolder) //for compilation task, else null
-                //the rest are for the display:
-                .addQueryParameter("name", missionName)
-                .addQueryParameter("graph-name", graphName)
-                .addQueryParameter("from-scratch", "false")
-                .addQueryParameter("incremental", "true")
-                .build()
-                .toString();
+        String amountOfTargets = String.valueOf(runTargetsArray.size());
+        String src = inputPath;
+        String compilationFolder = outputPath;
+        String graphName = parentController.getGraphName();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> System.out.println()
-                        //.setText("Something went wrong: " + e.getMessage())
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> System.out.println()
-                           // .setText("Something went wrong: " + responseBody)
-                    );
-                } else {
-                    Platform.runLater(() -> {
-
-                        try {
-                            String responseBody = response.body().string();
-                            System.out.println(responseBody);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            }
-        });
+        parentController.getMainController().openCreateNewMissionWin(false ,targetsArr, amountOfTargets,
+                src, compilationFolder, graphName, "", "", "", "");
 
     }
 
