@@ -13,6 +13,7 @@ import components.header.HeaderButtonsController;
 import components.home.login.LoginController;
 import components.mainLogin.MainLoginController;
 import components.missions.MissionsController;
+import components.missions.createNewMission.NewMissionCreatorController;
 import components.settings.settingsController;
 import http.HttpClientUtil;
 import javafx.application.Platform;
@@ -67,6 +68,11 @@ public class AppController implements Closeable {
     // missions
     private ScrollPane missionsComponent;
     private MissionsController missionsComponentController;
+    // create new mission
+    private GridPane createMissionComponent;
+    private NewMissionCreatorController createMissionComponentController;
+    private Stage createMissionWin;
+
     // missions
     private ScrollPane chatComponent;
     private ChatRoomMainController chatComponentController;
@@ -109,54 +115,6 @@ public class AppController implements Closeable {
         } catch (Exception ignored) {}
     }
 
-/*
-    @Override public void logout() {
-        String finalUrl = HttpUrl
-                .parse(LOGOUT_PAGE)
-                .newBuilder()
-                .build()
-                .toString();
-
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> new errorMain("error - admin logout"+e.getMessage()));
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> new errorMain("admin logout  - Response code: "+response.code()+"\nResponse body: "+responseBody));
-                } else {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() -> {
-                        System.out.println(responseBody);
-                        adminAppMainController.switchToLogin();
-                        setInActive();
-                        HttpClientUtil.removeCookiesOf(BASE_DOMAIN);
-                    });
-                }
-            }
-        });
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (timerChatRefresher != null) {
-            chatAreaRefresher.cancel();
-            timerChatRefresher.cancel();
-        }
-        if (timerMissionRefresher != null) {
-            missionRefresher.cancel();
-            timerMissionRefresher.cancel();
-        }
-        chatVersion.set(0);
-        chatLineTextArea.clear();
-        tableViewMission.getItems().clear();
-    }
-*/
-
     public String getUsername() {
         return loginComponentController.getUserName();
     }
@@ -191,6 +149,20 @@ public class AppController implements Closeable {
             loginWin.setResizable(false);
             System.out.println(" -- login done --");
 
+            // create new mission
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(CREATE_NEW_MISSION_fXML_RESOURCE));
+            createMissionComponent = fxmlLoader.load();
+            createMissionComponentController = fxmlLoader.getController();
+            createMissionComponentController.setMainController(this);
+            createMissionWin = new Stage();
+            createMissionWin.setTitle("Create New Mission");
+            createMissionWin.getIcons().add(new Image("/images/appIcon.png"));
+            createMissionWin.setScene(new Scene(createMissionComponent));
+            createMissionWin.initModality(Modality.APPLICATION_MODAL);
+            createMissionWin.setResizable(false);
+            System.out.println(" -- create new mission done --");
+
             // graph manager
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(GRAPH_MANAGER_fXML_RESOURCE));
@@ -204,6 +176,7 @@ public class AppController implements Closeable {
             fxmlLoader.setLocation(getClass().getResource(MISSIONS_fXML_RESOURCE));
             missionsComponent = fxmlLoader.load();
             missionsComponentController = fxmlLoader.getController();
+            missionsComponentController.setMainController(this);
             //missionsComponentController.setMainController(this);
             System.out.println(" -- missions done --");
 
@@ -272,7 +245,13 @@ public class AppController implements Closeable {
     public void closeSettingsWin() {
         settingsWin.close();
     }
-
+    public void openCreateNewMissionWin(boolean isDup, boolean isFromScratch) {
+        createMissionComponentController.cleanup();
+        createMissionComponentController.setupData(isDup, isFromScratch);
+        createMissionWin.show();
+    }
+    public void closeCreateNewMissionWin() { createMissionWin.close();
+    }
 
 /*
     public void showInfoPane() {

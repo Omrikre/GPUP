@@ -5,6 +5,7 @@ import Engine.Enums.Bond;
 import com.google.gson.Gson;
 import components.graphManager.missionCreator.taskController;
 import http.HttpClientUtil;
+import javafx.application.Platform;
 import javafx.beans.binding.IntegerBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,9 +18,11 @@ import javafx.stage.Stage;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
+import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static components.app.HttpResourcesPaths.ADD_MISSION;
@@ -209,7 +212,9 @@ public class compilationController {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        .setText("Something went wrong: " + e.getMessage())
+                                System.out.println("")
+                        //.setText("Something went wrong: " + e.getMessage())
+
                 );
             }
 
@@ -218,7 +223,9 @@ public class compilationController {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
                     Platform.runLater(() ->
-                            .setText("Something went wrong: " + responseBody)
+                            System.out.println("")
+
+                                    //.setText("Something went wrong: " + responseBody)
                     );
                 } else {
                     Platform.runLater(() -> {

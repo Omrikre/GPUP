@@ -13,10 +13,10 @@ public class CommonResourcesPaths {
     public final static String MISSIONS_fXML_RESOURCE = "/components/missions/missions.fxml";
     public final static String CHAT_fXML_RESOURCE = "/components/chat/chatroom/chat-room-main.fxml";
 
-
     // graph manager - back components
     public final static String INFO_XML_RESOURCE = "/components/graphManager/info/Info.fxml";
     public final static String MISSION_CREATOR_fXML_RESOURCE = "/components/graphManager/missionCreator/task.fxml";
+    public final static String CREATE_NEW_MISSION_fXML_RESOURCE = "/components/missions/createNewMission/newMission.fxml";
     public final static String TABLE_fXML_RESOURCE = "/components/graphManager/table/table.fxml";
     // table - back components
     public final static String TABLE_CYCLE_fXML_RESOURCE = "/components/graphManager/table/cycle/cycle.fxml";
@@ -24,6 +24,7 @@ public class CommonResourcesPaths {
     // task - back components
     public final static String TASK_COMPILATION_fXML_RESOURCE = "/components/graphManager/missionCreator/compilation/compilation.fxml";
     public final static String TASK_SIMULATION_fXML_RESOURCE = "/components/graphManager/missionCreator/simulation/simulation.fxml";
+
 
     // spacial messages
     public final static String INFO_CYCLE_MSG_fXML_RESOURCE = "/components/graphManager/info/cycleWarningInfo/cycleWarningInfo.fxml";
@@ -34,7 +35,6 @@ public class CommonResourcesPaths {
 
     //app icon
     public final static String APP_ICON_RESOURCE = "/images/Manchester-United-icon.png";
-
 
     // refresh
     public final static int REFRESH_RATE = 1500;
