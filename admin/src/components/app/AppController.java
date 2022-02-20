@@ -250,14 +250,13 @@ public class AppController implements Closeable {
     public void showHomePane() {
         maimBorderPaneComp.setCenter(mainLoginComp);
     }
-    public void showDashboardPane() {
-        maimBorderPaneComp.setCenter(dashboardComponent);
-    }
+    public void showDashboardPane() {maimBorderPaneComp.setCenter(dashboardComponent);}
     public void showMissionsPane() {
         maimBorderPaneComp.setCenter(missionsComponent);
     }
     public void showGraphPane() {
         maimBorderPaneComp.setCenter(graphManagerComponent);
+        graphManagerComponentController.showXMLManagerPane();
     }
     public void showChatPane() {
         maimBorderPaneComp.setCenter(chatComponent);
@@ -268,6 +267,7 @@ public class AppController implements Closeable {
     }
     public void openLoginWin() {
         loginWin.show();
+        loginComponentController.cleanUsernameText();
     }
     public void closeSettingsWin() {
         settingsWin.close();

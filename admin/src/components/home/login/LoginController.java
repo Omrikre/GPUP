@@ -38,14 +38,15 @@ public class LoginController {
     @FXML void loginPR(ActionEvent event) throws IOException {
         userName = "";
         loginMsgLB.setText("");
+        loginBT.setDisable(true);
 
         userName = userNameTF.getText();
         if(userName.isEmpty()) {
             loginMsgLB.setText("Please enter user name");
+            loginBT.setDisable(false);
             return;
         }
         System.out.println("LoginController: " + userName );
-        loginBT.setDisable(true);
 
         String finalUrl = HttpUrl
                 .parse(LOGIN_PAGE)
@@ -73,9 +74,7 @@ public class LoginController {
                     Platform.runLater(() -> {
                                 loginMsgLB.setText("Something went wrong: " + responseBody);
                                 loginBT.setDisable(false);
-
                             }
-
                     );
                 } else {
                     Platform.runLater(() -> {
@@ -88,10 +87,12 @@ public class LoginController {
         });
 
 
-
     }
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+    }
+    public void cleanUsernameText() {
+        userNameTF.clear();
     }
 
 
