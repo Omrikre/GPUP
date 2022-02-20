@@ -27,27 +27,48 @@ import java.util.Timer;
 
 public class MissionsController {
 
-    @FXML private TableView<MissionDTO> missionTV;
-    @FXML private TableColumn<MissionDTO, Checkbox> checkboxCOL;
-    @FXML private TableColumn<MissionDTO, String> missionNameCOL;
-    @FXML private TableColumn<MissionDTO, String> missionStatusCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionProgressCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionWorkersCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionPriceCOL;
-    @FXML private TableColumn<MissionDTO, String> missionCreatorCOL;
-    @FXML private TableColumn<MissionDTO, String> graphNameCOL;
-    @FXML private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
-    @FXML private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeIndepenCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeLeafCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeMiddleCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeRootCOL;
-    @FXML private Button startBT;
-    @FXML private Button pauseBT;
-    @FXML private Button resumeBT;
-    @FXML private Button stopBT;
-    @FXML private Button dupScratchBT;
-    @FXML private Button dupIncrementalBT;
+    @FXML
+    private TableView<MissionDTO> missionTV;
+    @FXML
+    private TableColumn<MissionDTO, Checkbox> checkboxCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionNameCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionStatusCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionProgressCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionWorkersCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionPriceCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionCreatorCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> graphNameCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeIndepenCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeLeafCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeMiddleCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeRootCOL;
+    @FXML
+    private Button startBT;
+    @FXML
+    private Button pauseBT;
+    @FXML
+    private Button resumeBT;
+    @FXML
+    private Button stopBT;
+    @FXML
+    private Button dupScratchBT;
+    @FXML
+    private Button dupIncrementalBT;
 
     private int numOfMissionsInTable;
     private String selectedMission;
@@ -63,7 +84,8 @@ public class MissionsController {
     private int numOfGraphs;
     private AppController mainController;
 
-    @FXML public void initialize() {
+    @FXML
+    public void initialize() {
         numOfMissionsInTable = 0;
         setAllButtonsDisable(true, "", "");
         selectedCheckBoxes = FXCollections.observableSet();
@@ -119,7 +141,7 @@ public class MissionsController {
                     tempCheckBox.setSelected(true);
                 }
                 configureCheckBox(tempCheckBox, mission.getMissionName(), mission.getStatus());
-                tempDTO = new MissionDTO(mission.getAmountOfTargets(), mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
+                tempDTO = new MissionDTO(mission.getAmountOfTargets(), null, mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
                         , mission.getStatus(), mission.getProgress(), mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
                         mission.getExecutedTargets(), mission.getWaitingTargets(), tempCheckBox, mission.getIndependenceCount(), mission.getLeafCount(), mission.getMiddleCount(), mission.getRootCount());
 
@@ -135,9 +157,9 @@ public class MissionsController {
     }
 
 
-    private void setMissionSelected(String missionStatus, String missionName,  boolean bool) {
-        if(!bool)
-            setAllButtonsDisable(true,"", "");
+    private void setMissionSelected(String missionStatus, String missionName, boolean bool) {
+        if (!bool)
+            setAllButtonsDisable(true, "", "");
         else {
             setAllButtonsDisable(false, missionStatus, missionName);
         }
@@ -147,8 +169,7 @@ public class MissionsController {
         if (checkBox.isSelected()) {
             selectedCheckBoxes.add(checkBox);
             setMissionSelected(missionStatus, missionName, true);
-        }
-        else {
+        } else {
             unselectedCheckBoxes.add(checkBox);
             setMissionSelected("", "", false);
         }
@@ -178,18 +199,35 @@ public class MissionsController {
     }
 
 
-    @FXML void dupIncrementalPR(ActionEvent event) {
+    @FXML
+    void dupIncrementalPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(true, false); //send all data
     }
-    @FXML void dupScratchPR(ActionEvent event) {
+
+    @FXML
+    void dupScratchPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(true, true);
     }
-    @FXML void pausePR(ActionEvent event) {}
-    @FXML void resumePR(ActionEvent event) {}
-    @FXML void startPR(ActionEvent event) {}
-    @FXML void stopPR(ActionEvent event) {}
 
-    public void setMainController(AppController appController) { this.mainController = appController; }
+    @FXML
+    void pausePR(ActionEvent event) {
+    }
+
+    @FXML
+    void resumePR(ActionEvent event) {
+    }
+
+    @FXML
+    void startPR(ActionEvent event) {
+    }
+
+    @FXML
+    void stopPR(ActionEvent event) {
+    }
+
+    public void setMainController(AppController appController) {
+        this.mainController = appController;
+    }
 
     //Engine e, minigraph of chosen targets, get the numbers, send 4 new params - ind, roots, leaves, middles.
 

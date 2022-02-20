@@ -205,6 +205,8 @@ public class compilationController {
                 //the rest are for the display:
                 .addQueryParameter("name", missionName)
                 .addQueryParameter("graph-name", graphName)
+                .addQueryParameter("from-scratch", "false")
+                .addQueryParameter("incremental", "true")
                 .build()
                 .toString();
 

@@ -1,9 +1,12 @@
 package Engine.DTO;
 
+import java.util.List;
+
 public class MissionDTOWithoutCB {
 
     //simulation/compilation infos:
     private Integer amountOfTargets;
+    private List<String> targets;
     private String src;
     private String compilationFolder; //for compilation task, else null
     private Integer runTime;
@@ -25,8 +28,9 @@ public class MissionDTOWithoutCB {
     private Integer middleCount;
     private Integer rootCount;
 
-    public MissionDTOWithoutCB(Integer amountOfTargets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
+    public MissionDTOWithoutCB(Integer amountOfTargets, List<String> targets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
+        this.targets=targets;
         this.src=src;
         this.compilationFolder = compilationFolder;
         this.runTime = runTime;
@@ -54,6 +58,14 @@ public class MissionDTOWithoutCB {
 
     public void setAmountOfTargets(Integer amountOfTargets) {
         this.amountOfTargets = amountOfTargets;
+    }
+
+    public List<String> getTargets() {
+        return targets;
+    }
+
+    public void setTargets(List<String> targets) {
+        this.targets = targets;
     }
 
     public String getSrc() {
