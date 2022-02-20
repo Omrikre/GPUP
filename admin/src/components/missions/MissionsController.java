@@ -47,6 +47,8 @@ public class MissionsController {
     @FXML void startPR(ActionEvent event) {}
     @FXML void stopPR(ActionEvent event) {}
 
+    //Engine e, minigraph of chosen targets, get the numbers, send 4 new params - ind, roots, leaves, middles.
+
 //    String finalUrl = HttpUrl
 //            .parse(ADD_MISSION)
 //            .newBuilder()

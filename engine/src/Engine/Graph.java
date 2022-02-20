@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.Enums.Location;
@@ -218,9 +219,9 @@ public class Graph implements Serializable {
         this.compilationPrice = compilationPrice;
     }
 
-    public GraphDTO getGraphDTO() {
+    public GraphDTOWithoutCB getGraphDTO() {
         Map<Location, Integer> locations = howManyTargetsInEachLocation();
-        return new GraphDTO(graphName, username, simulationPrice, compilationPrice, locations.get(Location.INDEPENDENT), locations.get(Location.LEAF), locations.get(Location.MIDDLE), locations.get(Location.ROOT), null);
+        return new GraphDTOWithoutCB(graphName, username, simulationPrice, compilationPrice, locations.get(Location.INDEPENDENT), locations.get(Location.LEAF), locations.get(Location.MIDDLE), locations.get(Location.ROOT));
     }
 
     public Map<String, Target> getTargets() {
