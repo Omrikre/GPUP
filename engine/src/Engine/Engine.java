@@ -586,6 +586,49 @@ public class Engine {
 
     }
 
+    public Graph getGraphOfRunnableTargetsFromArrayAndGraph(Graph g, ArrayList<String> targets) throws FileException {
+        Graph miniGraph = new Graph();
+        for (String s : targets) {
+            Graph.Target newTarget;
+            Graph.Target realTarget = g.getTargets().get(s);
+            newTarget = miniGraph.new Target(s, realTarget.getInfo());
+            newTarget.setState(realTarget.getState());
+//            for (int i = 0; i < realTarget.getSerialSetsBelongs(); i++) {
+//                newTarget.addTargetToSerialSet();
+//            }
+
+        }
+//        for (String st : g.getSerialSets().keySet()) {
+//            miniGraph.getSerialSets().put(st, g.getSerialSets().get(st));
+//        }
+        for (String ts : targets) {
+            Graph.Target oldTarget = g.getTargetByName(ts);
+            Graph.Target nTarget = miniGraph.getTargetByName(ts);
+            for (String str : oldTarget.getRequiredFor()) {
+                if (targets.contains(str))
+                    nTarget.addBondedTarget(Bond.REQUIRED_FOR, str);
+            }
+            for (String str : oldTarget.getDependsOn()) {
+                if (targets.contains(str))
+                    nTarget.addBondedTarget(Bond.DEPENDS_ON, str);
+            }
+        }
+
+//        //checking for strays and adding
+//        for (String s : targets) {
+//            Graph.Target newTarget = miniGraph.getTargetByName(s);
+//            for (String str : targets) {
+//                if (g.getSetOfAllAffectedTargetsByBond(s, Bond.REQUIRED_FOR).contains(str))
+//                    newTarget.addBondedTarget(Bond.REQUIRED_FOR, str);
+//                if (g.getSetOfAllAffectedTargetsByBond(s, Bond.DEPENDS_ON).contains(str))
+//                    newTarget.addBondedTarget(Bond.DEPENDS_ON, str);
+//            }
+//        }
+        miniGraph.setLocationForAllTargets();
+        return miniGraph;
+    }
+
+
     private Graph getGraphOfRunnableTargetsFromArray(ArrayList<String> targets) throws FileException {
         Graph miniGraph = new Graph();
         for (String s : targets) {
