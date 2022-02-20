@@ -13,8 +13,10 @@ public class GraphDTOWithoutCB {
     private Integer leafCount;
     private Integer middleCount;
     private Integer rootCount;
+    private boolean containsCycle;
 
-    public GraphDTOWithoutCB(String graphName, String uploadByAdminName, Integer simPricePerTarget, Integer compPricePerTarget, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
+    public GraphDTOWithoutCB(String graphName, String uploadByAdminName, Integer simPricePerTarget, Integer compPricePerTarget,
+                             Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount, boolean containsCycle) {
         this.graphName = graphName;
         this.uploadByAdminName = uploadByAdminName;
         this.simPricePerTarget = simPricePerTarget;
@@ -23,6 +25,15 @@ public class GraphDTOWithoutCB {
         this.leafCount = leafCount;
         this.middleCount = middleCount;
         this.rootCount = rootCount;
+        this.containsCycle = containsCycle;
+    }
+
+    public boolean isContainsCycle() {
+        return containsCycle;
+    }
+
+    public void setContainsCycle(boolean containsCycle) {
+        this.containsCycle = containsCycle;
     }
 
     public String getGraphName() {

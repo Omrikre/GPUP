@@ -2,81 +2,44 @@ package Engine.DTO;
 
 import Engine.Enums.Location;
 import Engine.Enums.State;
-import Engine.Graph;
 import javafx.scene.control.CheckBox;
 
 import java.util.Set;
 
-public class TargetDTO {
-    // members
+public class TargetDTOWithoutCB {
     private String targetName;
     private Location targetLocation;
-    private String targetLocationString;
+    private String targetLocationString; // +
     private Set<String> targetDependsOn;
-    private int targetDependsOnNum;
+    private int targetDependsOnNum; // +
     private Set<String> targetRequiredFor;
-    private int targetRequiredForNum;
+    private int targetRequiredForNum; // +
     private String targetInfo;
     private State targetState;
-    private String targetStateString;
+    private String targetStateString; // +
     private long targetTime;
     private CheckBox selectedState;
     private int serialSetsBelongs; //how many serial sets the target is in
     private int totalDependencies;
-    private int totalRequirements;
-
-    // constructor
-    public TargetDTO(TargetDTOWithoutCB t, CheckBox checkBox) {
-        this.targetName = t.getTargetName();
-        this.targetLocation = t.getTargetLocation();
-        this.targetLocationString = t.getTargetLocationString();
-        this.targetDependsOn = t.getTargetDependsOn();
-        this.targetDependsOnNum = t.getTargetDependsOnNum();
-        this.targetRequiredFor = t.getTargetRequiredFor();
-        this.targetRequiredForNum = t.getTargetDependsOnNum();
-        this.targetInfo = t.getTargetInfo();
-        this.targetState = t.getTargetState();
-        this.targetStateString = t.getTargetStateString();
-        this.targetTime = t.getTargetTime();
-        this.serialSetsBelongs = t.getSerialSetsBelongs();
-        this.totalDependencies = t.getTotalDependencies();
-        this.totalRequirements = t.getTotalRequierments();
-        this.selectedState = checkBox;
-    }
+    private int totalRequierments;
 
 
-    public TargetDTO(Graph.Target t) {
-        this.targetName = t.getName();
-        this.targetLocation = t.getLocation();
-        this.targetLocationString = t.getLocation().toString();
-        this.targetDependsOn = t.getDependsOn();
-        this.targetDependsOnNum = this.targetDependsOn.size();
-        this.targetRequiredFor = t.getRequiredFor();
-        this.targetRequiredForNum = this.targetRequiredFor.size();
-        this.targetInfo = t.getInfo();
-        this.targetState = t.getState();
-        this.targetStateString = this.targetState.toString();
-        this.targetTime = t.getTime();
-        this.serialSetsBelongs = t.getSerialSetsBelongs();
-        this.totalDependencies = t.getDependsOn().size();
-        this.totalRequirements = t.getRequiredFor().size();
-        this.selectedState = new CheckBox();
-    }
-
-
-    // methods
-    @Override
-    public String toString() {
-        return "TargetDTO{" +
-                "targetName='" + targetName + '\'' +
-                ", targetLocation=" + targetLocation +
-                ", targetDependsOn=" + targetDependsOn +
-                ", targetRequiredFor=" + targetRequiredFor +
-                ", targetInfo='" + targetInfo + '\'' +
-                ", targetState=" + targetState +
-                ", targetTime=" + targetTime +
-                ", serialSetsBelongs=" + serialSetsBelongs +
-                '}';
+    public TargetDTOWithoutCB(String targetName, Location targetLocation, String targetLocationString, Set<String> targetDependsOn, int targetDependsOnNum, Set<String> targetRequiredFor, int targetRequiredForNum, String targetInfo, State targetState, String targetStateString, long targetTime, CheckBox selectedState, int serialSetsBelongs, int totalDependencies, int totalRequierments) {
+        this.targetName = targetName;
+        this.targetLocation = targetLocation;
+        this.targetLocationString = targetLocationString;
+        this.targetDependsOn = targetDependsOn;
+        this.targetDependsOnNum = targetDependsOnNum;
+        this.targetRequiredFor = targetRequiredFor;
+        this.targetRequiredForNum = targetRequiredForNum;
+        this.targetInfo = targetInfo;
+        this.targetState = targetState;
+        this.targetStateString = targetStateString;
+        this.targetTime = targetTime;
+        this.selectedState = selectedState;
+        this.serialSetsBelongs = serialSetsBelongs;
+        this.totalDependencies = totalDependencies;
+        this.totalRequierments = totalRequierments;
     }
 
     public String getTargetName() {
@@ -191,24 +154,32 @@ public class TargetDTO {
         this.totalDependencies = totalDependencies;
     }
 
-    public int getTotalRequirements() {
-        return totalRequirements;
+    public int getTotalRequierments() {
+        return totalRequierments;
     }
 
-    public void setTotalRequirements(int totalRequirements) {
-        this.totalRequirements = totalRequirements;
+    public void setTotalRequierments(int totalRequierments) {
+        this.totalRequierments = totalRequierments;
     }
 
     public boolean isRoot() {
-        return targetLocation == Location.ROOT;
+        if(totalDependencies == 0) //TODO!!!! check if good
+            return true;
+        else
+            return false;
     }
 
     public boolean isLeaf() {
-        return targetLocation == Location.LEAF;
+        if(totalRequierments == 0) //TODO!!!! check if good
+            return true;
+        else
+            return false;
     }
 
     public boolean isIndependent() {
-        return targetLocation == Location.INDEPENDENT;
+        if (isLeaf() && isRoot())
+            return true;
+        else
+            return false;
     }
-
 }

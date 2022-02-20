@@ -2,6 +2,7 @@ package components.graphManager.info;
 
 import Engine.DTO.GraphDTO;
 import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
 import components.graphManager.GraphController;
 import components.graphManager.info.generalInfo.generalInfoController;
 import components.graphManager.info.targetInfo.targetInfoController;
@@ -12,31 +13,26 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class InfoController {
 
-    @FXML
-    private Tab generalInfoTab;
-    @FXML
-    private Tab infoByTargetTab;
-    @FXML
-    private Tab treeViewTab;
+    @FXML private Tab generalInfoTab;
+    @FXML private Tab infoByTargetTab;
+    @FXML private Tab treeViewTab;
 
-    @FXML
-    private HBox generalInfoGP;
-    @FXML
-    private generalInfoController generalInfoGPController;
-    @FXML
-    private VBox infoByTargetGP;
-    @FXML
-    private targetInfoController infoByTargetGPController;
-    @FXML
-    private BorderPane treeViewBP;
-    @FXML
-    private treeViewController treeViewBPController;
+    @FXML private HBox generalInfoGP;
+    @FXML private generalInfoController generalInfoGPController;
+    @FXML private VBox infoByTargetGP;
+    @FXML private targetInfoController infoByTargetGPController;
+    @FXML private BorderPane treeViewBP;
+    @FXML private treeViewController treeViewBPController;
 
     private GraphController parentController;
     private GraphDTO graph;
+    private List<TargetDTOWithoutCB> targets;
 
 
     public void setParentController(GraphController parentController) {
@@ -49,19 +45,20 @@ public class InfoController {
         infoByTargetGPController.setParentController(this);
     }
 
-    public void setupData(GraphDTO graph) {
+    public void setupData(GraphDTO graph, List<TargetDTOWithoutCB> targets) {
+
+        this.targets = targets;
         this.graph = graph;
-/*
         if(generalInfoGPController != null) {
-            generalInfoGPController.setupData(mainController.getGeneralInfoTable(), mainController.getNumOfTargets(), mainController.getGraphContainsCycle(), mainController.getFileName(), mainController.getNumOfSets(), mainController.getSerialSets());
+            generalInfoGPController.setupData(graph); //TODO
         } else System.out.println("null fuck 1");
         if(infoByTargetGPController != null) {
             infoByTargetGPController.resetData();
-            infoByTargetGPController.setChoiceTargetBox(mainController.getTargetList());
+            infoByTargetGPController.setChoiceTargetBox(targets);
         } else System.out.println("null fuck 2");
         if(treeViewBPController != null) {
-            if (!mainController.getGraphContainsCycle()) {
-                treeViewBPController.setTrees(mainController.getTargetList());
+            if (!graph.isContainsCycle()) {
+                treeViewBPController.setTrees(targets);
                 treeViewTab.setDisable(false);
             }
             else {
@@ -70,9 +67,12 @@ public class InfoController {
         } else System.out.println("null fuck 2");
 
     }
-    public TargetDTO getTargetDTO(String targetName) { return mainController.getTargetDTO(targetName); }
-
-    public String getSSByName(String name) { return mainController.getSerialSetByName(name).toString(); }
-*/ //TODO - get data from engine
+    public TargetDTOWithoutCB getTargetDTO(String targetName) {
+        for (TargetDTOWithoutCB t : targets) {
+            if (t.getTargetName() == targetName)
+                return t;
+        }
+        System.out.println("error infoController");
+        return null;
     }
 }

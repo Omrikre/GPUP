@@ -1,6 +1,7 @@
 package components.graphManager.info.targetInfo;
 
 import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
 import components.graphManager.info.InfoController;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -22,7 +23,7 @@ public class targetInfoController {
     @FXML private Label serialSetNameLabel;
     @FXML private Label serialSetTargetsLabel;
 
-    private List<TargetDTO> targetDTOList;
+    private List<TargetDTOWithoutCB> targetDTOList;
     private InfoController parentController;
 
     public void setParentController(InfoController parentController) { this.parentController = parentController;    }
@@ -55,11 +56,11 @@ public class targetInfoController {
             choiceTargetBox.getItems().clear();
     }
 
-    public void setChoiceTargetBox(List<TargetDTO> targetDTOS) {
+    public void setChoiceTargetBox(List<TargetDTOWithoutCB> targetDTOS) {
         targetDTOList = targetDTOS;
         if(!choiceTargetBox.getItems().isEmpty())
             choiceTargetBox.getItems().clear();
-        for(TargetDTO target :  targetDTOS) {
+        for(TargetDTOWithoutCB target :  targetDTOS) {
             choiceTargetBox.getItems().add(target.getTargetName());
         }
         choiceTargetBox.setOnAction((event) -> {

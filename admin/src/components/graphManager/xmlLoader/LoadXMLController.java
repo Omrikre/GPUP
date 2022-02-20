@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Timer;
 
 import static components.app.CommonResourcesPaths.REFRESH_RATE;
-import static components.app.HttpResourcesPaths.GRAPH;
 import static components.app.HttpResourcesPaths.LOAD_XML_FILE;
 
 public class LoadXMLController {
@@ -66,7 +65,8 @@ public class LoadXMLController {
     private ObservableSet<CheckBox> selectedCheckBoxes;
     private ObservableSet<CheckBox> unselectedCheckBoxes;
 
-    private String selectedGraph;
+    private String selectedGraphName;
+    private GraphDTO selectedGraphDTO;
     private Timer timer;
     private BooleanProperty autoUpdate;
     private LoadXMLRefresher xmlRefresher;
@@ -78,8 +78,8 @@ public class LoadXMLController {
         unselectedCheckBoxes = FXCollections.observableSet();
         numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
 
-        selectedGraph = "-";
-        selectedGraphLB.setText(selectedGraph);
+        selectedGraphName = "-";
+        selectedGraphLB.setText(selectedGraphName);
         numOfGraphs = 0;
     }
 
@@ -104,11 +104,11 @@ public class LoadXMLController {
 
             for (GraphDTOWithoutCB graph : lst) {
                 tempCheckBox = new CheckBox();
-                if (selectedGraph == graph.getGraphName()) {
+                if (selectedGraphName == graph.getGraphName()) {
                     tempCheckBox.setSelected(true);
                 }
                 configureCheckBox(tempCheckBox, graph.getGraphName());
-                tempDTO = new GraphDTO(graph.getGraphName(), graph.getUploadByAdminName(), graph.getSimPricePerTarget(), graph.getCompPricePerTarget(), graph.getIndependenceCount(), graph.getLeafCount(), graph.getMiddleCount(), graph.getMiddleCount(), tempCheckBox);
+                tempDTO = new GraphDTO(graph.getGraphName(), graph.getUploadByAdminName(), graph.getSimPricePerTarget(), graph.getCompPricePerTarget(), graph.getIndependenceCount(), graph.getLeafCount(), graph.getMiddleCount(), graph.getMiddleCount(), tempCheckBox, graph.isContainsCycle());
                 newGraphList.add(tempDTO);
             }
             ObservableList<GraphDTO> OLGraph = FXCollections.observableArrayList(newGraphList);
@@ -135,17 +135,17 @@ public class LoadXMLController {
     }
 
     private void setGraphSelected(String graphName, boolean bool) {
-        if (graphName == selectedGraph)
+        if (graphName == selectedGraphName)
             return;
 
-        selectedGraph = graphName;
-        selectedGraphLB.setText(selectedGraph);
+        selectedGraphName = graphName;
+        selectedGraphLB.setText(selectedGraphName);
         if(bool) {
-            graphParentController.setData(graphName);
-            graphParentController.disableAllHeaderBt(true);
+            graphParentController.setData(graphName , selectedGraphDTO);
+            graphParentController.disableAllHeaderBt(false);
         }
         else {
-            graphParentController.disableAllHeaderBt(false);
+            graphParentController.disableAllHeaderBt(true);
         }
     }
 
@@ -153,10 +153,15 @@ public class LoadXMLController {
         if (checkBox.isSelected()) {
             selectedCheckBoxes.add(checkBox);
             setGraphSelected(GraphName, true);
+            for (GraphDTO g : OLGraphs) {
+                if (g.getGraphName() == GraphName)
+                    selectedGraphDTO = g;
+            }
         }
         else {
             unselectedCheckBoxes.add(checkBox);
             setGraphSelected("-", false);
+            selectedGraphDTO = null;
         }
 
         checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {

@@ -1,8 +1,14 @@
 package components.graphManager.info.treeViewInfo;
 
+import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
+import Engine.Enums.Location;
 import components.graphManager.info.InfoController;
 import javafx.fxml.FXML;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+
+import java.util.List;
 
 
 public class treeViewController {
@@ -14,8 +20,7 @@ public class treeViewController {
     private InfoController parentController;
 
     public void setParentController(InfoController parentController) { this.parentController = parentController;    }
-    /*
-        public void setTrees(List<TargetDTO> targetList) {
+        public void setTrees(List<TargetDTOWithoutCB> targetList) {
             treeViewRtoL.setDisable(false);
             treeViewLtoR.setDisable(false);
             treeViewInd.setDisable(false);
@@ -24,7 +29,7 @@ public class treeViewController {
 
             int counter = 0;
             root = new TreeItem<String>("Roots");
-            for(TargetDTO target : targetList) {
+            for(TargetDTOWithoutCB target : targetList) {
                 if(target.isRoot()) {
                     counter++;
                     tempItm = new TreeItem<String>(target.getTargetName() + " (" + target.getTargetStateString() + ")");
@@ -40,7 +45,7 @@ public class treeViewController {
 
             counter = 0;
             root = new TreeItem<String>("Leaves");
-            for(TargetDTO target : targetList) {
+            for(TargetDTOWithoutCB target : targetList) {
                 if(target.isLeaf()) {
                     counter++;
                     tempItm = new TreeItem<String>(target.getTargetName() + " (" + target.getTargetStateString() + ")");
@@ -56,7 +61,7 @@ public class treeViewController {
 
             counter = 0;
             root = new TreeItem<String>("Independents");
-            for(TargetDTO target : targetList) {
+            for(TargetDTOWithoutCB target : targetList) {
                 if(target.isIndependent()) {
                     counter++;
                     tempItm = new TreeItem<String>(target.getTargetName() + " (" + target.getTargetStateString() + ")");
@@ -71,8 +76,8 @@ public class treeViewController {
 
 
         }
-        /*
-        private void setSmallTree(TreeItem<String> treeParent, TargetDTO targetParent, Location type) {
+
+        private void setSmallTree(TreeItem<String> treeParent, TargetDTOWithoutCB targetParent, Location type) {
             if ((targetParent.getTargetDependsOn().isEmpty() && type == Location.ROOT) || (targetParent.getTargetRequiredFor().isEmpty() && type == Location.LEAF))
                 return;
 
@@ -93,7 +98,7 @@ public class treeViewController {
                 }
             }
         }
-    */
+
     public void setCycle() {
         treeViewRtoL.setDisable(true);
         treeViewLtoR.setDisable(true);

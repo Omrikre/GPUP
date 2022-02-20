@@ -1,6 +1,8 @@
 package components.graphManager;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
 import components.app.AppController;
 import components.graphManager.graphHeader.GraphHeaderController;
 import components.graphManager.info.InfoController;
@@ -28,6 +30,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static components.app.CommonResourcesPaths.*;
 import static components.app.HttpResourcesPaths.GRAPH_LIST;
@@ -94,6 +97,7 @@ public class GraphController {
             infoComponent = fxmlLoader.load();
             infoComponentController = fxmlLoader.getController();
             infoComponentController.setParentController(this);
+
             // info - cycle warning
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(INFO_CYCLE_MSG_fXML_RESOURCE));
@@ -148,17 +152,17 @@ public class GraphController {
     public void showMissionCreatorPane() { graphBP.setCenter(missionCreateComponent); }
 
     public void closeCycleWarning() { cycleMsgWin.close(); }
-    public void startDataRefresher(BooleanProperty autoUpdate) {
+    public void startDataRefresher(BooleanProperty autoUpdate) { //TODO
         XMLCompController.startXMLGraphTableRefresher(autoUpdate);
     }
 
 
-    public void setData(String graphName) {
+    public void setData(String graphName, GraphDTO selectedGraphDTO) {
         String finalUrl = HttpUrl
                 .parse(GRAPH_LIST)
                 .newBuilder()
-                .addQueryParameter("graphname",graphName)
-                //TODO -  .addQueryParameter("targets","true")
+                .addQueryParameter("graphname", graphName)
+                .addQueryParameter("targets","true")
                 .build()
                 .toString();
 
@@ -166,7 +170,7 @@ public class GraphController {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        System.out.println(" error setData Graph tabs info")
+                        System.out.println(" error setData targets tabs info")
                 );
             }
 
@@ -175,17 +179,17 @@ public class GraphController {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
                     Platform.runLater(() ->
-                            System.out.println(" error setData Graph tabs info, code: " + response.code())
+                            System.out.println(" error setData targets tabs info, code: " + response.code())
                     );
                 } else {
                     Platform.runLater(() -> {
                         try {
+                            graphContainsCycle = selectedGraphDTO.isContainsCycle();
                             String responseBody = response.body().string();
-                            System.out.println(responseBody);
-                            GraphDTO graph = GSON.fromJson(responseBody, GraphDTO.class);
-                            infoComponentController.setupData(graph);
-                            //tableComponentController.setupData(graph);
-                            //missionCreateComponentController.setupData(graph.get);
+                            TargetDTOWithoutCB[] targets = GSON.fromJson(responseBody, TargetDTOWithoutCB[].class);
+                            infoComponentController.setupData(selectedGraphDTO, Arrays.asList(targets));
+                            tableComponentController.setupData(Arrays.asList(targets));
+                            missionCreateComponentController.setupData(Arrays.asList(targets));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -195,6 +199,9 @@ public class GraphController {
         });
 
     }
+
+
+}
 
 
 
@@ -268,4 +275,4 @@ public class GraphController {
      */
 
 
-}
+

@@ -1,6 +1,7 @@
 package components.graphManager.missionCreator;
 
 import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Enums.Bond;
 import Engine.Enums.State;
 import Exceptions.FileException;
@@ -104,17 +105,21 @@ public class taskController {
     public void setMainController(AppController mainController) {this.mainController = mainController;}
 
     // data setup
-    public void setupData(List<TargetDTO> targets) {
+    public void setupData(List<TargetDTOWithoutCB> targets) {
         CheckBox tempCB;
-        this.targetsList = targets;
-
-        for(TargetDTO target : targets) {
+        TargetDTO tempTDTO;
+        List<TargetDTO> newTargetsLst = new ArrayList<>();
+        for (TargetDTOWithoutCB tWithout : targets) {
             tempCB = new CheckBox();
-            target.setSelectedState(tempCB);
-            configureCheckBox(tempCB, target.getTargetName());
-            this.targetsMap.put(target.getTargetName(), target);
+            tempTDTO = new TargetDTO(tWithout, tempCB);
+            configureCheckBox(tempCB, tempTDTO.getTargetName());
+            this.targetsMap.put(tempTDTO.getTargetName(), tempTDTO);
+            newTargetsLst.add(tempTDTO);
         }
-        OLTargets = FXCollections.observableArrayList(targets);
+
+        this.targetsList = newTargetsLst;
+
+        OLTargets = FXCollections.observableArrayList(targetsList);
         setTable();
         rowClickData();
         loadBackComponents();
