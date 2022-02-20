@@ -1,6 +1,7 @@
 package components.graphManager.table;
 
 import Engine.DTO.TargetDTO;
+import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Enums.Bond;
 import components.graphManager.GraphController;
 import components.graphManager.table.cycle.cycleController;
@@ -18,6 +19,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -111,15 +113,19 @@ public class tableController {
 
 
     // data setup
-    public void setupData(List<TargetDTO> targets) {
+    public void setupData(List<TargetDTOWithoutCB> targets) {
+        CheckBox tempCB;
+        TargetDTO tempTDTO;
+        List<TargetDTO> newTargetsLst = new ArrayList<>();
+        for (TargetDTOWithoutCB tWithout : targets) {
+            tempCB = new CheckBox();
+            tempTDTO = new TargetDTO(tWithout, tempCB);
+            configureCheckBox(tempCB, tempTDTO.getTargetName());
+            newTargetsLst.add(tempTDTO);
+        }
+
         pathSetup();
 
-        CheckBox tempCB;
-        for(TargetDTO target : targets) {
-            tempCB = new CheckBox();
-            target.setSelectedState(tempCB);
-            configureCheckBox(tempCB, target.getTargetName());
-        }
 
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> {
             if (newSelectedCount.intValue() == maxNumSelectedElse && getTabNum() != 1) {
@@ -147,7 +153,7 @@ public class tableController {
             }
         });
 
-        OLTargets = FXCollections.observableArrayList(targets);
+        OLTargets = FXCollections.observableArrayList(newTargetsLst);
         setTable();
         loadBackComponents();
         whatIfVBPaneController.whatIfSetup();

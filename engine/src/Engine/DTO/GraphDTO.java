@@ -16,9 +16,10 @@ public class GraphDTO {
     private Integer middleCount;
     private Integer rootCount;
     private CheckBox selectedState;
+    private boolean containsCycle;
 
 
-    public GraphDTO(String graphName, String uploadByAdminName, Integer simPricePerTarget, Integer compPricePerTarget, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount, CheckBox selectedState) {
+    public GraphDTO(String graphName, String uploadByAdminName, Integer simPricePerTarget, Integer compPricePerTarget, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount, CheckBox selectedState ,boolean containsCycle) {
         this.graphName = graphName;
         this.uploadByAdminName = uploadByAdminName;
         this.simPricePerTarget = simPricePerTarget;
@@ -28,6 +29,28 @@ public class GraphDTO {
         this.middleCount = middleCount;
         this.rootCount = rootCount;
         this.selectedState = selectedState;
+        this.containsCycle = containsCycle;
+    }
+
+    public GraphDTO(String graphName, String username, int simulationPrice, int compilationPrice, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
+        this.graphName = graphName;
+        this.uploadByAdminName = username;
+        this.simPricePerTarget = simulationPrice;
+        this.compPricePerTarget = compilationPrice;
+        this.independenceCount = independenceCount;
+        this.leafCount = leafCount;
+        this.middleCount = middleCount;
+        this.rootCount = rootCount;
+        this.selectedState = null;
+        this.containsCycle = true;
+    }
+
+    public boolean isContainsCycle() {
+        return containsCycle;
+    }
+
+    public void setContainsCycle(boolean containsCycle) {
+        this.containsCycle = containsCycle;
     }
 
     public Integer getSimPricePerTarget() {

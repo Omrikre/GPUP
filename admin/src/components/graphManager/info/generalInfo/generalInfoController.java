@@ -1,5 +1,6 @@
 package components.graphManager.info.generalInfo;
 
+import Engine.DTO.GraphDTO;
 import Engine.Enums.Location;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -93,6 +94,8 @@ public class generalInfoController {
     }
 
 
+    public void setupData(GraphDTO graph) {
+    }
 }
 
 
