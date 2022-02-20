@@ -1,6 +1,7 @@
 package servlets;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.MissionDTO;
 import Engine.DTO.MissionDTOWithoutCB;
 import Engine.Enums.MissionState;
@@ -35,7 +36,7 @@ public class LoadTaskServlet extends HttpServlet {
             String graphName = req.getParameter("graph-name");
             Integer waitingTargets = Integer.parseInt(req.getParameter("waiting-targets"));
             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
-            GraphDTO graph = graphManager.getGraphDTOByName(graphName);
+            GraphDTOWithoutCB graph = graphManager.getGraphDTOByName(graphName);
             Integer price;
             if (compilationFolder == null)
                 price = waitingTargets * graph.getSimPricePerTarget();
