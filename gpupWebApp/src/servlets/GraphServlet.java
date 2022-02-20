@@ -20,8 +20,8 @@ import java.util.Map;
 
 @WebServlet("/graphlist")
 public class GraphServlet extends HttpServlet {
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+    protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("graphname");
         String isCycle = req.getParameter("cycle");
         String targetA = req.getParameter("target-a");
@@ -61,7 +61,7 @@ public class GraphServlet extends HttpServlet {
                         out.println(json);
                         out.flush();
                     } else {
-                        if(bond==null){
+                        if(targetA!=null && targetB!=null && bond==null){
                             out.write("bond doesn't exist!");
                             resp.setStatus(404);
                         }
@@ -74,7 +74,7 @@ public class GraphServlet extends HttpServlet {
                             resp.setStatus(200);
                             out.println(json);
                             out.flush();
-                        } else if (targetB == null && targetA != null) {
+                        } else if (targetA != null) {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
@@ -127,5 +127,15 @@ public class GraphServlet extends HttpServlet {
             }
         }
 
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processRequest(req,resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processRequest(req,resp);
     }
 }
