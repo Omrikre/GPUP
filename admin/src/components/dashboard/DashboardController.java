@@ -80,6 +80,8 @@ public class DashboardController implements Closeable {
             ObservableList<MissionDTOWithoutCB> missionsTV = missionListTV.getItems();
             missionsTV.clear();
             missionsTV.addAll(missions);
+            missionListTV.setItems(missionsTV);
+            missionListTV.refresh();
             updateMissionLabels(missions);
         });
     }

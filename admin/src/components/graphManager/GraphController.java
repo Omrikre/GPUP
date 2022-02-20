@@ -201,6 +201,10 @@ public class GraphController {
     }
 
 
+    public void closeGraphManager() {
+        XMLCompController.closeXMLLoader();
+        //TODO - close all
+    }
 }
 
 

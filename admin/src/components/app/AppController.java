@@ -95,7 +95,7 @@ public class AppController implements Closeable {
     public void setRefreshersActive() {
         dashboardComponentController.startListRefresher(autoUpdate);
         chatComponentController.startChatRefresher(autoUpdate);
-        //graphManagerComponentController.startDataRefresher(autoUpdate);
+        graphManagerComponentController.startDataRefresher(autoUpdate);
 /*        graphAdminComponentController.startGraphListRefresher();
         starChatRefresher();
         starMissionRefresher();*/
@@ -424,6 +424,7 @@ public class AppController implements Closeable {
         HttpClientUtil.shutdown();
         chatComponentController.closeChat();
         dashboardComponentController.closeDashboard();
+        graphManagerComponentController.closeGraphManager();
     }
 
     public BooleanProperty getAutoUpdate() { return autoUpdate; }

@@ -100,7 +100,7 @@ public class MissionsController {
     public void updateMissionsList(List<MissionDTOWithoutCB> missions) {
         Platform.runLater(() -> {
 
-            if (!(missions.size() == numOfMissionsInTable))
+            if ((missions.size() == numOfMissionsInTable))
                 return;
             numOfMissionsInTable = missions.size();
 

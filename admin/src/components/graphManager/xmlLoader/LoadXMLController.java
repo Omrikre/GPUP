@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Timer;
 
 import static components.app.CommonResourcesPaths.REFRESH_RATE;
+import static components.app.HttpResourcesPaths.GRAPH;
 import static components.app.HttpResourcesPaths.LOAD_XML_FILE;
 
 public class LoadXMLController {
@@ -81,6 +82,7 @@ public class LoadXMLController {
         selectedGraphName = "-";
         selectedGraphLB.setText(selectedGraphName);
         numOfGraphs = 0;
+        setupData();
     }
 
     public void startXMLGraphTableRefresher(BooleanProperty autoUpdate) {
@@ -93,7 +95,7 @@ public class LoadXMLController {
 
     public void updateGraphList(List<GraphDTOWithoutCB> lst) {
         Platform.runLater(() -> {
-            if (!(lst.size() == numOfGraphs))
+            if ((lst.size() == numOfGraphs))
                 return;
             numOfGraphs = lst.size();
 
@@ -169,10 +171,12 @@ public class LoadXMLController {
                 unselectedCheckBoxes.remove(checkBox);
                 selectedCheckBoxes.add(checkBox);
                 setupNames(GraphName);
+                setGraphSelected(GraphName, true);
             } else {
                 selectedCheckBoxes.remove(checkBox);
                 unselectedCheckBoxes.add(checkBox);
                 clearLastName();
+                setGraphSelected("", false);
             }
         });
     }
@@ -219,7 +223,7 @@ public class LoadXMLController {
         if (file == null)
             return;
         String finalUrl = HttpUrl
-                .parse(LOAD_XML_FILE)
+                .parse(GRAPH)
                 .newBuilder()
                 .build()
                 .toString();
@@ -234,14 +238,18 @@ public class LoadXMLController {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
                         System.out.println("error send th file: " + file.getName()));
+
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
-                    System.out.println("error send th file: " + file.getName());
+                    System.out.println("error send the file: " + file.getName());
                     System.out.println(responseBody);
+                }
+                else {
+                    System.out.println("ok");
                 }
             }
         });
@@ -257,7 +265,14 @@ public class LoadXMLController {
     public void setGraphParentController(GraphController graphController) {this.graphParentController = graphController;}
 
 
-
+    public void closeXMLLoader() {
+        if (timer != null) {
+            xmlRefresher.cancel();
+            timer.cancel();
+        }
+        graphTable.getItems().clear();
+        graphTable.refresh();
+    }
 }
 
 /*

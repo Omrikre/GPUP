@@ -34,10 +34,11 @@ public class LoadXMLRefresher extends TimerTask {
 
     @Override
     public void run() {
-//TODO
-/*        if (!shouldUpdate.get()) {
-            return;
-        }*/
+
+      if (!shouldUpdate.get()) {
+          return;
+      }
+
 
         String finalUrl = HttpUrl
                 .parse(GRAPH_LIST)

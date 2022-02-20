@@ -27,7 +27,7 @@ import java.util.Map;
 public class LoadGraphServlet extends HttpServlet {
 
 
-    protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, FileException, JAXBException {
+    protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/plain");
         String usernameFromSession = SessionUtils.getUsername(req);
         Collection<Part> parts = req.getParts();
@@ -82,16 +82,12 @@ public class LoadGraphServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
             processRequest(req, resp);
-        }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try {
             processRequest(req, resp);
-        }
     }
 }
 
