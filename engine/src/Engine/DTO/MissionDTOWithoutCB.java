@@ -4,6 +4,7 @@ public class MissionDTOWithoutCB {
 
     //simulation/compilation infos:
     private Integer amountOfTargets;
+    private String src;
     private String compilationFolder; //for compilation task, else null
     private Integer runTime;
     private boolean randomRunTime;
@@ -24,8 +25,9 @@ public class MissionDTOWithoutCB {
     private Integer middleCount;
     private Integer rootCount;
 
-    public MissionDTOWithoutCB(Integer amountOfTargets, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
+    public MissionDTOWithoutCB(Integer amountOfTargets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
+        this.src=src;
         this.compilationFolder = compilationFolder;
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
@@ -52,6 +54,14 @@ public class MissionDTOWithoutCB {
 
     public void setAmountOfTargets(Integer amountOfTargets) {
         this.amountOfTargets = amountOfTargets;
+    }
+
+    public String getSrc() {
+        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
     }
 
     public String getCompilationFolder() {
