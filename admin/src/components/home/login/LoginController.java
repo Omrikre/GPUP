@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,11 +32,23 @@ public class LoginController {
     private Stage mainAppStage;
     private String userName;
 
+    @FXML public void initialize() {
+        userNameTF.setOnKeyPressed( event -> {
+            if( event.getCode() == KeyCode.ENTER ) {
+                loginSetUp();
+            }
+        } );
+        userNameTF.requestFocus();
+    }
+
     public String getUserName() {
         return userName;
     }
 
     @FXML void loginPR(ActionEvent event) throws IOException {
+        loginSetUp();
+    }
+    private void loginSetUp() {
         userName = "";
         loginMsgLB.setText("");
         loginBT.setDisable(true);
@@ -93,6 +106,7 @@ public class LoginController {
     }
     public void cleanUsernameText() {
         userNameTF.clear();
+        userNameTF.requestFocus();
     }
 
 

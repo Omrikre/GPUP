@@ -4,6 +4,7 @@ import Engine.DTO.GraphDTO;
 import Engine.DTO.MissionDTO;
 
 import Engine.DTO.MissionDTOWithoutCB;
+import components.app.AppController;
 import components.graphManager.xmlLoader.LoadXMLRefresher;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -60,6 +61,7 @@ public class MissionsController {
     private BooleanProperty autoUpdate;
     private LoadXMLRefresher xmlRefresher;
     private int numOfGraphs;
+    private AppController mainController;
 
     @FXML public void initialize() {
         numOfMissionsInTable = 0;
@@ -69,6 +71,8 @@ public class MissionsController {
         numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
         setupData();
         selectedMission = "";
+        dupScratchBT.setDisable(false); //TODO 123
+        dupIncrementalBT.setDisable(false);
     }
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {
@@ -174,12 +178,18 @@ public class MissionsController {
     }
 
 
-    @FXML void dupIncrementalPR(ActionEvent event) {}
-    @FXML void dupScratchPR(ActionEvent event) {}
+    @FXML void dupIncrementalPR(ActionEvent event) {
+        mainController.openCreateNewMissionWin(true, false); //send all data
+    }
+    @FXML void dupScratchPR(ActionEvent event) {
+        mainController.openCreateNewMissionWin(true, true);
+    }
     @FXML void pausePR(ActionEvent event) {}
     @FXML void resumePR(ActionEvent event) {}
     @FXML void startPR(ActionEvent event) {}
     @FXML void stopPR(ActionEvent event) {}
+
+    public void setMainController(AppController appController) { this.mainController = appController; }
 
     //Engine e, minigraph of chosen targets, get the numbers, send 4 new params - ind, roots, leaves, middles.
 
