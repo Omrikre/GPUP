@@ -5,9 +5,12 @@ import Engine.Enums.MissionState;
 import Engine.Graph;
 import javafx.scene.control.CheckBox;
 
+import java.util.List;
+
 public class MissionDTO {
     //simulation/compilation infos:
     private Integer amountOfTargets;
+    private List<String> targets;
     private String src;
     private String compilationFolder; //for compilation task, else null
     private Integer runTime;
@@ -32,8 +35,9 @@ public class MissionDTO {
     private CheckBox selectedState;
 
 
-    public MissionDTO(Integer amountOfTargets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, CheckBox selectedState, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
+    public MissionDTO(Integer amountOfTargets, List<String> targets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, CheckBox selectedState, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
+        this.targets=targets;
         this.src=src;
         this.compilationFolder = compilationFolder;
         this.runTime = runTime;
@@ -66,6 +70,14 @@ public class MissionDTO {
 
     public String getSrc() {
         return src;
+    }
+
+    public List<String> getTargets() {
+        return targets;
+    }
+
+    public void setTargets(List<String> targets) {
+        this.targets = targets;
     }
 
     public void setSrc(String src) {

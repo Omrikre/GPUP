@@ -199,6 +199,8 @@ public class simulationController {
                 //the rest are for the display:
                 .addQueryParameter("name", missionName)
                 .addQueryParameter("graph-name", graphName)
+                .addQueryParameter("from-scratch", "false")
+                .addQueryParameter("incremental", "true")
                 .build()
                 .toString();
 
@@ -312,4 +314,32 @@ public class simulationController {
 
 }
 
+
+
+/*
+FROM SCRATCH:
+
+String finalUrl = HttpUrl
+                .parse(ADD_MISSION)
+                .newBuilder()
+                .addQueryParameter("name", missionName)
+                .addQueryParameter("from-scratch","true")
+                .addQueryParameter("incremental","false")
+                .addQueryParameter("new-name",newName)
+                .build()
+                .toString();
+
+
+INCREMENTAL:
+
+String finalUrl = HttpUrl
+                .parse(ADD_MISSION)
+                .newBuilder()
+                .addQueryParameter("name", missionName)
+                .addQueryParameter("from-scratch","false")
+                .addQueryParameter("incremental","true")
+                .addQueryParameter("new-name",newName)
+                .build()
+                .toString();
+ */
 
