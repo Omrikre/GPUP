@@ -1,6 +1,7 @@
 package servlets;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 import Engine.GraphManager;
@@ -33,7 +34,7 @@ public class GraphServlet extends HttpServlet {
                 if (!(isCycle != null || targetA != null || targetB != null || bond != null)) {
                     Gson gson = new Gson();
                     GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
-                    List<GraphDTO> graphList = graphManager.getGraphsAsDTOs();
+                    List<GraphDTOWithoutCB> graphList = graphManager.getGraphsAsDTOs();
                     String json = gson.toJson(graphList);
                     resp.setStatus(200);
                     out.println(json);
@@ -91,7 +92,7 @@ public class GraphServlet extends HttpServlet {
                                 out.println(json);
                             }
                             else{
-                                GraphDTO graphDTO = graphManager.getGraphDTOByName(name);
+                                GraphDTOWithoutCB graphDTO = graphManager.getGraphDTOByName(name);
                             String json = gson.toJson(graphDTO);
                             out.println(json);
                             }

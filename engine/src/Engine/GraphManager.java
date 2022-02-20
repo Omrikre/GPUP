@@ -1,6 +1,7 @@
 package Engine;
 
 import Engine.DTO.GraphDTO;
+import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.TargetDTO;
 import Engine.Enums.Bond;
 
@@ -21,8 +22,8 @@ public class GraphManager {
         graphMap.put(g.getGraphName(), g);
     }
 
-    public synchronized List<GraphDTO> getGraphsAsDTOs() {
-        List<GraphDTO> res = new ArrayList<>();
+    public synchronized List<GraphDTOWithoutCB> getGraphsAsDTOs() {
+        List<GraphDTOWithoutCB> res = new ArrayList<>();
         for (Graph g : graphMap.values()) {
             res.add(g.getGraphDTO());
         }
@@ -41,7 +42,7 @@ public class GraphManager {
         return res;
     }
 
-    public synchronized GraphDTO getGraphDTOByName(String name) {
+    public synchronized GraphDTOWithoutCB getGraphDTOByName(String name) {
         return graphMap.get(name).getGraphDTO();
     }
 
