@@ -49,7 +49,6 @@ public class LoadTaskServlet extends HttpServlet {
                 price = waitingTargets * graph.getSimPricePerTarget();
             else
                 price = waitingTargets * graph.getCompPricePerTarget();
-            Engine engine;
             Gson gson=new Gson();
             String[] targets=gson.fromJson(req.getParameter("targets-array"), String[].class);
             List<String> targestList= Arrays.asList(targets);

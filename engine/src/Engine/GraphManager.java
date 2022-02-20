@@ -5,6 +5,7 @@ import Engine.DTO.GraphDTOWithoutCB;
 import Engine.DTO.TargetDTO;
 import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Enums.Bond;
+import Exceptions.FileException;
 
 import java.lang.annotation.Target;
 import java.util.ArrayList;
@@ -60,8 +61,13 @@ public class GraphManager {
         return graphMap.get(gName).getSetOfAllAffectedTargetsByBond(t, b);
     }
 
-    public synchronized Graph getGraphOfRunnableTargetsFromArrayAndGraph(String graphname, List<String> targets){
-        Engine e;
-        e.getGraphOfRunnableTargetsFromArrayAndGraph(graphMap.get(graphname),targets);
+    public synchronized Graph getGraphOfRunnableTargetsFromArrayAndGraph(String graphname, List<String> targets) {
+        Engine e = new Engine();
+        try {
+            return e.getGraphOfRunnableTargetsFromArrayAndGraph(graphMap.get(graphname), (ArrayList<String>) targets);
+        } catch (FileException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }
