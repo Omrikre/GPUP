@@ -49,7 +49,7 @@ public class GraphController {
     @FXML private ScrollPane XMLComp;
     @FXML private LoadXMLController XMLCompController;
 
-    // selected graph\
+    // selected graph
     private String selectedGraphName;
 
     // graph info
@@ -136,6 +136,8 @@ public class GraphController {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+        missionCreateComponentController.setMainController(mainController);
+
     }
 
     public void disableAllHeaderBt(boolean bool) {headerCompController.makeButtonsDisable(bool);}
@@ -158,6 +160,7 @@ public class GraphController {
 
 
     public void setData(String graphName, GraphDTO selectedGraphDTO) {
+        selectedGraphName = graphName;
         String finalUrl = HttpUrl
                 .parse(GRAPH_LIST)
                 .newBuilder()

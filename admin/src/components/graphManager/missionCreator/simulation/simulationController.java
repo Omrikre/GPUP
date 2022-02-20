@@ -69,14 +69,22 @@ public class simulationController {
         firstRun = true;
         runIsDone = false;
         runBT.setDisable(true);
+        depOnBT.setDisable(true);
+        reqForBT.setDisable(true);
 
         useWhatIfBT.setOnAction((event) -> {
             if (useWhatIfBT.isSelected()) {
                 useWhatIfBT.setDisable(false);
+                depOnBT.setDisable(false);
+                reqForBT.setDisable(false);
             } else {
                 useWhatIfBT.setDisable(true);
+                depOnBT.setDisable(true);
+                reqForBT.setDisable(true);
             }
         });
+
+        setupData();
     }
     private void loadBackComponents() {;
         try {
@@ -111,7 +119,6 @@ public class simulationController {
         useWhatIfBT.setDisable(true);
         depOnBT.setSelected(false);
         reqForBT.setSelected(false);
-        //newRunBt.setDisable(true);
 
 
         // text boxes
@@ -159,7 +166,6 @@ public class simulationController {
         parentController.getGraphName(); //TODO - graph name
 
         runBT.setDisable(true);
-        //parentController.setDisableTaskType(true);
         upVB.setDisable(true);
         downVB.setDisable(true);
         lastRunTargetsArray = (ArrayList<String>) runTargetsArray.clone();
@@ -175,66 +181,28 @@ public class simulationController {
         System.out.println("\n");
 
         runningSimulation = true;
-        firstRun = false;
-
 
         String graphName = parentController.getGraphName();
         Gson gson = new Gson();
         String targetsArr = gson.toJson(runTargetsArray);
         String amountOfTargets= String.valueOf(runTargetsArray.size());
-        String missionName=name;
         String runtime= String.valueOf(timeSpinner.getValue());
         String randomRunTime= String.valueOf(randomCB.isSelected());
         String success= String.valueOf(successSpinner.getValue());
         String successWithWarnings= String.valueOf(warningsSpinner.getValue());
-        String finalUrl = HttpUrl
-                .parse(ADD_MISSION)
-                .newBuilder()
-                .addQueryParameter("targets-array", targetsArr)
-                .addQueryParameter("amount-of-targets", amountOfTargets)
-                .addQueryParameter("runtime", runtime)
-                .addQueryParameter("random-runtime", randomRunTime)
-                .addQueryParameter("success", success)
-                .addQueryParameter("success-warnings", successWithWarnings)
-                //the rest are for the display:
-                .addQueryParameter("name", missionName)
-                .addQueryParameter("graph-name", graphName)
-                .addQueryParameter("from-scratch", "false")
-                .addQueryParameter("incremental", "true")
-                .build()
-                .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                                System.out.println()
-                       // .setText("Something went wrong: " + e.getMessage())
-                );
-            }
+        System.out.println("\n\n-- Simulation Data --");
+        System.out.println(targetsArr);
+        System.out.println(amountOfTargets);
+        System.out.println(runtime);
+        System.out.println(randomRunTime);
+        System.out.println(success);
+        System.out.println(successWithWarnings);
+        System.out.println(graphName);
+        System.out.println("\n");
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() ->
-                                    System.out.println()
-                      //      .setText("Something went wrong: " + responseBody)
-                    );
-                } else {
-                    Platform.runLater(() -> {
-
-                        try {
-                            String responseBody = response.body().string();
-                            System.out.println(responseBody);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            }
-        });
-
+        parentController.CreateNewMissionWin(true ,targetsArr, amountOfTargets,
+                "", "", graphName, runtime, randomRunTime, success, successWithWarnings);
     }
 
     @FXML void selectAllTargetsPr(ActionEvent event) {parentController.selectAllCB();}
@@ -244,8 +212,12 @@ public class simulationController {
             parentController.setAllCBDisable(false);
             depOnBT.setSelected(false);
             reqForBT.setSelected(false);
+            depOnBT.setSelected(false);
+            reqForBT.setSelected(false);
         }
         else {
+            depOnBT.setSelected(true);
+            reqForBT.setSelected(true);
             parentController.setAllCBDisable(true);
         }
     }
@@ -316,30 +288,4 @@ public class simulationController {
 
 
 
-/*
-FROM SCRATCH:
-
-String finalUrl = HttpUrl
-                .parse(ADD_MISSION)
-                .newBuilder()
-                .addQueryParameter("name", missionName)
-                .addQueryParameter("from-scratch","true")
-                .addQueryParameter("incremental","false")
-                .addQueryParameter("new-name",newName)
-                .build()
-                .toString();
-
-
-INCREMENTAL:
-
-String finalUrl = HttpUrl
-                .parse(ADD_MISSION)
-                .newBuilder()
-                .addQueryParameter("name", missionName)
-                .addQueryParameter("from-scratch","false")
-                .addQueryParameter("incremental","true")
-                .addQueryParameter("new-name",newName)
-                .build()
-                .toString();
- */
 

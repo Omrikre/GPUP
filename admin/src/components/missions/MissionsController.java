@@ -19,11 +19,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import okhttp3.HttpUrl;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
+
+import static components.app.HttpResourcesPaths.ADD_MISSION;
 
 public class MissionsController {
 
@@ -114,6 +117,7 @@ public class MissionsController {
 
         } else if (missionStatus.equals("Ready")) {
             startBT.setDisable(false);
+
         } else if (missionStatus.equals("Execution")) {
             pauseBT.setDisable(false);
             stopBT.setDisable(false);
@@ -201,12 +205,12 @@ public class MissionsController {
 
     @FXML
     void dupIncrementalPR(ActionEvent event) {
-        mainController.openCreateNewMissionWin(true, false); //send all data
+        mainController.openCreateNewMissionWin(false, selectedMission);
     }
 
     @FXML
     void dupScratchPR(ActionEvent event) {
-        mainController.openCreateNewMissionWin(true, true);
+        mainController.openCreateNewMissionWin(true, selectedMission);
     }
 
     @FXML

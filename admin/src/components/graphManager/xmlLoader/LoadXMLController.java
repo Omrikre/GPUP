@@ -261,8 +261,8 @@ public class LoadXMLController {
 
                 }
                 else {
-                    uploadInfo1LB.setText("upload successfully");
-                    uploadInfo2LB.setText("file name: " + file.getName());
+                    //uploadInfo1LB.setText("upload successfully");
+                    //uploadInfo2LB.setText("file name: " + file.getName()); //todo
                     System.out.println("ok");
                 }
             }
