@@ -30,7 +30,7 @@
          <children>
             <CheckBox fx:id="darkModeCB" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label prefHeight="17.0" prefWidth="74.0" text="Dark Mode" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label layoutX="57.0" layoutY="21.0" prefHeight="17.0" prefWidth="74.0" text="Animations" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label layoutX="57.0" layoutY="21.0" minWidth="84.0" prefHeight="21.0" prefWidth="84.0" text="Animations" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <CheckBox fx:id="animationsCB" layoutX="142.0" layoutY="21.0" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Label layoutX="57.0" layoutY="41.0" prefHeight="17.0" prefWidth="74.0" text="Made By" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label layoutX="57.0" layoutY="74.0" prefHeight="17.0" prefWidth="97.0" text="Omri Krelman" GridPane.columnIndex="2" GridPane.rowIndex="3">

@@ -211,10 +211,8 @@ public class compilationController {
         HttpClientUtil.runAsync(finalUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                                System.out.println("")
+                Platform.runLater(() -> System.out.println()
                         //.setText("Something went wrong: " + e.getMessage())
-
                 );
             }
 
@@ -222,10 +220,8 @@ public class compilationController {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
-                    Platform.runLater(() ->
-                            System.out.println("")
-
-                                    //.setText("Something went wrong: " + responseBody)
+                    Platform.runLater(() -> System.out.println()
+                           // .setText("Something went wrong: " + responseBody)
                     );
                 } else {
                     Platform.runLater(() -> {

@@ -59,4 +59,9 @@ public class GraphManager {
     public synchronized java.util.Set<String> getWhatIf(String gName, String t, Bond b) {
         return graphMap.get(gName).getSetOfAllAffectedTargetsByBond(t, b);
     }
+
+    public synchronized Graph getGraphOfRunnableTargetsFromArrayAndGraph(String graphname, List<String> targets){
+        Engine e;
+        e.getGraphOfRunnableTargetsFromArrayAndGraph(graphMap.get(graphname),targets);
+    }
 }

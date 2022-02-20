@@ -206,9 +206,8 @@ public class simulationController {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                                System.out.println("")
-
-                        //.setText("Something went wrong: " + e.getMessage())
+                                System.out.println()
+                       // .setText("Something went wrong: " + e.getMessage())
                 );
             }
 
@@ -217,9 +216,8 @@ public class simulationController {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
                     Platform.runLater(() ->
-                            System.out.println("")
-
-                                    //.setText("Something went wrong: " + responseBody)
+                                    System.out.println()
+                      //      .setText("Something went wrong: " + responseBody)
                     );
                 } else {
                     Platform.runLater(() -> {
