@@ -126,6 +126,16 @@ public class ChatRoomMainController {
     }
 
 
+    public void closeChat() {
+        if (timerChatRefresher != null) {
+            chatAreaRefresher.cancel();
+            timerChatRefresher.cancel();
+        }
+        chatVersion.set(0);
+        chatLineTextArea.clear();
+        chatVersionLabel.setText("Chat Version: 0");
+        mainChatLinesTextArea.clear();
+    }
 }
 
 

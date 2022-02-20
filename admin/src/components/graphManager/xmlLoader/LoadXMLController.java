@@ -121,7 +121,7 @@ public class LoadXMLController {
         });
     }
 
-    public void setupData(List<GraphDTO> graphs) {
+    public void setupData() {
 
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> {
             if (newSelectedCount.intValue() == 1) {
@@ -265,9 +265,6 @@ public class LoadXMLController {
 
     public void setGraphParentController(GraphController graphController) {this.graphParentController = graphController;}
 
-    public void setupData() {
-        //TODO get graph data from server
-    }
 
 
 }

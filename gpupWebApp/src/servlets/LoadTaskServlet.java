@@ -42,7 +42,8 @@ public class LoadTaskServlet extends HttpServlet {
             else
                 price = waitingTargets * graph.getCompPricePerTarget();
             MissionDTOWithoutCB task = new MissionDTOWithoutCB(amountOfTargets, compilationFolder, runtime, randomRunTime, success, successWithWarnings, missionName, MissionState.READY.toString(), 0, 0,
-                    price, creatorName, graphName, 0, 0);
+                    price, creatorName, graphName, 0, 0, 0,0,0,0);
+            //TODO - get parameters - target type, replace the last 4 param
             ServletUtils.getTaskManager(getServletContext()).addTask(task);
             resp.setStatus(200);
             out.write("Task " + task.getMissionName() + " was added successfully.");

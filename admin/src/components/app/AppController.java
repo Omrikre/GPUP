@@ -14,6 +14,8 @@ import components.home.login.LoginController;
 import components.mainLogin.MainLoginController;
 import components.missions.MissionsController;
 import components.settings.settingsController;
+import http.HttpClientUtil;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -197,14 +199,6 @@ public class AppController implements Closeable {
             graphManagerComponentController.setMainController(this);
             System.out.println(" -- graph manager done --");
 
-            // dashboard
-            fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource(DASHBOARD_fXML_RESOURCE));
-            dashboardComponent = fxmlLoader.load();
-            dashboardComponentController = fxmlLoader.getController();
-            dashboardComponentController.setMainController(this);
-            System.out.println(" -- dashboard done --");
-
             // missions
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(MISSIONS_fXML_RESOURCE));
@@ -212,6 +206,14 @@ public class AppController implements Closeable {
             missionsComponentController = fxmlLoader.getController();
             //missionsComponentController.setMainController(this);
             System.out.println(" -- missions done --");
+
+            // dashboard
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(DASHBOARD_fXML_RESOURCE));
+            dashboardComponent = fxmlLoader.load();
+            dashboardComponentController = fxmlLoader.getController();
+            dashboardComponentController.setMainController(this, missionsComponentController);
+            System.out.println(" -- dashboard done --");
 
             // chat
             fxmlLoader = new FXMLLoader();
@@ -413,16 +415,15 @@ public class AppController implements Closeable {
 
     public void logout() {
         headerComponentController.makeAllButtonsDisable(true);
-
     }
 
 
     @Override
-    public void close() throws IOException { //TODO - FIX
-        autoUpdate.setValue(false);
-        System.out.println(autoUpdate);
-        System.out.println("exit!!!");
-
+    public void close() throws IOException {
+        mainLoginCompController.loggedOut();
+        HttpClientUtil.shutdown();
+        chatComponentController.closeChat();
+        dashboardComponentController.closeDashboard();
     }
 
     public BooleanProperty getAutoUpdate() { return autoUpdate; }

@@ -35,7 +35,7 @@ public class ChatAreaRefresher extends TimerTask {
 
     @Override
     public void run() {
-        if(!shouldUpdate.getValue())
+        if(!(shouldUpdate.getValue()))
             return;
 
         String finalUrl = HttpUrl
