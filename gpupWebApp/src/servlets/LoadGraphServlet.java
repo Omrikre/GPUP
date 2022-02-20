@@ -31,15 +31,20 @@ public class LoadGraphServlet extends HttpServlet {
         resp.setContentType("text/plain");
         String usernameFromSession = SessionUtils.getUsername(req);
         Collection<Part> parts = req.getParts();
+        PrintWriter out=resp.getWriter();
         if (parts != null)
             for (Part part : parts) {
-                try (PrintWriter out = resp.getWriter()) {
+                try {
                     Engine engine = new Engine();
                     engine.loadFileFromServlet(part.getInputStream(), usernameFromSession);
                     Graph graph = engine.getG();
                     resp.setStatus(200);
                     ServletUtils.getGraphManager(getServletContext()).addGraph(graph);
                     out.write("Graph [" + graph.getGraphName() + "]" + " was added successfully");
+                }
+                catch (FileException | JAXBException e) {
+                    resp.setStatus(500);
+                    out.write("The XML file is not valid! error: " + e.getMessage());
                 }
             }
 
@@ -79,10 +84,6 @@ public class LoadGraphServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             processRequest(req, resp);
-        } catch (FileException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
         }
     }
 
@@ -90,10 +91,6 @@ public class LoadGraphServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             processRequest(req, resp);
-        } catch (FileException e) {
-            e.printStackTrace();
-        } catch (JAXBException e) {
-            e.printStackTrace();
         }
     }
 }
