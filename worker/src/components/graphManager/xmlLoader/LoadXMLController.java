@@ -67,7 +67,7 @@ public class LoadXMLController {
 
         selectedGraphLB.setText("-");
 
-        setupData();
+        //setupData();
     }
 
 
@@ -160,9 +160,6 @@ public class LoadXMLController {
     }
     public void setGraphParentController(GraphController graphController) { this.graphParentController = graphController;}
 
-    public void setupData() {
-        //TODO get graph data from server
-    }
 
 
 

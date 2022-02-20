@@ -1,9 +1,9 @@
 package components.dashboard;
 
-import Engine.DTO.MissionDTO;
 import Engine.DTO.MissionDTOWithoutCB;
 import Engine.users.User;
 import components.app.AppController;
+import components.missions.MissionsController;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -43,10 +43,12 @@ public class DashboardController implements Closeable {
     private DashboardRefresher dashboardRefresher;
     private AppController mainController;
     private BooleanProperty autoUpdate;
-    private Timer timer;
+    private Timer dashboardTimer;
+    private MissionsController missionController;
 
 
-    public void setMainController(AppController appController) {
+    public void setMainController(AppController appController, MissionsController missionController) {
+        this.missionController = missionController;
         this.mainController = appController;
     }
 
@@ -73,13 +75,17 @@ public class DashboardController implements Closeable {
             updateUsersLabels(userNames);
         });
     }
-    private void updateMissionsList(List<MissionDTOWithoutCB> missions) {
+    private void updateMissionsListInDashboard(List<MissionDTOWithoutCB> missions) {
         Platform.runLater(() -> {
             ObservableList<MissionDTOWithoutCB> missionsTV = missionListTV.getItems();
             missionsTV.clear();
             missionsTV.addAll(missions);
             updateMissionLabels(missions);
         });
+    }
+
+    private void updateMissionsInMissionTab(List<MissionDTOWithoutCB> missions) {
+        missionController.updateMissionsList(missions);
     }
 
     private void updateMissionLabels(List<MissionDTOWithoutCB> missions) {
@@ -121,15 +127,15 @@ public class DashboardController implements Closeable {
     public void startListRefresher(BooleanProperty autoUpdate) {
         this.autoUpdate = autoUpdate;
         dashboardRefresher = new DashboardRefresher(
-                this.autoUpdate, this::updateUsersList, this::updateMissionsList);
-        timer = new Timer();
-        timer.schedule(dashboardRefresher, REFRESH_RATE, REFRESH_RATE);
+                this.autoUpdate, this::updateUsersList, this::updateMissionsListInDashboard, this::updateMissionsInMissionTab);
+        dashboardTimer = new Timer();
+        dashboardTimer.schedule(dashboardRefresher, REFRESH_RATE, REFRESH_RATE);
     }
 
     public void close() {
-        if (dashboardRefresher != null && timer != null) {
+        if (dashboardRefresher != null && dashboardTimer != null) {
             dashboardRefresher.cancel();
-            timer.cancel();
+            dashboardTimer.cancel();
         }
         userListTV.getItems().clear();
         missionListTV.getItems().clear();
@@ -138,6 +144,14 @@ public class DashboardController implements Closeable {
     public void UsersListController() {autoUpdate = new SimpleBooleanProperty(true);}
     public BooleanProperty autoUpdatesProperty() {return autoUpdate;}
 
+    public void closeDashboard() {
+        if (dashboardTimer != null) {
+            dashboardRefresher.cancel();
+            dashboardTimer.cancel();
+        }
+        userListTV.getItems().clear();
+        userListTV.refresh();
+    }
 }
 
 

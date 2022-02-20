@@ -7,25 +7,31 @@ import javafx.scene.control.CheckBox;
 
 public class MissionDTO {
     //simulation/compilation infos:
-    private int amountOfTargets;
+    private Integer amountOfTargets;
     private String compilationFolder; //for compilation task, else null
-    private int runTime;
+    private Integer runTime;
     private boolean randomRunTime;
-    private int success;
-    private int successWithWarnings;
+    private Integer success;
+    private Integer successWithWarnings;
     //the rest are for the display:
     private String missionName;
     private String status;
-    private int progress;
-    private int workers;
-    private int totalPrice;
+    private Integer progress;
+    private Integer workers;
+    private Integer totalPrice;
     private String creatorName;
     private String graphName;
-    private int executedTargets;
-    private int waitingTargets;
+    private Integer executedTargets;
+    private Integer waitingTargets;
+    private Integer independenceCount;
+    private Integer leafCount;
+    private Integer middleCount;
+    private Integer rootCount;
+
     private CheckBox selectedState;
 
-    public MissionDTO(Integer amountOfTargets, String compilationFolder, Integer runTime, Boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, MissionState status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets) {
+
+    public MissionDTO(Integer amountOfTargets, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, CheckBox selectedState, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
         this.compilationFolder = compilationFolder;
         this.runTime = runTime;
@@ -33,7 +39,7 @@ public class MissionDTO {
         this.success = success;
         this.successWithWarnings = successWithWarnings;
         this.missionName = missionName;
-        this.status = status.toString();
+        this.status = status;
         this.progress = progress;
         this.workers = workers;
         this.totalPrice = totalPrice;
@@ -42,62 +48,10 @@ public class MissionDTO {
         this.executedTargets = executedTargets;
         this.waitingTargets = waitingTargets;
         this.selectedState = selectedState;
-    }
-
-    public void setAmountOfTargets(int amountOfTargets) {
-        this.amountOfTargets = amountOfTargets;
-    }
-
-    public void setRunTime(int runTime) {
-        this.runTime = runTime;
-    }
-
-    public boolean isRandomRunTime() {
-        return randomRunTime;
-    }
-
-    public void setRandomRunTime(boolean randomRunTime) {
-        this.randomRunTime = randomRunTime;
-    }
-
-    public void setSuccess(int success) {
-        this.success = success;
-    }
-
-    public void setSuccessWithWarnings(int successWithWarnings) {
-        this.successWithWarnings = successWithWarnings;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
-
-    public void setWorkers(int workers) {
-        this.workers = workers;
-    }
-
-    public void setTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public void setExecutedTargets(int executedTargets) {
-        this.executedTargets = executedTargets;
-    }
-
-    public void setWaitingTargets(int waitingTargets) {
-        this.waitingTargets = waitingTargets;
-    }
-
-    public CheckBox getSelectedState() {
-        return selectedState;
-    }
-
-    public void setSelectedState(CheckBox selectedState) {
-        this.selectedState = selectedState;
+        this.independenceCount = independenceCount;
+        this.leafCount = leafCount;
+        this.middleCount = middleCount;
+        this.rootCount = rootCount;
     }
 
     public Integer getAmountOfTargets() {
@@ -124,11 +78,11 @@ public class MissionDTO {
         this.runTime = runTime;
     }
 
-    public Boolean getRandomRunTime() {
+    public boolean isRandomRunTime() {
         return randomRunTime;
     }
 
-    public void setRandomRunTime(Boolean randomRunTime) {
+    public void setRandomRunTime(boolean randomRunTime) {
         this.randomRunTime = randomRunTime;
     }
 
@@ -157,11 +111,11 @@ public class MissionDTO {
     }
 
     public String getStatus() {
-        return this.status;
+        return status;
     }
 
-    public void setStatus(MissionState status) {
-        this.status = status.toString();
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Integer getProgress() {
@@ -220,6 +174,45 @@ public class MissionDTO {
         this.waitingTargets = waitingTargets;
     }
 
+    public CheckBox getSelectedState() {
+        return selectedState;
+    }
+
+    public void setSelectedState(CheckBox selectedState) {
+        this.selectedState = selectedState;
+    }
+
+    public Integer getIndependenceCount() {
+        return independenceCount;
+    }
+
+    public void setIndependenceCount(Integer independenceCount) {
+        this.independenceCount = independenceCount;
+    }
+
+    public Integer getLeafCount() {
+        return leafCount;
+    }
+
+    public void setLeafCount(Integer leafCount) {
+        this.leafCount = leafCount;
+    }
+
+    public Integer getMiddleCount() {
+        return middleCount;
+    }
+
+    public void setMiddleCount(Integer middleCount) {
+        this.middleCount = middleCount;
+    }
+
+    public Integer getRootCount() {
+        return rootCount;
+    }
+
+    public void setRootCount(Integer rootCount) {
+        this.rootCount = rootCount;
+    }
 
     @Override
     public String toString() {

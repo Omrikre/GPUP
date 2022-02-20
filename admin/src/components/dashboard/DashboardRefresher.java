@@ -24,23 +24,26 @@ import static components.app.HttpResourcesPaths.*;
 
 public class DashboardRefresher extends TimerTask {
 
-    private Consumer<List<User>> usersListConsumer;
-    private Consumer<List<MissionDTOWithoutCB>> missionConsumer;
+    private final Consumer<List<MissionDTOWithoutCB>> missionsConsumer;
+    private final Consumer<List<User>> usersListConsumer;
+    private final Consumer<List<MissionDTOWithoutCB>> missionConsumerDashboard;
     private final BooleanProperty shouldUpdate;
 
 
-    public DashboardRefresher(BooleanProperty shouldUpdate, Consumer<List<User>> userConsumer, Consumer<List<MissionDTOWithoutCB>> missionConsumer) {
+    public DashboardRefresher(BooleanProperty shouldUpdate, Consumer<List<User>> userConsumer,
+                              Consumer<List<MissionDTOWithoutCB>> missionConsumerDashboard, Consumer<List<MissionDTOWithoutCB>> missionsConsumer) {
         this.shouldUpdate = shouldUpdate;
         this.usersListConsumer = userConsumer;
-        this.missionConsumer = missionConsumer;
+        this.missionConsumerDashboard = missionConsumerDashboard;
+        this.missionsConsumer = missionsConsumer;
     }
 
     @Override
     public void run() {
-//TODO
-/*        if (!shouldUpdate.get()) {
+
+       if (!shouldUpdate.get())
             return;
-        }*/
+
         String userUrl = HttpUrl
                 .parse(USERS_LIST)
                 .newBuilder()
@@ -102,7 +105,9 @@ public class DashboardRefresher extends TimerTask {
                         try {
                             String responseBody = response.body().string();
                             MissionDTOWithoutCB[] lst = GSON.fromJson(responseBody, MissionDTOWithoutCB[].class);
-                            missionConsumer.accept(Arrays.asList(lst)); //TODO - FIX
+                            missionsConsumer.accept(Arrays.asList(lst));
+                            missionConsumerDashboard.accept(Arrays.asList(lst));
+
                         } catch (IOException e) {
                             System.out.println(e.getMessage());
                         }

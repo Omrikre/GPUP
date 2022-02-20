@@ -44,7 +44,7 @@ public class MainLoginController {
         }
     }
 
-    private void loggedOut() {
+    public void loggedOut() {
         String finalUrl = HttpUrl
                 .parse(LOGOUT_PAGE)
                 .newBuilder()
@@ -68,7 +68,6 @@ public class MainLoginController {
                     );
                 } else {
                     Platform.runLater(() -> {
-                        System.out.println("loggedOut!!");
                         mainController.setInActive();
                         loggedIn = false;
                         userNameNameLB.setText("");

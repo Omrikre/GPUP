@@ -1,33 +1,30 @@
 package Engine.DTO;
 
-import Engine.Enums.MissionState;
-import javafx.scene.control.CheckBox;
-import Engine.Engine;
-import Engine.Enums.MissionState;
-import Engine.Graph;
-import javafx.scene.control.CheckBox;
-
 public class MissionDTOWithoutCB {
 
-        //simulation/compilation infos:
-        private int amountOfTargets;
-        private String compilationFolder; //for compilation task, else null
-        private int runTime;
-        private boolean randomRunTime;
-        private int success;
-        private int successWithWarnings;
-        //the rest are for the display:
-        private String missionName;
-        private String status;
-        private int progress;
-        private int workers;
-        private int totalPrice;
-        private String creatorName;
-        private String graphName;
-        private int executedTargets;
-        private int waitingTargets;
+    //simulation/compilation infos:
+    private Integer amountOfTargets;
+    private String compilationFolder; //for compilation task, else null
+    private Integer runTime;
+    private boolean randomRunTime;
+    private Integer success;
+    private Integer successWithWarnings;
+    //the rest are for the display:
+    private String missionName;
+    private String status;
+    private Integer progress;
+    private Integer workers;
+    private Integer totalPrice;
+    private String creatorName;
+    private String graphName;
+    private Integer executedTargets;
+    private Integer waitingTargets;
+    private Integer independenceCount;
+    private Integer leafCount;
+    private Integer middleCount;
+    private Integer rootCount;
 
-    public MissionDTOWithoutCB(int amountOfTargets, String compilationFolder, int runTime, boolean randomRunTime, int success, int successWithWarnings, String missionName, String status, int progress, int workers, int totalPrice, String creatorName, String graphName, int executedTargets, int waitingTargets) {
+    public MissionDTOWithoutCB(Integer amountOfTargets, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
         this.compilationFolder = compilationFolder;
         this.runTime = runTime;
@@ -43,13 +40,17 @@ public class MissionDTOWithoutCB {
         this.graphName = graphName;
         this.executedTargets = executedTargets;
         this.waitingTargets = waitingTargets;
+        this.independenceCount = independenceCount;
+        this.leafCount = leafCount;
+        this.middleCount = middleCount;
+        this.rootCount = rootCount;
     }
 
-    public int getAmountOfTargets() {
+    public Integer getAmountOfTargets() {
         return amountOfTargets;
     }
 
-    public void setAmountOfTargets(int amountOfTargets) {
+    public void setAmountOfTargets(Integer amountOfTargets) {
         this.amountOfTargets = amountOfTargets;
     }
 
@@ -61,11 +62,11 @@ public class MissionDTOWithoutCB {
         this.compilationFolder = compilationFolder;
     }
 
-    public int getRunTime() {
+    public Integer getRunTime() {
         return runTime;
     }
 
-    public void setRunTime(int runTime) {
+    public void setRunTime(Integer runTime) {
         this.runTime = runTime;
     }
 
@@ -77,19 +78,19 @@ public class MissionDTOWithoutCB {
         this.randomRunTime = randomRunTime;
     }
 
-    public int getSuccess() {
+    public Integer getSuccess() {
         return success;
     }
 
-    public void setSuccess(int success) {
+    public void setSuccess(Integer success) {
         this.success = success;
     }
 
-    public int getSuccessWithWarnings() {
+    public Integer getSuccessWithWarnings() {
         return successWithWarnings;
     }
 
-    public void setSuccessWithWarnings(int successWithWarnings) {
+    public void setSuccessWithWarnings(Integer successWithWarnings) {
         this.successWithWarnings = successWithWarnings;
     }
 
@@ -109,27 +110,27 @@ public class MissionDTOWithoutCB {
         this.status = status;
     }
 
-    public int getProgress() {
+    public Integer getProgress() {
         return progress;
     }
 
-    public void setProgress(int progress) {
+    public void setProgress(Integer progress) {
         this.progress = progress;
     }
 
-    public int getWorkers() {
+    public Integer getWorkers() {
         return workers;
     }
 
-    public void setWorkers(int workers) {
+    public void setWorkers(Integer workers) {
         this.workers = workers;
     }
 
-    public int getTotalPrice() {
+    public Integer getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(int totalPrice) {
+    public void setTotalPrice(Integer totalPrice) {
         this.totalPrice = totalPrice;
     }
 
@@ -149,20 +150,52 @@ public class MissionDTOWithoutCB {
         this.graphName = graphName;
     }
 
-    public int getExecutedTargets() {
+    public Integer getExecutedTargets() {
         return executedTargets;
     }
 
-    public void setExecutedTargets(int executedTargets) {
+    public void setExecutedTargets(Integer executedTargets) {
         this.executedTargets = executedTargets;
     }
 
-    public int getWaitingTargets() {
+    public Integer getWaitingTargets() {
         return waitingTargets;
     }
 
-    public void setWaitingTargets(int waitingTargets) {
+    public void setWaitingTargets(Integer waitingTargets) {
         this.waitingTargets = waitingTargets;
+    }
+
+    public Integer getIndependenceCount() {
+        return independenceCount;
+    }
+
+    public void setIndependenceCount(Integer independenceCount) {
+        this.independenceCount = independenceCount;
+    }
+
+    public Integer getLeafCount() {
+        return leafCount;
+    }
+
+    public void setLeafCount(Integer leafCount) {
+        this.leafCount = leafCount;
+    }
+
+    public Integer getMiddleCount() {
+        return middleCount;
+    }
+
+    public void setMiddleCount(Integer middleCount) {
+        this.middleCount = middleCount;
+    }
+
+    public Integer getRootCount() {
+        return rootCount;
+    }
+
+    public void setRootCount(Integer rootCount) {
+        this.rootCount = rootCount;
     }
 
     @Override
