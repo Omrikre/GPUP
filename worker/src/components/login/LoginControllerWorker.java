@@ -1,40 +1,126 @@
 package components.login;
 
 import components.app.AppController;
+import http.HttpClientUtil;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
+
+import static components.app.HttpResourcesPaths.LOGIN_PAGE;
 
 
 public class LoginControllerWorker {
 
-    @FXML private Spinner<Integer> numThreadsSP;
-    @FXML private Label loginMsgLB;
-    @FXML private Button loginBT;
-    @FXML private TextField userNameTF;
+    @FXML
+    private Spinner<Integer> numThreadsSP;
+    @FXML
+    private Label loginMsgLB;
+    @FXML
+    private Button loginBT;
+    @FXML
+    private TextField userNameTF;
 
     private AppController mainController;
     private Stage mainAppStage;
     private String userName;
 
 
-    @FXML public void initialize() {
-        loginMsgLB.setText("");
-        numThreadsSP.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1,5));
+    @FXML
+    public void initialize() {
+        userNameTF.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                loginSetUp();
+            }
+        });
+        userNameTF.requestFocus();
     }
 
-    @FXML void loginPR(ActionEvent event) throws IOException {
+    public String getUserName() {
+        return userName;
+    }
+
+    @FXML
+    void loginPR(ActionEvent event) throws IOException {
         //check username b
         // if()
-        userName = userNameTF.getText();
-        System.out.println("LoginController worker: " + userName );
-        mainController.closeLogin(userName, numThreadsSP.getValue());
+//        userName = userNameTF.getText();
+//        System.out.println("LoginController worker: " + userName );
+//        mainController.closeLogin(userName, numThreadsSP.getValue());
+        loginSetUp();
+
     }
+
+    private void loginSetUp() {
+        userName = "";
+        loginMsgLB.setText("");
+        loginBT.setDisable(true);
+
+        userName = userNameTF.getText();
+        if (userName.isEmpty()) {
+            loginMsgLB.setText("Please enter user name");
+            loginBT.setDisable(false);
+            return;
+        }
+        System.out.println("LoginController: " + userName);
+
+        String finalUrl = HttpUrl
+                .parse(LOGIN_PAGE)
+                .newBuilder()
+                .addQueryParameter("username", userName)
+                .addQueryParameter("role", "Worker")
+                .addQueryParameter("threadSize", String.valueOf(mainController.getNumThreads()))
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> {
+                            loginMsgLB.setText("Something went wrong: " + e.getMessage());
+                            loginBT.setDisable(false);
+                        }
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                                loginMsgLB.setText("Something went wrong: " + responseBody);
+                                loginBT.setDisable(false);
+                            }
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                                mainController.closeLogin(userName, mainController.getNumThreads());
+                                loginBT.setDisable(false);
+                            }
+                    );
+                }
+            }
+        });
+
+
+    }
+
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
 
+    public void cleanUsernameText() {
+        userNameTF.clear();
+        userNameTF.requestFocus();
+    }
 
 }

@@ -14,6 +14,8 @@ import components.login.LoginControllerWorker;
 import components.mainLogin.MainLoginController;
 import components.missions.MissionsController;
 import components.settings.settingsController;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -49,6 +51,8 @@ public class AppController {
     private GridPane loginComponent;
     private LoginControllerWorker loginComponentController;
     private Stage loginWin;
+    private BooleanProperty autoUpdate;
+
 
     // main components:
     // main - login Loader
@@ -84,6 +88,7 @@ public class AppController {
     @FXML public void initialize() {
         isLoggedIn = false;
         setMainInSubComponents();
+        autoUpdate = new SimpleBooleanProperty(true);
         loadBackComponents();
     }
 
@@ -276,10 +281,24 @@ public class AppController {
         mainLoginCompController.loggedIn(userName);
         loginWin.close();
         headerComponentController.makeAllButtonsDisable(false);
+        setAllDataInPanes();
+        autoUpdate.setValue(true);
         numThreads = threads;
     }
-    public void logout() { headerComponentController.makeAllButtonsDisable(true); }
+ //TODO FIX THREADS
+    public int getNumThreads() {
+        return numThreads;
+    }
 
+    public void logout() { headerComponentController.makeAllButtonsDisable(true); }
+    public void setInActive() {
+        try {
+            autoUpdate.setValue(false);
+            //usersListComponentController.close();
+            //graphAdminComponentController.close();
+        } catch (Exception ignored) {}
+    }
+    public BooleanProperty getAutoUpdate() { return autoUpdate; }
 
 
 }
