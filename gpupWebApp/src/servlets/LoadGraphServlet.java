@@ -21,6 +21,7 @@ import java.util.Map;
 @WebServlet("/select/graph")
 public class LoadGraphServlet extends HttpServlet {
 
+
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, FileException, JAXBException {
         resp.setContentType("object/graph");
         try (PrintWriter out = resp.getWriter()) {
@@ -75,3 +76,82 @@ public class LoadGraphServlet extends HttpServlet {
         }
     }
 }
+
+
+//TODO - change th servlet
+// bar's:
+/*
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
+@WebServlet("/file/xml/load")
+public class LoadFileServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/plain");
+        String usernameFromSession = SessionUtils.getUsername(request);
+        UserManager userManager = ServletUtils.getUserManager(getServletContext());
+
+        /// request before login
+        if (usernameFromSession == null || usernameFromSession.isEmpty() || userManager.getUserRole(usernameFromSession) == null){
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            response.getWriter().write("please login before upload file");
+        }
+        /// worker request load graph but only admin can load graph)
+        else if(!userManager.getUserRole(usernameFromSession).equals("Admin")){
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            response.getWriter().write("only admin can load a file");
+        }
+        else {
+            GraphManger graphManager = ServletUtils.getGraphManager(getServletContext());
+            PrintWriter out = response.getWriter();
+            Collection<Part> parts = request.getParts();
+            if (parts != null)
+            for (Part part : parts) {
+                if (checkFileExtension(part.getSubmittedFileName())) {
+                    try {
+                        Xmlimpl xmlFile = new Xmlimpl(part.getInputStream());
+                        graphManager.addGraph(new Graph(xmlFile, usernameFromSession));
+
+                        response.setStatus(HttpServletResponse.SC_OK);
+                        out.write("Add new graph successfully: \n" +
+                                "creator: " + usernameFromSession + "\n" +
+                                "graph name: " + xmlFile.getGraphName() + "\n");
+                        out.flush();
+
+                    } catch (GraphIsExists e) {
+                        out.write(e.toString());
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    } catch (IllegalArgumentException e) {
+                        out.write(e.toString());
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    } catch (Exception e) {
+                        out.write(e.toString());
+                        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    }
+                } else {
+                    /// not xml file
+                    out.write("please choose xml file");
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
+            }
+            else{
+                out.write("please insert file");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+        }
+    }
+
+    public static boolean checkFileExtension(String fileName) {
+        if (fileName == null) {
+            throw new IllegalArgumentException("fileName must not be null!");
+        }
+        String extension = "";
+        int index = fileName.lastIndexOf('.');
+        if (index > 0) {
+            extension = fileName.substring(index + 1);
+        }
+
+        return extension.equals("xml");
+    }
+
+ */

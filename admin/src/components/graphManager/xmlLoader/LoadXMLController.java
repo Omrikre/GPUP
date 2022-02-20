@@ -19,10 +19,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Response;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -34,6 +31,7 @@ import java.util.Timer;
 
 import static components.app.CommonResourcesPaths.REFRESH_RATE;
 import static components.app.HttpResourcesPaths.GRAPH;
+import static components.app.HttpResourcesPaths.LOAD_XML_FILE;
 
 public class LoadXMLController {
 
@@ -201,8 +199,10 @@ public class LoadXMLController {
         checkBoxCOL.setCellValueFactory(new PropertyValueFactory<GraphDTO, CheckBox>("selectedState"));
     }
 
+
     @FXML
     void uploadXMLPR(ActionEvent event) throws MalformedURLException { //TODO - send the file to the server
+
         clearFileUploadLB();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -210,7 +210,53 @@ public class LoadXMLController {
         Stage chooser = new Stage();
         chooser.initModality(Modality.APPLICATION_MODAL);
         File file = fileChooser.showOpenDialog(chooser);
-        try {
+
+        if (file == null)
+            return;
+        String finalUrl = HttpUrl
+                .parse(LOAD_XML_FILE)
+                .newBuilder()
+                .build()
+                .toString();
+
+        RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+                .build();
+
+        HttpClientUtil.runAsyncPost(finalUrl, body, new Callback() {
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println("error send th file: " + file.getName()));
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    System.out.println("error send th file: " + file.getName());
+                    System.out.println(responseBody);
+                }
+            }
+        });
+    }
+
+    private void clearFileUploadLB() {
+        uploadInfo1LB.setText("");
+        uploadInfo2LB.setText("");
+    }
+
+    public void setMainController(AppController mainController) {this.mainController = mainController;}
+
+    public void setGraphParentController(GraphController graphController) {this.graphParentController = graphController;}
+
+
+
+}
+
+/*
+try {
             if (file == null || !mainController.checkFileIsValid(file.getAbsolutePath(), mainController.getUsername())) {
                 uploadInfo1LB.setText("Please select file");
                 return;
@@ -254,17 +300,4 @@ public class LoadXMLController {
                 }
             }
         });
-    }
-
-    private void clearFileUploadLB() {
-        uploadInfo1LB.setText("");
-        uploadInfo2LB.setText("");
-    }
-
-    public void setMainController(AppController mainController) {this.mainController = mainController;}
-
-    public void setGraphParentController(GraphController graphController) {this.graphParentController = graphController;}
-
-
-
-}
+ */
