@@ -293,6 +293,15 @@ public class Graph implements Serializable {
         return allPaths;
     }
 
+    public boolean checkIfTheGraphContainsCycle() {
+        for (String s : targets.keySet()) {
+            Set<List<String>> temp = isTargetInCircleByName(s);
+            if (!temp.isEmpty())
+                return true;
+        }
+        return false;
+    }
+
     //to be used only in the big function, finding each simple path and adding to all the paths
     private void getPathBetweenTargetsRec(Map<String, Boolean> visited,
                                           Set<List<String>> allPaths, List<String> singlePath,
