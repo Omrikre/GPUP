@@ -39,6 +39,7 @@ import java.util.Set;
 
 import static components.app.CommonResourcesPaths.*;
 
+
 public class AppController implements Closeable {
 
     // components:
@@ -177,7 +178,6 @@ public class AppController implements Closeable {
             missionsComponent = fxmlLoader.load();
             missionsComponentController = fxmlLoader.getController();
             missionsComponentController.setMainController(this);
-            //missionsComponentController.setMainController(this);
             System.out.println(" -- missions done --");
 
             // dashboard
@@ -245,9 +245,14 @@ public class AppController implements Closeable {
     public void closeSettingsWin() {
         settingsWin.close();
     }
-    public void openCreateNewMissionWin(boolean isDup, boolean isFromScratch) {
+    public void openCreateNewMissionWin(boolean isDup, boolean isFromScratch, String oldMission, String newName) {
         createMissionComponentController.cleanup();
-        createMissionComponentController.setupData(isDup, isFromScratch);
+        createMissionComponentController.setupData(isDup, isFromScratch, oldMission, newName);
+        createMissionWin.show();
+    }
+    public void openCreateNewMissionWin(String httpURL) {
+        createMissionComponentController.cleanup();
+        createMissionComponentController.setupData(httpURL);
         createMissionWin.show();
     }
     public void closeCreateNewMissionWin() { createMissionWin.close();

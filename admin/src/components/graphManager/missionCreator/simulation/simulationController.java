@@ -159,7 +159,6 @@ public class simulationController {
         parentController.getGraphName(); //TODO - graph name
 
         runBT.setDisable(true);
-        //parentController.setDisableTaskType(true);
         upVB.setDisable(true);
         downVB.setDisable(true);
         lastRunTargetsArray = (ArrayList<String>) runTargetsArray.clone();
@@ -175,8 +174,6 @@ public class simulationController {
         System.out.println("\n");
 
         runningSimulation = true;
-        firstRun = false;
-
 
         String graphName = parentController.getGraphName();
         Gson gson = new Gson();
@@ -202,37 +199,7 @@ public class simulationController {
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                                System.out.println()
-                       // .setText("Something went wrong: " + e.getMessage())
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
-                    Platform.runLater(() ->
-                                    System.out.println()
-                      //      .setText("Something went wrong: " + responseBody)
-                    );
-                } else {
-                    Platform.runLater(() -> {
-
-                        try {
-                            String responseBody = response.body().string();
-                            System.out.println(responseBody);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            }
-        });
-
+        parentController.getMainController().openCreateNewMissionWin(finalUrl);
     }
 
     @FXML void selectAllTargetsPr(ActionEvent event) {parentController.selectAllCB();}

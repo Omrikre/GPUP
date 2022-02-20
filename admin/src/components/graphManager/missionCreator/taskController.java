@@ -102,6 +102,8 @@ public class taskController {
         checkBoxCOL.setStyle( "-fx-alignment: CENTER;");
         targetTypeCOL.setStyle( "-fx-alignment: CENTER;");
 
+        prefByTaskBPane.setCenter(compilationComponent);
+        compilationBT.setSelected(true);
     }
     public void setMainController(AppController mainController) {this.mainController = mainController;}
 
@@ -158,11 +160,11 @@ public class taskController {
     }
 
     @FXML void compilationPR(ActionEvent event) {
-        prefByTaskBPane.setCenter(simulationComponent);
+        prefByTaskBPane.setCenter(compilationComponent);
         simulationBT.setSelected(false);
     }
     @FXML void simulationPR(ActionEvent event) {
-        prefByTaskBPane.setCenter(compilationComponent);
+        prefByTaskBPane.setCenter(simulationComponent);
         compilationBT.setSelected(false);
     }
 
@@ -281,7 +283,6 @@ public class taskController {
     public void setResume(int threadNum) {
         pause = false;
         mainController.setResume(threadNum);
-        startRandomGenerator();
     }
     public void runCompilation(Integer threads, ArrayList<String> runTargetsArray,
                                boolean fromScratch, String inputPath, String outputPath) {
@@ -291,7 +292,7 @@ public class taskController {
                 inputPath, outputPath);
         pause = false;
         firstCallForResult = true;
-        startRandomGenerator();
+
     }
     public void runSimulation(
             int runTime, boolean randomRunTime, int success, int successWithWarnings,
@@ -301,7 +302,6 @@ public class taskController {
         mainController.runSimulation(runTime, randomRunTime, success, successWithWarnings, threadsNum, runTargetsArray, fromScratch);
         pause = false;
         firstCallForResult = true;
-        startRandomGenerator();
     }
 
     public void resetTargetsStatus() {

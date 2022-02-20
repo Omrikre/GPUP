@@ -1,13 +1,19 @@
 package components.missions.createNewMission;
 
 import components.app.AppController;
+import http.HttpClientUtil;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 public class NewMissionCreatorController {
 
@@ -17,6 +23,7 @@ public class NewMissionCreatorController {
 
     private boolean createNewMissionSucceed;
     private AppController mainController;
+    private String httpUrl;
 
 
     @FXML public void initialize() {
@@ -26,9 +33,12 @@ public class NewMissionCreatorController {
     public void setMainController(AppController controller) { mainController = controller; }
 
     private void sendNewMissionRequest() {
+        MsgLB.setText("");
         createBT.setDisable(true);
+        sendRequest();
         if(createNewMissionSucceed)
             this.mainController.closeCreateNewMissionWin();
+
 
         //TODO - make the request
         changeBTToOK(true);
@@ -60,6 +70,51 @@ public class NewMissionCreatorController {
         sendNewMissionRequest();
     }
 
-    public void setupData(boolean isDup, boolean isFromScratch) {
-    } //TODO - add all the other data
+    private void sendRequest() {
+
+        HttpClientUtil.runAsync(httpUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() -> {
+                        MsgLB.setText("Error: can't sent the request");
+                createNewMissionSucceed = false;
+                            changeBTToOK(false);
+            }
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() -> {
+                            MsgLB.setText(responseBody);
+                            createNewMissionSucceed = false;
+                                changeBTToOK(false);
+                }
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        try {
+                            String responseBody = response.body().string();
+                            MsgLB.setText("The mission was created successfully");
+                            createNewMissionSucceed = true;
+                            changeBTToOK(true);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void setupData(String httpUrl) {
+        this.httpUrl = httpUrl;
+    }
+
+    public void setupData(boolean isDup, boolean isFromScratch, String oldMission, String newName) {
+        //TODO - dup request
+    }
 }
+
