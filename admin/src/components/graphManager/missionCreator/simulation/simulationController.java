@@ -3,16 +3,24 @@ package components.graphManager.missionCreator.simulation;
 
 import Engine.Enums.Bond;
 import Exceptions.FileException;
+import com.google.gson.Gson;
 import components.graphManager.missionCreator.taskController;
+import http.HttpClientUtil;
 import javafx.beans.binding.IntegerBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static components.app.HttpResourcesPaths.ADD_MISSION;
 
 
 public class simulationController {
@@ -44,6 +52,7 @@ public class simulationController {
     private boolean runningSimulation;
     private boolean firstRun;
     private boolean runIsDone;
+    private String name;
 
 
     // initializers
@@ -164,6 +173,60 @@ public class simulationController {
 
         runningSimulation = true;
         firstRun = false;
+
+
+        String graphName = parentController.getGraphName();
+        Gson gson = new Gson();
+        String targetsArr = gson.toJson(runTargetsArray);
+        String amountOfTargets= String.valueOf(runTargetsArray.size());
+        String missionName=name;
+        String runtime= String.valueOf(timeSpinner.getValue());
+        String randomRunTime= String.valueOf(randomCB.isSelected());
+        String success= String.valueOf(successSpinner.getValue());
+        String successWithWarnings= String.valueOf(warningsSpinner.getValue());
+        String finalUrl = HttpUrl
+                .parse(ADD_MISSION)
+                .newBuilder()
+                .addQueryParameter("targets-array", targetsArr)
+                .addQueryParameter("amount-of-targets", amountOfTargets)
+                .addQueryParameter("runtime", runtime)
+                .addQueryParameter("random-runtime", randomRunTime)
+                .addQueryParameter("success", success)
+                .addQueryParameter("success-warnings", successWithWarnings)
+                //the rest are for the display:
+                .addQueryParameter("name", missionName)
+                .addQueryParameter("graph-name", graphName)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        .setText("Something went wrong: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            .setText("Something went wrong: " + responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+
+                        try {
+                            String responseBody = response.body().string();
+                            System.out.println(responseBody);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
 
     }
 

@@ -1,7 +1,10 @@
 package components.graphManager.missionCreator.compilation;
 
+import Engine.Engine;
 import Engine.Enums.Bond;
+import com.google.gson.Gson;
 import components.graphManager.missionCreator.taskController;
+import http.HttpClientUtil;
 import javafx.beans.binding.IntegerBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,28 +14,47 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import static components.app.HttpResourcesPaths.ADD_MISSION;
+
 public class compilationController {
 
 
-
-    @FXML private BorderPane simulationBP;
-    @FXML private VBox upVB;
-    @FXML private ToggleButton useWhatIfBT;
-    @FXML private ToggleButton depOnBT;
-    @FXML private ToggleButton reqForBT;
-    @FXML private Button selectAllTargetsBT;
-    @FXML private Button unselectAllTargetsBT;
-    @FXML private TextField selectedTargetsTB;
-    @FXML private VBox downVB;
-    @FXML private Button runBT;
-    @FXML private Button inputPathBT;
-    @FXML private Button outputPathBt;
-    @FXML private CheckBox outputPathCB;
-    @FXML private CheckBox inputPathCB;
+    @FXML
+    private BorderPane simulationBP;
+    @FXML
+    private VBox upVB;
+    @FXML
+    private ToggleButton useWhatIfBT;
+    @FXML
+    private ToggleButton depOnBT;
+    @FXML
+    private ToggleButton reqForBT;
+    @FXML
+    private Button selectAllTargetsBT;
+    @FXML
+    private Button unselectAllTargetsBT;
+    @FXML
+    private TextField selectedTargetsTB;
+    @FXML
+    private VBox downVB;
+    @FXML
+    private Button runBT;
+    @FXML
+    private Button inputPathBT;
+    @FXML
+    private Button outputPathBt;
+    @FXML
+    private CheckBox outputPathCB;
+    @FXML
+    private CheckBox inputPathCB;
 
 
     private taskController parentController;
@@ -43,11 +65,10 @@ public class compilationController {
     private String inputPath;
     private String outputPath;
     private int SelectedNum;
+    private String name;
 
     private boolean runningCompilation;
     private boolean firstRun;
-
-
 
 
     public void setParentController(taskController parent) {
@@ -91,7 +112,6 @@ public class compilationController {
     }
 
 
-
     private void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
         try {
@@ -129,17 +149,24 @@ public class compilationController {
         runTargetsArray.clear();
         selectedTargetsTB.setText(runTargetsArray.toString());
     }
+
     public void removeSelectedTargetsTB(String targetName) {
         runTargetsArray.remove(targetName);
         setSelectedTargetsTB();
     }
+
     public void addSelectedTargetsTB(String targetName) {
         runTargetsArray.add(targetName);
         setSelectedTargetsTB();
     }
-    public void setSelectedTargetsTB() {  selectedTargetsTB.setText(runTargetsArray.toString());}
 
-    @FXML void runBTPr(ActionEvent event) {
+    public void setSelectedTargetsTB() {
+        selectedTargetsTB.setText(runTargetsArray.toString());
+    }
+
+    @FXML
+    void runBTPr(ActionEvent event) {
+
 
         runBT.setDisable(true);
         //parentController.setDisableTaskType(true);
@@ -157,10 +184,70 @@ public class compilationController {
         runningCompilation = true;
         firstRun = false;
 
+
+        String graphName = parentController.getGraphName();
+        Gson gson = new Gson();
+        String targetsArr = gson.toJson(runTargetsArray);
+        String amountOfTargets= String.valueOf(runTargetsArray.size());
+        String compilationFolder=outputPath;
+        String src=inputPath;
+        String missionName=name;
+        String finalUrl = HttpUrl
+                .parse(ADD_MISSION)
+                .newBuilder()
+                .addQueryParameter("targets-array", targetsArr)
+                .addQueryParameter("amount-of-targets", amountOfTargets)
+                .addQueryParameter("src",src)
+                .addQueryParameter("compilation-folder", compilationFolder) //for compilation task, else null
+                //the rest are for the display:
+                .addQueryParameter("name", missionName)
+                .addQueryParameter("graph-name", graphName)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        .setText("Something went wrong: " + e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            .setText("Something went wrong: " + responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+
+                        try {
+                            String responseBody = response.body().string();
+                            System.out.println(responseBody);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
+
     }
-    @FXML void selectAllTargetsPr(ActionEvent event) {parentController.selectAllCB();}
-    @FXML void unselectAllTargetsPr(ActionEvent event) {parentController.unselectAllCB();}
-    @FXML void useWhatIfPr(ActionEvent event) {
+
+    @FXML
+    void selectAllTargetsPr(ActionEvent event) {
+        parentController.selectAllCB();
+    }
+
+    @FXML
+    void unselectAllTargetsPr(ActionEvent event) {
+        parentController.unselectAllCB();
+    }
+
+    @FXML
+    void useWhatIfPr(ActionEvent event) {
         if (!useWhatIfBT.isSelected()) {
             parentController.setAllCBDisable(false);
             depOnBT.setSelected(false);
@@ -169,25 +256,33 @@ public class compilationController {
             parentController.setAllCBDisable(true);
         }
     }
-    @FXML void inputPathPr(ActionEvent event) {
+
+    @FXML
+    void inputPathPr(ActionEvent event) {
         inputPath = pathGetter();
-        if(inputPath != null)
+        if (inputPath != null)
             inputPathCB.setSelected(true);
         checkIfToOpenRunBT();
     }
-    @FXML void outputPathPr(ActionEvent event) {
+
+    @FXML
+    void outputPathPr(ActionEvent event) {
         outputPath = pathGetter();
-        if(outputPath != null)
+        if (outputPath != null)
             outputPathCB.setSelected(true);
         checkIfToOpenRunBT();
     }
-    @FXML void reqForPr(ActionEvent event) {
+
+    @FXML
+    void reqForPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
         System.out.println(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
         parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
         whatIfMakeDisable();
     }
-    @FXML void depOnPr(ActionEvent event) {
+
+    @FXML
+    void depOnPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
         parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.DEPENDS_ON));
         whatIfMakeDisable();
@@ -201,6 +296,7 @@ public class compilationController {
         reqForBT.setSelected(false);
         depOnBT.setSelected(false);
     }
+
     private String pathGetter() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File selectedDirectory = directoryChooser.showDialog(new Stage());
@@ -210,7 +306,11 @@ public class compilationController {
             return null;
 
     }
-    private void checkIfToOpenRunBT() {runBT.setDisable(inputPath == null || outputPath == null);}
+
+    private void checkIfToOpenRunBT() {
+        runBT.setDisable(inputPath == null || outputPath == null);
+    }
+
     public void setSelectedNum(IntegerBinding numCheckBoxesSelected) {
         this.SelectedNum = numCheckBoxesSelected.intValue();
         if (SelectedNum != 1)
@@ -218,20 +318,24 @@ public class compilationController {
         else
             whatIfMakeEnable();
     }
+
     private void whatIfMakeEnable() {
         useWhatIfBT.setSelected(false);
         useWhatIfBT.setDisable(false);
         reqForBT.setSelected(false);
         depOnBT.setSelected(false);
     }
+
     public void setProgress(int progress) {
         Integer temp = progress;
         double dProgress = progress;
-        double pres = dProgress/100;
+        double pres = dProgress / 100;
     }
+
     public void openResult() {
         cleanupAfterFinish();
     }
+
     private void cleanupAfterFinish() {
         //parentController.setDisableTaskType(false);
         upVB.setDisable(false);
@@ -241,9 +345,14 @@ public class compilationController {
         parentController.unselectAllCB();
         runBT.setDisable(true);
     }
-    public ArrayList<String> getRunTargetsArray() {return runTargetsArray;}
-    public ArrayList<String> getLastRunTargetsArray() {return lastRunTargetsArray;}
 
+    public ArrayList<String> getRunTargetsArray() {
+        return runTargetsArray;
+    }
+
+    public ArrayList<String> getLastRunTargetsArray() {
+        return lastRunTargetsArray;
+    }
 
 
 }
