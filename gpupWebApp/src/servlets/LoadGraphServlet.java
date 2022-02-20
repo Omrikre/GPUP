@@ -7,36 +7,57 @@ import Engine.Graph;
 import Exceptions.FileException;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import utils.ServletUtils;
+import utils.SessionUtils;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Map;
 
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 @WebServlet("/select/graph")
 public class LoadGraphServlet extends HttpServlet {
 
 
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, FileException, JAXBException {
-        resp.setContentType("object/graph");
-        try (PrintWriter out = resp.getWriter()) {
-            String filepath = req.getParameter("filepath");
-            String userName = req.getParameter("username");
-            filepath=filepath.replace('(','\\');
-            if (shouldAddGraph(filepath, userName, out, resp)) {
-                Engine engine = new Engine();
-                engine.loadFile(filepath, userName);
-                Graph graph = engine.getG();
-                resp.setStatus(200);
-                ServletUtils.getGraphManager(getServletContext()).addGraph(graph);
-                out.write("Graph [" + graph.getGraphName() + "]" + " was added successfully");
+        resp.setContentType("text/plain");
+        String usernameFromSession = SessionUtils.getUsername(req);
+        Collection<Part> parts = req.getParts();
+        if (parts != null)
+            for (Part part : parts) {
+                try (PrintWriter out = resp.getWriter()) {
+                    Engine engine = new Engine();
+                    engine.loadFileFromServlet(part.getInputStream(), usernameFromSession);
+                    Graph graph = engine.getG();
+                    resp.setStatus(200);
+                    ServletUtils.getGraphManager(getServletContext()).addGraph(graph);
+                    out.write("Graph [" + graph.getGraphName() + "]" + " was added successfully");
+                }
             }
-        }
+
+
+        // resp.setContentType("object/graph");
+//        try (PrintWriter out = resp.getWriter()) {
+//            String filepath = req.getParameter("filepath");
+//            String userName = req.getParameter("username");
+//            filepath=filepath.replace('(','\\');
+//            if (shouldAddGraph(filepath, userName, out, resp)) {
+//                Engine engine = new Engine();
+//                engine.loadFile(filepath, userName);
+//                Graph graph = engine.getG();
+//                resp.setStatus(200);
+//                ServletUtils.getGraphManager(getServletContext()).addGraph(graph);
+//                out.write("Graph [" + graph.getGraphName() + "]" + " was added successfully");
+//            }
+//        }
 
     }
 
@@ -78,8 +99,7 @@ public class LoadGraphServlet extends HttpServlet {
 }
 
 
-//TODO - change th servlet
-// bar's:
+
 /*
 @MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 1024 * 1024 * 5, maxRequestSize = 1024 * 1024 * 5 * 5)
 @WebServlet("/file/xml/load")
