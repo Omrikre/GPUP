@@ -1,6 +1,7 @@
 package components.login;
 
 import components.app.AppController;
+
 import http.HttpClientUtil;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -21,14 +22,10 @@ import static components.app.HttpResourcesPaths.LOGIN_PAGE;
 
 public class LoginControllerWorker {
 
-    @FXML
-    private Spinner<Integer> numThreadsSP;
-    @FXML
-    private Label loginMsgLB;
-    @FXML
-    private Button loginBT;
-    @FXML
-    private TextField userNameTF;
+    @FXML private Spinner<Integer> numThreadsSP;
+    @FXML private Label loginMsgLB;
+    @FXML private Button loginBT;
+    @FXML private TextField userNameTF;
 
     private AppController mainController;
     private Stage mainAppStage;
@@ -42,6 +39,14 @@ public class LoginControllerWorker {
                 loginSetUp();
             }
         });
+
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 5, 1, 1);
+        numThreadsSP.setValueFactory(valueFactory);
+        numThreadsSP.setEditable(false);
+        TextFormatter format = new TextFormatter(numThreadsSP.getValueFactory().getConverter(), numThreadsSP.getValueFactory().getValue());
+        numThreadsSP.getEditor().setTextFormatter(format);
+        numThreadsSP.getValueFactory().valueProperty().bindBidirectional(format.valueProperty());
+
         userNameTF.requestFocus();
     }
 
@@ -51,13 +56,7 @@ public class LoginControllerWorker {
 
     @FXML
     void loginPR(ActionEvent event) throws IOException {
-        //check username b
-        // if()
-//        userName = userNameTF.getText();
-//        System.out.println("LoginController worker: " + userName );
-//        mainController.closeLogin(userName, numThreadsSP.getValue());
         loginSetUp();
-
     }
 
     private void loginSetUp() {
@@ -78,7 +77,7 @@ public class LoginControllerWorker {
                 .newBuilder()
                 .addQueryParameter("username", userName)
                 .addQueryParameter("role", "Worker")
-                .addQueryParameter("threadSize", String.valueOf(mainController.getNumThreads()))
+                .addQueryParameter("threadSize",numThreadsSP.getValue().toString())
                 .build()
                 .toString();
 
@@ -86,7 +85,7 @@ public class LoginControllerWorker {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() -> {
-                            loginMsgLB.setText("Something went wrong: " + e.getMessage());
+                            loginMsgLB.setText("Something went wrong: server down");
                             loginBT.setDisable(false);
                         }
                 );
@@ -103,15 +102,13 @@ public class LoginControllerWorker {
                     );
                 } else {
                     Platform.runLater(() -> {
-                                mainController.closeLogin(userName, mainController.getNumThreads());
+                                mainController.closeLogin(userName, numThreadsSP.getValue());
                                 loginBT.setDisable(false);
                             }
                     );
                 }
             }
         });
-
-
     }
 
     public void setMainController(AppController mainController) {

@@ -213,7 +213,6 @@ public class AppController implements Closeable {
     public void setAllDataInPanes() {
         setGraphContainsCycle();
         headerComponentController.makeAllButtonsDisable(false);
-        //TODO - start All refreshers
         setRefreshersActive();
     }
 

@@ -18,7 +18,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import static components.app.CommonResourcesPaths.*;
+import static components.app.CommonResourcesPathsWorker.*;
+
+
 
 public class GraphController {
 

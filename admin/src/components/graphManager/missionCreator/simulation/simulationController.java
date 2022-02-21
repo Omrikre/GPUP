@@ -28,7 +28,6 @@ import static components.app.HttpResourcesPaths.ADD_MISSION;
 
 public class simulationController {
 
-
     @FXML private VBox upVB;
     @FXML private VBox downVB;
 
@@ -44,6 +43,8 @@ public class simulationController {
     @FXML private Button unselectAllTargetsBT;
     @FXML private TextField selectedTargetsTB;//
     @FXML private Button runBT;
+    @FXML private Label priceLB;
+
 
 
     private taskController parentController;
@@ -56,6 +57,8 @@ public class simulationController {
     private boolean firstRun;
     private boolean runIsDone;
     private String name;
+    private Integer simulationPrice;
+    private int SelectedNum;
 
 
     // initializers
@@ -71,14 +74,13 @@ public class simulationController {
         runBT.setDisable(true);
         depOnBT.setDisable(true);
         reqForBT.setDisable(true);
+        priceLB.setText("-");
 
         useWhatIfBT.setOnAction((event) -> {
             if (useWhatIfBT.isSelected()) {
-                useWhatIfBT.setDisable(false);
                 depOnBT.setDisable(false);
                 reqForBT.setDisable(false);
             } else {
-                useWhatIfBT.setDisable(true);
                 depOnBT.setDisable(true);
                 reqForBT.setDisable(true);
             }
@@ -165,9 +167,9 @@ public class simulationController {
 
         parentController.getGraphName(); //TODO - graph name
 
-        runBT.setDisable(true);
+        /*runBT.setDisable(true);
         upVB.setDisable(true);
-        downVB.setDisable(true);
+        downVB.setDisable(true);*/
         lastRunTargetsArray = (ArrayList<String>) runTargetsArray.clone();
 
         //TODO - delete
@@ -204,7 +206,6 @@ public class simulationController {
         parentController.CreateNewMissionWin(true ,targetsArr, amountOfTargets,
                 "", "", graphName, runtime, randomRunTime, success, successWithWarnings);
     }
-
     @FXML void selectAllTargetsPr(ActionEvent event) {parentController.selectAllCB();}
     @FXML void unselectAllTargetsPr(ActionEvent event) {parentController.unselectAllCB();}
     @FXML void useWhatIfPr(ActionEvent event) {
@@ -223,14 +224,14 @@ public class simulationController {
     }
     @FXML void reqForPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
-        System.out.println(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
-        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
         whatIfMakeDisable();
+        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
+
     }
     @FXML void depOnPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
-        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.DEPENDS_ON));
         whatIfMakeDisable();
+        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.DEPENDS_ON));
     }
 
 
@@ -258,14 +259,23 @@ public class simulationController {
         setSelectedTargetsTB();
     }
     public void setSelectedNum(IntegerBinding numCheckBoxesSelected) {
-        if (numCheckBoxesSelected.intValue() != 1)
+        this.SelectedNum = numCheckBoxesSelected.intValue();
+        updatePrice();
+        if (SelectedNum != 1)
             whatIfMakeDisable();
         else
             whatIfMakeEnable();
-        if(numCheckBoxesSelected.intValue() == 0)
+        if(SelectedNum == 0 || simulationPrice == 0)
             runBT.setDisable(true);
         else
             runBT.setDisable(false);
+    }
+    private void updatePrice() {
+        simulationPrice = parentController.getSimulationPrice();
+        if(SelectedNum == 0)
+            priceLB.setText("-");
+        else
+            priceLB.setText(SelectedNum + " * " + simulationPrice + " = " + (SelectedNum*simulationPrice));
     }
 
 

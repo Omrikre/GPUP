@@ -83,7 +83,6 @@ public class MissionsController {
     private String selectedGraph;
     private Timer timer;
     private BooleanProperty autoUpdate;
-    private LoadXMLRefresher xmlRefresher;
     private int numOfGraphs;
     private AppController mainController;
 

@@ -17,17 +17,24 @@ import java.io.IOException;
 
 import static components.app.HttpResourcesPaths.LOGOUT_PAGE;
 
+
 public class MainLoginController {
 
     @FXML private Button loginBT;
     @FXML private Label userNameLB;
     @FXML private Label userNameNameLB;
     @FXML private Label loadResponseLB;
+    @FXML private Label userNameLB1;
+    @FXML private Label numThreadsLB;
     private AppController mainController;
     private boolean loggedIn;
 
+
+
+
     @FXML public void initialize() {
         userNameNameLB.setText("-");
+        numThreadsLB.setText("-");
         loadResponseLB.setText("");
         loggedIn = false;
         loginBT.setDefaultButton(true);
@@ -69,7 +76,8 @@ public class MainLoginController {
                     Platform.runLater(() -> {
                         mainController.setInActive();
                         loggedIn = false;
-                        userNameNameLB.setText("");
+                        userNameNameLB.setText("-");
+                        numThreadsLB.setText("-");
                         mainController.logout();
                         loginBT.setDefaultButton(true);
                         loginBT.setText("Login");
@@ -82,9 +90,10 @@ public class MainLoginController {
         this.mainController = mainController;
     }
 
-    public void loggedIn(String userName) {
+    public void loggedIn(String userName, String numOfThreads) {
         loggedIn = true;
         userNameNameLB.setText(userName);
+        numThreadsLB.setText(numOfThreads);
         loginBT.setText("Logout");
         loginBT.setDefaultButton(false);
     }

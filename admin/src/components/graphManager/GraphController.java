@@ -192,6 +192,7 @@ public class GraphController {
                             TargetDTOWithoutCB[] targets = GSON.fromJson(responseBody, TargetDTOWithoutCB[].class);
                             infoComponentController.setupData(selectedGraphDTO, Arrays.asList(targets));
                             tableComponentController.setupData(Arrays.asList(targets));
+                            missionCreateComponentController.setPrice(selectedGraphDTO.getCompPricePerTarget(), selectedGraphDTO.getSimPricePerTarget());
                             missionCreateComponentController.setupData(Arrays.asList(targets));
                         } catch (IOException e) {
                             e.printStackTrace();

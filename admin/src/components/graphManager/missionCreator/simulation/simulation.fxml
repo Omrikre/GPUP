@@ -175,6 +175,7 @@
                </rowConstraints>
                <children>
                   <Label text="Price" GridPane.columnIndex="1" />
+                  <Label fx:id="priceLB" text="-" GridPane.columnIndex="2" />
                </children>
             </GridPane>
             <VBox fx:id="downVB" alignment="CENTER">

@@ -42,7 +42,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="GraphBT" minWidth="110.0" mnemonicParsing="false" onAction="#GraphPR" text="Graph Manager" />
+                  <Button fx:id="GraphBT" minWidth="110.0" mnemonicParsing="false" onAction="#GraphPR" text="Target Manager" />
                </children>
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="224.0" GridPane.columnIndex="1">

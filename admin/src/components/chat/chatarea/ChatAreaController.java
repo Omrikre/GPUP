@@ -49,43 +49,6 @@ public class ChatAreaController implements Closeable {
         autoUpdate = new SimpleBooleanProperty();
     }
 
-/*
-
-    private void updateProgress() {
-        while (taskProgress != 100 && !pause) {
-            sleepForSomeTime();
-            Platform.runLater(
-                    () -> setupProgressByThread()
-            );
-        }
-
-    }
-    public void setupProgressByThread() {
-        taskProgress = mainController.getProgress();
-        updateTableStatus();
-        compilationComponentController.setProgress(taskProgress);
-        simulationComponentController.setProgress(taskProgress);
-        if(taskProgress == 100) {
-            firstCallForResult = false;
-            whenFinishedSimulation();
-            pause = false;
-        }
-    }
-    private void updateTableStatus() {
-        for(TargetDTO dto : targetDataTable.getItems() ) {
-            State state = mainController.getStateByTargetName(dto.getTargetName());
-            dto.setTargetState(state);
-            dto.setTargetStateString(state.toString());
-        }
-        targetDataTable.refresh();
-    }
-    private void sleepForSomeTime() {
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException ignored) {}
-    }
-*/
-
 
     @FXML
     public void initialize() {

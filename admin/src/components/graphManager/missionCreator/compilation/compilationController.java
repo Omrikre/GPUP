@@ -29,7 +29,6 @@ import static components.app.HttpResourcesPaths.ADD_MISSION;
 
 public class compilationController {
 
-
     @FXML private BorderPane simulationBP;
     @FXML private VBox upVB;
     @FXML private ToggleButton useWhatIfBT;
@@ -44,6 +43,7 @@ public class compilationController {
     @FXML private Button outputPathBt;
     @FXML private CheckBox outputPathCB;
     @FXML private CheckBox inputPathCB;
+    @FXML private Label priceLB;
 
     private taskController parentController;
     private ArrayList<String> runTargetsArray;
@@ -56,14 +56,14 @@ public class compilationController {
 
     private boolean runningCompilation;
     private boolean firstRun;
+    private Integer compilationPrice;
 
 
     public void setParentController(taskController parent) {
         parentController = parent;
     }
 
-    @FXML
-    public void initialize() {
+    @FXML public void initialize() {
         runTargetsArray = new ArrayList<String>();
         fromScratch = false;
         lastRunTargetsArray = new ArrayList<String>();
@@ -74,6 +74,9 @@ public class compilationController {
         runningCompilation = false;
         firstRun = true;
         fromScratch = true;
+        depOnBT.setDisable(true);
+        reqForBT.setDisable(true);
+        priceLB.setText("-");
 
 
         useWhatIfBT.setOnAction((event) -> {
@@ -94,13 +97,6 @@ public class compilationController {
         runTargetsArray.clear();
         selectedTargetsTB.setText(runTargetsArray.toString());
     }
-
-
-    private boolean IfIncrementalPossible() {
-        return false;
-        //return runTargetsArray.equals(lastRunTargetsArray); //TODO
-    }
-
 
     private void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -154,13 +150,12 @@ public class compilationController {
         selectedTargetsTB.setText(runTargetsArray.toString());
     }
 
-    @FXML
-    void runBTPr(ActionEvent event) {
+    @FXML void runBTPr(ActionEvent event) {
 
-        runBT.setDisable(true);
+        //runBT.setDisable(true);
         //parentController.setDisableTaskType(true);
-        upVB.setDisable(true);
-        downVB.setDisable(true);
+        //upVB.setDisable(true);
+        //downVB.setDisable(true);
         lastRunTargetsArray = (ArrayList<String>) runTargetsArray.clone();
 
         //TODO - delete
@@ -186,18 +181,15 @@ public class compilationController {
 
     }
 
-    @FXML
-    void selectAllTargetsPr(ActionEvent event) {
+    @FXML void selectAllTargetsPr(ActionEvent event) {
         parentController.selectAllCB();
     }
 
-    @FXML
-    void unselectAllTargetsPr(ActionEvent event) {
+    @FXML void unselectAllTargetsPr(ActionEvent event) {
         parentController.unselectAllCB();
     }
 
-    @FXML
-    void useWhatIfPr(ActionEvent event) {
+    @FXML void useWhatIfPr(ActionEvent event) {
         if (!useWhatIfBT.isSelected()) {
             parentController.setAllCBDisable(false);
             depOnBT.setSelected(false);
@@ -207,44 +199,38 @@ public class compilationController {
         }
     }
 
-    @FXML
-    void inputPathPr(ActionEvent event) {
+    @FXML void inputPathPr(ActionEvent event) {
         inputPath = pathGetter();
         if (inputPath != null)
             inputPathCB.setSelected(true);
         checkIfToOpenRunBT();
     }
 
-    @FXML
-    void outputPathPr(ActionEvent event) {
+    @FXML void outputPathPr(ActionEvent event) {
         outputPath = pathGetter();
         if (outputPath != null)
             outputPathCB.setSelected(true);
         checkIfToOpenRunBT();
     }
 
-    @FXML
-    void reqForPr(ActionEvent event) {
+    @FXML void reqForPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
-        System.out.println(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
-        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
         whatIfMakeDisable();
+        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR)); //TODO -fix
     }
 
-    @FXML
-    void depOnPr(ActionEvent event) {
+    @FXML void depOnPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
-        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.DEPENDS_ON));
         whatIfMakeDisable();
+        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.DEPENDS_ON)); //TODO -fix
     }
 
-    private void whatIfMakeDisable() {
-        useWhatIfBT.setSelected(false);
-        if (parentController.getSelectedNum() != 1) {
-            useWhatIfBT.setDisable(true);
-        }
-        reqForBT.setSelected(false);
-        depOnBT.setSelected(false);
+    private void updatePrice() {
+        compilationPrice = parentController.getCompilationPrice();
+        if(SelectedNum == 0)
+            priceLB.setText("-");
+        else
+            priceLB.setText(SelectedNum + " * " + compilationPrice + " = " + (SelectedNum*compilationPrice));
     }
 
     private String pathGetter() {
@@ -263,10 +249,24 @@ public class compilationController {
 
     public void setSelectedNum(IntegerBinding numCheckBoxesSelected) {
         this.SelectedNum = numCheckBoxesSelected.intValue();
+        updatePrice();
         if (SelectedNum != 1)
             whatIfMakeDisable();
         else
             whatIfMakeEnable();
+        if(SelectedNum == 0 || compilationPrice == 0)
+            runBT.setDisable(true);
+        else
+            runBT.setDisable(false);
+    }
+
+    private void whatIfMakeDisable() {
+        useWhatIfBT.setSelected(false);
+        if (parentController.getSelectedNum() != 1) {
+            useWhatIfBT.setDisable(true);
+        }
+        reqForBT.setSelected(false);
+        depOnBT.setSelected(false);
     }
 
     private void whatIfMakeEnable() {
@@ -274,12 +274,6 @@ public class compilationController {
         useWhatIfBT.setDisable(false);
         reqForBT.setSelected(false);
         depOnBT.setSelected(false);
-    }
-
-    public void setProgress(int progress) {
-        Integer temp = progress;
-        double dProgress = progress;
-        double pres = dProgress / 100;
     }
 
     public void openResult() {

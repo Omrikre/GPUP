@@ -118,7 +118,7 @@ public class taskController {
         setTable();
         rowClickData();
         loadBackComponents();
-       numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
+        numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { compilationComponentController.setSelectedNum(numCheckBoxesSelected); });
     }
     private void configureCheckBox(CheckBox checkBox, String targetName) {

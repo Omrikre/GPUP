@@ -14,6 +14,7 @@ import components.login.LoginControllerWorker;
 import components.mainLogin.MainLoginController;
 import components.missions.MissionsController;
 import components.settings.settingsController;
+import http.HttpClientUtil;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -28,15 +29,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.xml.bind.JAXBException;
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static components.app.CommonResourcesPaths.DASHBOARD_fXML_RESOURCE;
 import static components.app.CommonResourcesPathsWorker.*;
 
-public class AppController {
+public class AppController  implements Closeable {
 
     // components:
     @FXML private BorderPane maimBorderPaneComp;
@@ -124,22 +127,6 @@ public class AppController {
             loginWin.setResizable(false);
             System.out.println(" -- login done --");
 
-            // graph manager
-            fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource(GRAPH_MANAGER_fXML_RESOURCE));
-            graphManagerComponent = fxmlLoader.load();
-            graphManagerComponentController = fxmlLoader.getController();
-            graphManagerComponentController.setMainController(this);
-            System.out.println(" -- graph manager done --");
-
-            // dashboard
-            fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource(DASHBOARD_fXML_RESOURCE));
-            dashboardComponent = fxmlLoader.load();
-            dashboardComponentController = fxmlLoader.getController();
-            dashboardComponentController.setMainController(this);
-            System.out.println(" -- dashboard done --");
-
             // missions
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(MISSIONS_fXML_RESOURCE));
@@ -148,6 +135,14 @@ public class AppController {
             //missionsComponentController.setMainController(this);
             System.out.println(" -- missions done --");
 
+            // dashboard
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(DASHBOARD_fXML_RESOURCE));
+            dashboardComponent = fxmlLoader.load();
+            dashboardComponentController = fxmlLoader.getController();
+            dashboardComponentController.setMainController(this, missionsComponentController);
+            System.out.println(" -- dashboard done --");
+
             // chat
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(CHAT_fXML_RESOURCE));
@@ -155,6 +150,8 @@ public class AppController {
             chatComponentController = fxmlLoader.getController();
             //missionsComponentController.setMainController(this);
             System.out.println(" -- chat done --");
+
+            //TODO - add the targets tableV
 
 
 
@@ -175,11 +172,7 @@ public class AppController {
     public void setAllDataInPanes() {
         setGraphContainsCycle();
         headerComponentController.makeAllButtonsDisable(false);
-
-        //FXMLComponentController.setupData(xmlPath);
-        //infoComponentController.setupData();
-        //taskComponentController.setupData(engine.getListOfAllTargetsDTOsInGraph());
-        //tableComponentController.setupData(engine.getListOfAllTargetsDTOsInGraph());
+        setRefreshersActive();
     }
 
 
@@ -194,35 +187,18 @@ public class AppController {
         settingsComponentController.setupData(darkModeOn, animationsOn);
         settingsWin.show();
     }
-    public void openLoginWin() {
-        loginWin.show();
+
+    // Refreshers //TODO
+    public void setRefreshersActive() {
+        dashboardComponentController.startListRefresher(autoUpdate);
+        chatComponentController.startChatRefresher(autoUpdate);
+        //graphManagerComponentController.startDataRefresher(autoUpdate);
     }
-    public void closeSettingsWin() { settingsWin.close(); }
-
-
-/*
-    public void showInfoPane() {
-        infoComponentController.setupData();
-        maimBorderPaneComp.setCenter(infoComponent);
-        if(!cycleMsgShownAlready && graphContainsCycle) {
-            cycleMsgWin.show();
-            cycleMsgShownAlready = true;
-        }
-    }
-    public void showDashboardPane() { maimBorderPaneComp.setCenter(tableComponent); }
-    public void showGraphPane() { maimBorderPaneComp.setCenter(tableComponent); }
-    public void showMissionsPane() { maimBorderPaneComp.setCenter(tableComponent); }
-    public void showXMLLoadPane() {
-        FXMLComponentController.whenGetToPane();
-        maimBorderPaneComp.setCenter(FXMLComponent);
-    }
-    public void showTaskPane() { maimBorderPaneComp.setCenter(taskComponent); }
-    public void showTablePane() { maimBorderPaneComp.setCenter(tableComponent); }
-*/
 
 
 
-    // getters setters
+
+        // getters setters
     public boolean isDarkModeOn() { return darkModeOn; }
     public boolean isAnimationsOn() { return animationsOn; }
     public void setAnimationsOn(boolean animationsOn) { this.animationsOn = animationsOn; }
@@ -241,10 +217,7 @@ public class AppController {
     public Set<List<String>> getPathDepends(String a, String b) { return engine.getPathBetweenTargets(a,b, Bond.DEPENDS_ON); }
     public Set<List<String>> getPathRequired(String a, String b) { return engine.getPathBetweenTargets(a,b, Bond.REQUIRED_FOR); }
     public Map<Location, Integer> getGeneralInfoTable() { return engine.howManyTargetsInEachLocation(); }
-//    public boolean checkFileIsValid(String path) throws FileException, JAXBException, IOException {
-//        engine.loadFile(path);
-//        return true;
-//    }
+
     public int getMaxThreads() { return engine.getMaxThreads(); }
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
                               int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
@@ -277,20 +250,23 @@ public class AppController {
 
     public Engine getEngine() { return engine; }
 
-    public void closeLogin(String userName, int threads) {
-        mainLoginCompController.loggedIn(userName);
+    public void closeLogin(String userName, Integer threads) {
+        mainLoginCompController.loggedIn(userName, threads.toString());
         loginWin.close();
         headerComponentController.makeAllButtonsDisable(false);
-        setAllDataInPanes();
         autoUpdate.setValue(true);
         numThreads = threads;
+        setAllDataInPanes();
     }
  //TODO FIX THREADS
     public int getNumThreads() {
         return numThreads;
     }
 
-    public void logout() { headerComponentController.makeAllButtonsDisable(true); }
+    public void logout() {
+        headerComponentController.makeAllButtonsDisable(true);
+        //TODO - graphManagerComponentController.clearAfterLogout();
+    }
     public void setInActive() {
         try {
             autoUpdate.setValue(false);
@@ -299,6 +275,23 @@ public class AppController {
         } catch (Exception ignored) {}
     }
     public BooleanProperty getAutoUpdate() { return autoUpdate; }
+
+    public void openLoginWin() {
+        loginWin.show();
+        loginComponentController.cleanUsernameText();
+    }
+    public void closeSettingsWin() {
+        settingsWin.close();
+    }
+
+    @Override
+    public void close() throws IOException {
+        mainLoginCompController.loggedOut();
+        HttpClientUtil.shutdown();
+        chatComponentController.closeChat();
+        dashboardComponentController.closeDashboard();
+        //TODO - graphManagerComponentController.closeGraphManager();
+    }
 
 
 }

@@ -77,6 +77,8 @@ public class taskController {
     boolean simTab;
     boolean firstCallForResult;
     boolean infoWindowStillOpen;
+    private Integer simulationPrice;
+    private Integer compilationPrice;
 
 
 
@@ -102,8 +104,8 @@ public class taskController {
         checkBoxCOL.setStyle( "-fx-alignment: CENTER;");
         targetTypeCOL.setStyle( "-fx-alignment: CENTER;");
 
-        prefByTaskBPane.setCenter(compilationComponent);
-        compilationBT.setSelected(true);
+        //prefByTaskBPane.setCenter(compilationComponent);
+        //compilationBT.setSelected(true);
     }
     public void setMainController(AppController mainController) {this.mainController = mainController;}
 
@@ -126,7 +128,7 @@ public class taskController {
         setTable();
         rowClickData();
         loadBackComponents();
-       numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
+        numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { compilationComponentController.setSelectedNum(numCheckBoxesSelected); });
     }
     private void configureCheckBox(CheckBox checkBox, String targetName) {
@@ -371,5 +373,13 @@ public class taskController {
                  runTime,  randomRunTime,  success,  successWithWarnings);
     }
 
+
+    public void setPrice(Integer compPricePerTarget, Integer simPricePerTarget) {
+        this.simulationPrice = simPricePerTarget;
+        this.compilationPrice = compPricePerTarget;
+    }
+
+    public Integer getCompilationPrice() { return compilationPrice; }
+    public Integer getSimulationPrice() { return simulationPrice; }
 
 }
