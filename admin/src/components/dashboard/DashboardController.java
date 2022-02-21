@@ -94,10 +94,10 @@ public class DashboardController implements Closeable {
         Platform.runLater(() -> {
             Integer numOfExecution = 0, numberOfPaused = 0, numOfStopped = 0, numOfFinished = 0, numOfReady = 0, totalCount = 0;
             for (MissionDTOWithoutCB mission : missions) {
-                MissionState tempMissionStatus = MissionState.valueOf(mission.getStatus());
-                if (tempMissionStatus == PAUSED || tempMissionStatus == READY)
+                String tempMissionStatus = (mission.getStatus());
+                if (tempMissionStatus.equals("Paused") || tempMissionStatus.equals("Ready"))
                     numOfReady++;
-                else if (tempMissionStatus == STOPPED || tempMissionStatus == FINISHED)
+                else if (tempMissionStatus.equals("Stopped") || tempMissionStatus.equals("Finished"))
                     numOfFinished++;
                 else
                     numOfExecution++;

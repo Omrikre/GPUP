@@ -586,7 +586,7 @@ public class Engine {
 
     }
 
-    public Graph getGraphOfRunnableTargetsFromArrayAndGraph(Graph g, ArrayList<String> targets) throws FileException {
+    public Graph getGraphOfRunnableTargetsFromArrayAndGraph(Graph g, List<String> targets) throws FileException {
         Graph miniGraph = new Graph();
         for (String s : targets) {
             Graph.Target newTarget;

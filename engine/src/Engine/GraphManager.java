@@ -64,7 +64,7 @@ public class GraphManager {
     public synchronized Graph getGraphOfRunnableTargetsFromArrayAndGraph(String graphname, List<String> targets) {
         Engine e = new Engine();
         try {
-            return e.getGraphOfRunnableTargetsFromArrayAndGraph(graphMap.get(graphname), (ArrayList<String>) targets);
+            return e.getGraphOfRunnableTargetsFromArrayAndGraph(graphMap.get(graphname), targets);
         } catch (FileException ex) {
             ex.printStackTrace();
         }

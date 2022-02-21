@@ -1,5 +1,6 @@
 package components.missions.createNewMission;
 
+import com.google.gson.Gson;
 import components.app.AppController;
 import http.HttpClientUtil;
 import javafx.application.Platform;
@@ -158,7 +159,7 @@ public class NewMissionCreatorController {
 
     private void createHttpCall() {
         String finalUrl;
-        if(isSimulation) {
+        if(!isSimulation) {
             finalUrl = HttpUrl
                     .parse(ADD_MISSION)
                     .newBuilder()
@@ -188,7 +189,7 @@ public class NewMissionCreatorController {
                     .addQueryParameter("name", missionName)
                     .addQueryParameter("graph-name", graphName)
                     .addQueryParameter("from-scratch", "false")
-                    .addQueryParameter("incremental", "true")
+                    .addQueryParameter("incremental", "false")
                     .build()
                     .toString();
 
