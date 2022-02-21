@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Timer;
 
 import static components.app.HttpResourcesPaths.ADD_MISSION;
+import static components.app.HttpResourcesPaths.MISSION_LIST;
 
 public class MissionsController {
 
@@ -219,12 +220,39 @@ public class MissionsController {
         mainController.openCreateNewMissionWin(true, selectedMission);
     }
     @FXML void pausePR(ActionEvent event) {
+                String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("status", "") //TODO GET STATUS
+                .build()
+                .toString();
     }
     @FXML void resumePR(ActionEvent event) {
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name","") //TODO GET MISSION NAME
+                .addQueryParameter("status", "") //TODO GET STATUS
+                .build()
+                .toString();
     }
     @FXML void startPR(ActionEvent event) {
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name","") //TODO GET MISSION NAME
+                .addQueryParameter("status", "") //TODO GET STATUS
+                .build()
+                .toString();
     }
     @FXML void stopPR(ActionEvent event) {
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name","") //TODO GET MISSION NAME
+                .addQueryParameter("status", "") //TODO GET STATUS
+                .build()
+                .toString();
     }
 
     public void setMainController(AppController appController) {

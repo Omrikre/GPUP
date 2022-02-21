@@ -22,14 +22,30 @@ import java.util.Map;
 public class TasksServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
-        try (PrintWriter out = resp.getWriter()) {
-            Gson gson = new Gson();
-            List<MissionDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
-            String json = gson.toJson(lst);
-            System.out.println("MISSIONS: " + json);
-            out.println(json);
-            out.flush();
+        String status = req.getParameter("status");
+        String name = req.getParameter("name");
+        if (status == null) {
+            resp.setContentType("application/json");
+            try (PrintWriter out = resp.getWriter()) {
+                Gson gson = new Gson();
+                List<MissionDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
+                String json = gson.toJson(lst);
+                System.out.println("MISSIONS: " + json);
+                resp.setStatus(200);
+                out.println(json);
+                out.flush();
+            }
+        } else {
+            try (PrintWriter out = resp.getWriter()) {
+                // no content type
+                if (name == null) {
+                    resp.setStatus(404);
+                    out.println("No name given!");
+                } else {
+                    ServletUtils.getTaskManager(getServletContext()).getMissionByName(name).setStatus(status);
+                    resp.setStatus(200);
+                }
+            }
         }
     }
 }
