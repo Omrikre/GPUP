@@ -4,6 +4,7 @@ import Engine.DTO.GraphDTO;
 import Engine.DTO.MissionDTO;
 
 import Engine.DTO.MissionDTOWithoutCB;
+import Engine.DTO.TargetDTO;
 import components.app.AppController;
 import components.graphManager.xmlLoader.LoadXMLRefresher;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import okhttp3.HttpUrl;
 
 import java.awt.*;
@@ -30,48 +32,27 @@ import static components.app.HttpResourcesPaths.ADD_MISSION;
 
 public class MissionsController {
 
-    @FXML
-    private TableView<MissionDTO> missionTV;
-    @FXML
-    private TableColumn<MissionDTO, Checkbox> checkboxCOL;
-    @FXML
-    private TableColumn<MissionDTO, String> missionNameCOL;
-    @FXML
-    private TableColumn<MissionDTO, String> missionStatusCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> missionProgressCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> missionWorkersCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> missionPriceCOL;
-    @FXML
-    private TableColumn<MissionDTO, String> missionCreatorCOL;
-    @FXML
-    private TableColumn<MissionDTO, String> graphNameCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> typeIndepenCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> typeLeafCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> typeMiddleCOL;
-    @FXML
-    private TableColumn<MissionDTO, Integer> typeRootCOL;
-    @FXML
-    private Button startBT;
-    @FXML
-    private Button pauseBT;
-    @FXML
-    private Button resumeBT;
-    @FXML
-    private Button stopBT;
-    @FXML
-    private Button dupScratchBT;
-    @FXML
-    private Button dupIncrementalBT;
+    @FXML private TableView<MissionDTO> missionTV;
+    @FXML private TableColumn<MissionDTO, Checkbox> checkboxCOL;
+    @FXML private TableColumn<MissionDTO, String> missionNameCOL;
+    @FXML private TableColumn<MissionDTO, String> missionStatusCOL;
+    @FXML private TableColumn<MissionDTO, Integer> missionProgressCOL;
+    @FXML private TableColumn<MissionDTO, Integer> missionWorkersCOL;
+    @FXML private TableColumn<MissionDTO, Integer> missionPriceCOL;
+    @FXML private TableColumn<MissionDTO, String> missionCreatorCOL;
+    @FXML private TableColumn<MissionDTO, String> graphNameCOL;
+    @FXML private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
+    @FXML private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
+    @FXML private TableColumn<MissionDTO, Integer> typeIndepenCOL;
+    @FXML private TableColumn<MissionDTO, Integer> typeLeafCOL;
+    @FXML private TableColumn<MissionDTO, Integer> typeMiddleCOL;
+    @FXML private TableColumn<MissionDTO, Integer> typeRootCOL;
+    @FXML private Button startBT;
+    @FXML private Button pauseBT;
+    @FXML private Button resumeBT;
+    @FXML private Button stopBT;
+    @FXML private Button dupScratchBT;
+    @FXML private Button dupIncrementalBT;
 
     private int numOfMissionsInTable;
     private String selectedMission;
@@ -97,6 +78,36 @@ public class MissionsController {
         selectedMission = "";
         dupScratchBT.setDisable(false); //TODO 123
         dupIncrementalBT.setDisable(false);
+
+        checkboxCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Checkbox>("selectedState"));
+        missionNameCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("missionName"));
+        missionStatusCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("status"));
+        missionProgressCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("progress"));
+        missionWorkersCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("workers"));
+        missionPriceCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("totalPrice"));
+        missionCreatorCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("creatorName"));
+        graphNameCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("graphName"));
+        targetStatFinishedCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("executedTargets"));
+        targetStatWaitingCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("waitingTargets"));
+        typeIndepenCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("independenceCount"));
+        typeLeafCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("leafCount"));
+        typeMiddleCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("middleCount"));
+        typeRootCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("rootCount"));
+
+        checkboxCOL.setStyle( "-fx-alignment: CENTER;");
+        missionNameCOL.setStyle( "-fx-alignment: CENTER;");
+        missionStatusCOL.setStyle( "-fx-alignment: CENTER;");
+        missionProgressCOL.setStyle( "-fx-alignment: CENTER;");
+        missionWorkersCOL.setStyle( "-fx-alignment: CENTER;");
+        missionPriceCOL.setStyle( "-fx-alignment: CENTER;");
+        missionCreatorCOL.setStyle( "-fx-alignment: CENTER;");
+        graphNameCOL.setStyle( "-fx-alignment: CENTER;");
+        targetStatFinishedCOL.setStyle( "-fx-alignment: CENTER;");
+        targetStatWaitingCOL.setStyle( "-fx-alignment: CENTER;");
+        typeIndepenCOL.setStyle( "-fx-alignment: CENTER;");
+        typeLeafCOL.setStyle( "-fx-alignment: CENTER;");
+        typeMiddleCOL.setStyle( "-fx-alignment: CENTER;");
+        typeRootCOL.setStyle( "-fx-alignment: CENTER;");
     }
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {
@@ -128,7 +139,6 @@ public class MissionsController {
 
     public void updateMissionsList(List<MissionDTOWithoutCB> missions) {
         Platform.runLater(() -> {
-
             if ((missions.size() == numOfMissionsInTable))
                 return;
             numOfMissionsInTable = missions.size();
@@ -202,82 +212,23 @@ public class MissionsController {
     }
 
 
-    @FXML
-    void dupIncrementalPR(ActionEvent event) {
+    @FXML void dupIncrementalPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(false, selectedMission);
     }
-
-    @FXML
-    void dupScratchPR(ActionEvent event) {
+    @FXML void dupScratchPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(true, selectedMission);
     }
-
-    @FXML
-    void pausePR(ActionEvent event) {
+    @FXML void pausePR(ActionEvent event) {
     }
-
-    @FXML
-    void resumePR(ActionEvent event) {
+    @FXML void resumePR(ActionEvent event) {
     }
-
-    @FXML
-    void startPR(ActionEvent event) {
+    @FXML void startPR(ActionEvent event) {
     }
-
-    @FXML
-    void stopPR(ActionEvent event) {
+    @FXML void stopPR(ActionEvent event) {
     }
 
     public void setMainController(AppController appController) {
         this.mainController = appController;
     }
-
-    //Engine e, minigraph of chosen targets, get the numbers, send 4 new params - ind, roots, leaves, middles.
-
-//    String finalUrl = HttpUrl
-//            .parse(ADD_MISSION)
-//            .newBuilder()
-//            .addQueryParameter("amount-of-targets", amountOfTargets)
-//            .addQueryParameter("compilation-folder", compilationFolder) //for compilation task, else null
-//    .addQueryParameter("runtime", runTime)
-//    .addQueryParameter("random-runtime",randomRunTime)
-//    .addQueryParameter("success", success)
-//    .addQueryParameter("success-warnings", successWithWarnings)
-//    //the rest are for the display:
-//    .addQueryParameter("name",missionName)
-//    .addQueryParameter("creator",creatorName)
-//    .addQueryParameter("graph-name",graphName)
-//            .build()
-//            .toString();
-
-//        HttpClientUtil.runAsync(finalUrl, new Callback() {
-//        @Override
-//        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//            Platform.runLater(() ->
-//                    .setText("Something went wrong: " + e.getMessage())
-//            );
-//        }
-//
-//        @Override
-//        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//            if (response.code() != 200) {
-//                String responseBody = response.body().string();
-//                Platform.runLater(() ->
-//                        .setText("Something went wrong: " + responseBody)
-//                );
-//            } else {
-//                Platform.runLater(() -> {
-//
-//                    try {
-//                        String responseBody = response.body().string();
-//                        System.out.println(responseBody);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//            }
-//        }
-//    });
-
 
 }
