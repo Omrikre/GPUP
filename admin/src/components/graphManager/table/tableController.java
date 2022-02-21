@@ -6,6 +6,8 @@ import Engine.Enums.Bond;
 import components.graphManager.GraphController;
 import components.graphManager.table.cycle.cycleController;
 import components.graphManager.table.whatIf.whatIfController;
+import http.HttpClientUtil;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
 import javafx.collections.FXCollections;
@@ -18,13 +20,22 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static components.app.CommonResourcesPaths.TABLE_CYCLE_fXML_RESOURCE;
 import static components.app.CommonResourcesPaths.TABLE_WHATIF_fXML_RESOURCE;
+import static components.app.HttpResourcesPaths.GRAPH_LIST;
+import static components.app.HttpResourcesPaths.GSON;
 
 
 public class tableController {
@@ -159,9 +170,7 @@ public class tableController {
         whatIfVBPaneController.whatIfSetup();
         cycleVBPaneController.cycleSetup();
     }
-
     private int getTabNum() { return tabNum; }
-
 
     public void loadBackComponents() {
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -186,7 +195,6 @@ public class tableController {
             System.out.println(e.getMessage());
         }
     }
-
     private void configureCheckBox(CheckBox checkBox, String targetName) {
         if (checkBox.isSelected())
             selectedCheckBoxes.add(checkBox);
@@ -206,7 +214,6 @@ public class tableController {
             }
         });
     }
-
     private void clearLastName() {
         if(tabNum == 2)
             whatIfVBPaneController.clearSelectedTargetLabel();
@@ -224,7 +231,6 @@ public class tableController {
             }
         }
     }
-
     private void setupNames(String targetName) {
         if(tabNum == 2)
             whatIfVBPaneController.setSelectedTargetLabel(targetName);
@@ -244,7 +250,6 @@ public class tableController {
 
     }
 
-
     // table
     public void setTable() {
         targetNameCOL.setCellValueFactory(new PropertyValueFactory<TargetDTO, String>("targetName"));
@@ -260,7 +265,6 @@ public class tableController {
 
         targetDataTable.setItems(OLTargets);
     }
-
 
     // change panes methods
     @FXML void CYCLEmenuPr(ActionEvent event) {
@@ -282,8 +286,6 @@ public class tableController {
         this.tabNum = tabNum;
     }
 
-
-    //
     // path tab
     private void pathSetup() {
         pathClearTextBoxes();
@@ -291,28 +293,28 @@ public class tableController {
         PATHsecondTargetLabel.setText(" -");
         PATHgetPathBt.setDisable(true);
     }
-    /*
-    private void pathSetTextBoxes(String a, String b) {
-        String lst;
+
+    private void pathSetTextBoxes(String a, String b , Bond bond, String lst) {
         String noPath = "-- There is no path --";
+        Set<String> check = new HashSet();
 
         PATHAreqBLabel.setText(a + " required for " + b);
         PATHAdepBLabel.setText(a + " depends for " + b);
 
-        lst = createListOfTargets(mainController.getPathRequired(a,b), Bond.REQUIRED_FOR);
-        if(lst == null || lst.isEmpty())
-            PATHreqTextBox.appendText(noPath);
-        else
-            PATHreqTextBox.appendText(lst);
-
-        lst = createListOfTargets(mainController.getPathDepends(a,b), Bond.DEPENDS_ON);
-        if(lst == null || lst.isEmpty())
-            PATHdepTextBox.appendText(noPath);
-        else
-            PATHdepTextBox.appendText(lst);
+        if(bond == Bond.REQUIRED_FOR) {
+            if (lst == null || lst.isEmpty() || lst.equals(check.toString()))
+                PATHreqTextBox.appendText(noPath);
+            else
+                PATHreqTextBox.appendText(lst);
+        }
+        else {
+            if (lst == null || lst.isEmpty() || lst.equals(check.toString()))
+                PATHdepTextBox.appendText(noPath);
+            else
+                PATHdepTextBox.appendText(lst);
+        }
     }
 
-    */
     private String createListOfTargets(Set<List<String>> lst, Bond whichWay) {
         StringBuilder stringBuild = new StringBuilder("");
         boolean firstTarget = true;
@@ -357,21 +359,81 @@ public class tableController {
         PATHreqTextBox.clear();
     }
     @FXML void pathGetPathPr(ActionEvent event) {
-        //pathSetTextBoxes(firstTargetName, secondTargetName);
-        /*
-        PATHdepTextBox.setText(
-                createListOfTargets(
-                        mainController.getPathDepends(firstTargetName, secondTargetName),
-                        Bond.DEPENDS_ON));
+        pathClearTextBoxes();
+        String depUrl = HttpUrl
+                .parse(GRAPH_LIST)
+                .newBuilder()
+                .addQueryParameter("graphname", getGraphName())
+                .addQueryParameter("target-a",firstTargetName)
+                .addQueryParameter("target-b",secondTargetName)
+                .addQueryParameter("bond","dep")
+                .build()
+                .toString();
 
-        PATHAreqBLabel.setText();
-        PATHreqTextBox.setText(
-                createListOfTargets(
-                        mainController.getPathRequired(firstTargetName, secondTargetName),
-                        Bond.REQUIRED_FOR));
+        String reqUrl = HttpUrl
+                .parse(GRAPH_LIST)
+                .newBuilder()
+                .addQueryParameter("graphname", getGraphName())
+                .addQueryParameter("target-a",firstTargetName)
+                .addQueryParameter("target-b",secondTargetName)
+                .addQueryParameter("bond","req")
+                .build()
+                .toString();
 
-         */
+        HttpClientUtil.runAsync(reqUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println(responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        try {
+                            String responseBody = response.body().string();
+                            Set<String> res = GSON.fromJson(responseBody, Set.class);
+                            pathSetTextBoxes(firstTargetName, secondTargetName , Bond.REQUIRED_FOR, res.toString());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
+
+        HttpClientUtil.runAsync(depUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println(responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        try {
+                            String responseBody = response.body().string();
+                            Set<String> res = GSON.fromJson(responseBody, Set.class);
+                            pathSetTextBoxes(firstTargetName, secondTargetName , Bond.DEPENDS_ON, res.toString());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            }
+        });
     }
+
+    public String getGraphName() { return parentController.getSelectedGraphName(); }
 
 /*
 
