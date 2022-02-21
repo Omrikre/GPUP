@@ -223,7 +223,8 @@ public class MissionsController {
                 String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("status", "") //TODO GET STATUS
+                        .addQueryParameter("name",selectedMission)
+                        .addQueryParameter("status", "Paused")
                 .build()
                 .toString();
     }
@@ -231,8 +232,8 @@ public class MissionsController {
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("name","") //TODO GET MISSION NAME
-                .addQueryParameter("status", "") //TODO GET STATUS
+                .addQueryParameter("name",selectedMission)
+                .addQueryParameter("status", "Ready")
                 .build()
                 .toString();
     }
@@ -240,8 +241,8 @@ public class MissionsController {
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("name","") //TODO GET MISSION NAME
-                .addQueryParameter("status", "") //TODO GET STATUS
+                .addQueryParameter("name",selectedMission)
+                .addQueryParameter("status", "Ready")
                 .build()
                 .toString();
     }
@@ -249,8 +250,8 @@ public class MissionsController {
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("name","") //TODO GET MISSION NAME
-                .addQueryParameter("status", "") //TODO GET STATUS
+                .addQueryParameter("name",selectedMission)
+                .addQueryParameter("status", "Stopped")
                 .build()
                 .toString();
     }

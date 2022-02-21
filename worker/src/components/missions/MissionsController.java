@@ -47,11 +47,11 @@ public class MissionsController {
     @FXML private Button singupBT;
 
 
-    @FXML void singupPR(ActionEvent event) {}
+    @FXML void singupPR(ActionEvent event) {} //send to server
     @FXML void pausePR(ActionEvent event) {}
     @FXML void resumePR(ActionEvent event) {}
     @FXML void startPR(ActionEvent event) {}
-    @FXML void stopPR(ActionEvent event) {}
+    @FXML void stopPR(ActionEvent event) {} //send to server
     private int numOfMissionsInTable;
     private String selectedMission;
     private IntegerBinding numCheckBoxesSelected;
