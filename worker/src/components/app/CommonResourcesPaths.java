@@ -13,11 +13,10 @@ public class CommonResourcesPaths {
     public final static String MISSIONS_fXML_RESOURCE = "/components/missions/missions.fxml";
     public final static String CHAT_fXML_RESOURCE = "/components/chat/chatroom/chat-room-main.fxml";
 
-    // graph manager - back components
-    public final static String INFO_XML_RESOURCE = "/components/graphManager/info/Info.fxml";
-    public final static String MISSION_CREATOR_fXML_RESOURCE = "/components/graphManager/missionCreator/task.fxml";
-    public final static String CREATE_NEW_MISSION_fXML_RESOURCE = "/components/missions/createNewMission/newMission.fxml";
-    public final static String TABLE_fXML_RESOURCE = "/components/graphManager/table/table.fxml";
+    // targets manager - back components
+    public final static String TARGETS_fXML_RESOURCE = "/components/targets/targets.fxml";
+
+
     // table - back components
     public final static String TABLE_CYCLE_fXML_RESOURCE = "/components/graphManager/table/cycle/cycle.fxml";
     public final static String TABLE_WHATIF_fXML_RESOURCE = "/components/graphManager/table/whatIf/whatif.fxml";

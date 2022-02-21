@@ -26,6 +26,7 @@ public class MissionsController {
 
     @FXML private TableView<MissionDTO> missionTV;
     @FXML private TableColumn<MissionDTO, Checkbox> checkboxCOL;
+    @FXML private TableColumn<?, ?> yourStatusCOL; //TODO
     @FXML private TableColumn<MissionDTO, String> missionNameCOL;
     @FXML private TableColumn<MissionDTO, String> missionStatusCOL;
     @FXML private TableColumn<MissionDTO, Integer> missionProgressCOL;
@@ -43,11 +44,10 @@ public class MissionsController {
     @FXML private Button pauseBT;
     @FXML private Button resumeBT;
     @FXML private Button stopBT;
-    @FXML private Button dupScratchBT;
-    @FXML private Button dupIncrementalBT;
+    @FXML private Button singupBT;
 
-    @FXML void dupIncrementalPR(ActionEvent event) {}
-    @FXML void dupScratchPR(ActionEvent event) {}
+
+    @FXML void singupPR(ActionEvent event) {}
     @FXML void pausePR(ActionEvent event) {}
     @FXML void resumePR(ActionEvent event) {}
     @FXML void startPR(ActionEvent event) {}
@@ -74,8 +74,7 @@ public class MissionsController {
         numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
         setupData();
         selectedMission = "";
-        dupScratchBT.setDisable(false); //TODO 123
-        dupIncrementalBT.setDisable(false);
+        singupBT.setDisable(true);
     }
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {
@@ -86,8 +85,7 @@ public class MissionsController {
             pauseBT.setDisable(true);
             resumeBT.setDisable(true);
             stopBT.setDisable(true);
-            dupScratchBT.setDisable(true);
-            dupIncrementalBT.setDisable(true);
+            singupBT.setDisable(true);
             return;
         }
         if (missionStatus.equals("Paused")) {
@@ -101,8 +99,7 @@ public class MissionsController {
             stopBT.setDisable(false);
         }
         selectedMission = missionName;
-        dupScratchBT.setDisable(false);
-        dupIncrementalBT.setDisable(false);
+        singupBT.setDisable(false);
     }
 
     public void updateMissionsList(List<MissionDTOWithoutCB> missions) {

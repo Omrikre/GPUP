@@ -17,9 +17,9 @@
    <content>
       <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="428.0" prefWidth="698.0">
          <center>
-            <VBox alignment="CENTER" BorderPane.alignment="TOP_CENTER">
+            <VBox alignment="CENTER" prefHeight="556.0" prefWidth="700.0" BorderPane.alignment="TOP_CENTER">
                <children>
-                  <GridPane prefHeight="323.0" prefWidth="700.0">
+                  <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="327.0" prefWidth="700.0">
                     <columnConstraints>
                         <ColumnConstraints hgrow="NEVER" minWidth="30.0" prefWidth="30.0" />
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="5.0" prefWidth="20.0" />
@@ -33,8 +33,8 @@
                         <RowConstraints maxHeight="65.0" minHeight="-Infinity" prefHeight="39.0" vgrow="NEVER" />
                         <RowConstraints maxHeight="29.0" minHeight="10.0" prefHeight="17.0" vgrow="NEVER" />
                       <RowConstraints maxHeight="67.0" minHeight="-Infinity" prefHeight="40.0" vgrow="NEVER" />
-                        <RowConstraints maxHeight="67.0" minHeight="5.0" prefHeight="14.0" vgrow="NEVER" />
-                        <RowConstraints maxHeight="74.0" minHeight="60.0" prefHeight="74.0" vgrow="NEVER" />
+                        <RowConstraints maxHeight="67.0" minHeight="1.0" prefHeight="5.0" vgrow="NEVER" />
+                        <RowConstraints maxHeight="87.0" minHeight="60.0" prefHeight="83.0" vgrow="NEVER" />
                     </rowConstraints>
                      <children>
                         <VBox alignment="BOTTOM_CENTER" GridPane.columnIndex="2" GridPane.hgrow="NEVER" GridPane.rowIndex="2">
@@ -60,7 +60,7 @@
                               </ImageView>
                            </children>
                         </VBox>
-                        <VBox alignment="CENTER" prefHeight="113.0" prefWidth="336.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                        <VBox alignment="CENTER" prefHeight="102.0" prefWidth="336.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
                            <children>
                               <GridPane>
                                 <columnConstraints>
@@ -70,6 +70,7 @@
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
@@ -89,6 +90,16 @@
                                        </font>
                                     </Label>
                                     <Label fx:id="numThreadsLB" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="userNameLB11" text="Your Credits" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                       <font>
+                                          <Font name="System Bold" size="15.0" />
+                                       </font>
+                                    </Label>
+                                    <Label fx:id="creditsLB" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                        <font>
                                           <Font size="14.0" />
                                        </font>

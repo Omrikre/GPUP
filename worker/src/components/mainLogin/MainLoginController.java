@@ -26,8 +26,12 @@ public class MainLoginController {
     @FXML private Label loadResponseLB;
     @FXML private Label userNameLB1;
     @FXML private Label numThreadsLB;
+    @FXML private Label userNameLB11;
+    @FXML private Label creditsLB;
     private AppController mainController;
     private boolean loggedIn;
+
+
 
 
 
@@ -35,6 +39,7 @@ public class MainLoginController {
     @FXML public void initialize() {
         userNameNameLB.setText("-");
         numThreadsLB.setText("-");
+        creditsLB.setText("-");
         loadResponseLB.setText("");
         loggedIn = false;
         loginBT.setDefaultButton(true);
@@ -78,6 +83,7 @@ public class MainLoginController {
                         loggedIn = false;
                         userNameNameLB.setText("-");
                         numThreadsLB.setText("-");
+                        creditsLB.setText("-");
                         mainController.logout();
                         loginBT.setDefaultButton(true);
                         loginBT.setText("Login");
@@ -94,6 +100,7 @@ public class MainLoginController {
         loggedIn = true;
         userNameNameLB.setText(userName);
         numThreadsLB.setText(numOfThreads);
+        creditsLB.setText("0");
         loginBT.setText("Logout");
         loginBT.setDefaultButton(false);
     }

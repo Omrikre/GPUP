@@ -14,6 +14,7 @@ import components.login.LoginControllerWorker;
 import components.mainLogin.MainLoginController;
 import components.missions.MissionsController;
 import components.settings.settingsController;
+import components.targets.TargetsListController;
 import http.HttpClientUtil;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static components.app.CommonResourcesPaths.DASHBOARD_fXML_RESOURCE;
+import static components.app.CommonResourcesPaths.TARGETS_fXML_RESOURCE;
 import static components.app.CommonResourcesPathsWorker.*;
 
 public class AppController  implements Closeable {
@@ -56,23 +58,22 @@ public class AppController  implements Closeable {
     private Stage loginWin;
     private BooleanProperty autoUpdate;
 
-
     // main components:
     // main - login Loader
     @FXML private ScrollPane mainLoginComp;
     @FXML private MainLoginController mainLoginCompController;
-    // graph manager
-    private BorderPane graphManagerComponent;
-    private GraphController graphManagerComponentController;
     // dashboard
     private ScrollPane dashboardComponent;
     private DashboardController dashboardComponentController;
     // missions
     private ScrollPane missionsComponent;
     private MissionsController missionsComponentController;
-    // missions
+    // chat
     private ScrollPane chatComponent;
     private ChatRoomMainController chatComponentController;
+    // targets
+    private ScrollPane targetsComponents;
+    private TargetsListController targetsComponentsController;
 
 
 
@@ -151,7 +152,13 @@ public class AppController  implements Closeable {
             //missionsComponentController.setMainController(this);
             System.out.println(" -- chat done --");
 
-            //TODO - add the targets tableV
+            // targets
+            fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(getClass().getResource(TARGETS_fXML_RESOURCE));
+            targetsComponents = fxmlLoader.load();
+            targetsComponentsController = fxmlLoader.getController();
+            //targetsComponentsController.setMainController(this, missionsComponentController);
+            System.out.println(" -- targets done --");
 
 
 
@@ -181,7 +188,7 @@ public class AppController  implements Closeable {
     public void showHomePane() { maimBorderPaneComp.setCenter(mainLoginComp); }
     public void showDashboardPane() { maimBorderPaneComp.setCenter(dashboardComponent); }
     public void showMissionsPane() { maimBorderPaneComp.setCenter(missionsComponent); }
-    public void showGraphPane() { maimBorderPaneComp.setCenter(graphManagerComponent); }
+    public void showGraphPane() { maimBorderPaneComp.setCenter(targetsComponents); }
     public void showChatPane() { maimBorderPaneComp.setCenter(chatComponent); }
     public void showSettingsPane() {
         settingsComponentController.setupData(darkModeOn, animationsOn);

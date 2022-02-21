@@ -1,6 +1,8 @@
 package components.app.code;
 
+import components.app.AppController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,6 +17,8 @@ import static components.app.CommonResourcesPaths.MAIN_APP_RESOURCE;
 
 public class Main extends Application {
 
+    private AppController mainAppController;
+
     public static void main(String[] args) {
         Thread.currentThread().setName("main");
         launch(args);
@@ -28,6 +32,7 @@ public class Main extends Application {
         URL url = getClass().getResource(MAIN_APP_RESOURCE);
         fxmlLoader.setLocation(url);
         Parent root = fxmlLoader.load(url.openStream());
+        mainAppController = fxmlLoader.getController();
         Scene scene = new Scene(root, 1100, 820);
         primaryStage.setScene(scene);
         primaryStage.setTitle("G.P.U.P - Worker App");
@@ -37,8 +42,8 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-       // logout(); //TODO
-       // HttpClientUtil.shutdown();
+        mainAppController.close();
+        Platform.exit();
     }
 
 

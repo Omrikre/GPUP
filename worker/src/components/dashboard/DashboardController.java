@@ -76,7 +76,7 @@ public class DashboardController implements Closeable {
     }
     private void updateMissionsListInDashboard(List<MissionDTOWithoutCB> missions) {
         Platform.runLater(() -> {
-            System.out.println(missions);
+            //System.out.println(missions);
             ObservableList<MissionDTOWithoutCB> missionsTV = missionListTV.getItems();
             missionsTV.clear();
             missionsTV.addAll(missions);
