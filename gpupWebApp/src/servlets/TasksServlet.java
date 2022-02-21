@@ -2,6 +2,7 @@ package servlets;
 
 import Engine.DTO.MissionDTO;
 import Engine.DTO.MissionDTOWithoutCB;
+import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Enums.MissionState;
 import Engine.users.UserManager;
 import com.google.gson.Gson;
@@ -24,19 +25,34 @@ public class TasksServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String status = req.getParameter("status");
         String name = req.getParameter("name");
-        if (status == null) {
-            resp.setContentType("application/json");
-            try (PrintWriter out = resp.getWriter()) {
+        String targets = req.getParameter("targets");
+        resp.setContentType("application/json");
+        try (PrintWriter out = resp.getWriter()) {
+            if (status == null) {
                 Gson gson = new Gson();
-                List<MissionDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
-                String json = gson.toJson(lst);
-                System.out.println("MISSIONS: " + json);
-                resp.setStatus(200);
-                out.println(json);
+                if (name == null) {
+                    List<MissionDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
+                    String json = gson.toJson(lst);
+                    System.out.println("MISSIONS: " + json);
+                    resp.setStatus(200);
+                    out.println(json);
+                } else {
+                    if (targets == null) { //get only mission
+                        MissionDTOWithoutCB m = ServletUtils.getTaskManager(getServletContext()).getMissionByName(name);
+                        String json = gson.toJson(m);
+                        System.out.println("MISSION: " + json);
+                        resp.setStatus(200);
+                        out.println(json);
+                    } else { //get mission targets
+                        Map<String, TargetDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTargets(name);
+                        String json = gson.toJson(lst);
+                        System.out.println("targets: " + json);
+                        resp.setStatus(200);
+                        out.println(json);
+                    }
+                }
                 out.flush();
-            }
-        } else {
-            try (PrintWriter out = resp.getWriter()) {
+            } else {
                 // no content type
                 if (name == null) {
                     resp.setStatus(404);

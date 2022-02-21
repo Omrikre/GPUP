@@ -16,3 +16,17 @@ public class TargetsListController {
     @FXML private Label availableThreadsLB;
     @FXML private Label totalThreadsLB;
 }
+
+
+/*
+//TODO for the worker to get the list of targets from the task he wants to work on when he starts to work.
+String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name","")
+                .addQueryParameter("targets","true")
+                .build()
+                .toString();
+
+
+ */
