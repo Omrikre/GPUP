@@ -13,6 +13,7 @@ public class TaskManager {
 
     public TaskManager() {
         taskList = new ArrayList<>();
+        targetsMap=new HashMap<>();
     }
 
     public synchronized void addTask(MissionDTOWithoutCB task, Map<String, TargetDTOWithoutCB> targets) {

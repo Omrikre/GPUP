@@ -7,6 +7,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+import okhttp3.HttpUrl;
+
+import static components.app.HttpResourcesPaths.GRAPH_LIST;
 
 public class whatIfController {
 
@@ -24,7 +27,14 @@ public class whatIfController {
 
     @FXML
     void whatIfGetWhatIfPr(ActionEvent event) {
-
+            //TODO, whatif
+//        String finalUrl = HttpUrl
+//                .parse(GRAPH_LIST)
+//                .newBuilder()
+//                .addQueryParameter("target-a", selectedTarget)
+//                .addQueryParameter("bond",) //"dep" or "req"
+//                .build()
+//                .toString();
     }
 
     public void clearSelectedTargetLabel() {

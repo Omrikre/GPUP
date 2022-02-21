@@ -25,7 +25,6 @@ import java.util.Map;
 public class LoadTaskServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("object/task");
-        System.out.println("IN ADD TASK SERVLET");
         try (PrintWriter out = resp.getWriter()) {
             Integer amountOfTargets = Integer.parseInt(req.getParameter("amount-of-targets"));
             String src = req.getParameter("src"); //source folder
@@ -53,7 +52,6 @@ public class LoadTaskServlet extends HttpServlet {
             else
                 price = amountOfTargets * graph.getCompPricePerTarget();
 
-            System.out.println("ADD TASK AFTER GET PARAMS");
             if (fromScratch) {
                 Map<String, TargetDTOWithoutCB> targetDTOMap = new HashMap<>();
                 List<String> targets = ServletUtils.getTaskManager(getServletContext()).getMissionByName(missionName).getTargets();
@@ -64,10 +62,8 @@ public class LoadTaskServlet extends HttpServlet {
             } else if (incremental) {
                 ServletUtils.getTaskManager(getServletContext()).addTaskIncremental(missionName, newName, creatorName);
             } else {
-                System.out.println("CREATING NEW TASK");
                 Gson gson = new Gson();
                 String[] targets = gson.fromJson(req.getParameter("targets-array"), String[].class);
-                System.out.println("CONVERTED TARGETS FROM JSON");
                 List<String> targestList = Arrays.asList(targets);
                 Map<Location, Integer> locations = graphManager.getGraphOfRunnableTargetsFromArrayAndGraph(graphName, targestList).howManyTargetsInEachLocation();
                 MissionDTOWithoutCB task = new MissionDTOWithoutCB(amountOfTargets, targestList, src, compilationFolder, runtime, randomRunTime, success, successWithWarnings, missionName, MissionState.READY.toString(), 0, 0,

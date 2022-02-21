@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @WebServlet("/graphlist")
 public class GraphServlet extends HttpServlet {
@@ -66,7 +67,35 @@ public class GraphServlet extends HttpServlet {
                             out.write("bond doesn't exist!");
                             resp.setStatus(404);
                         }
-                        else if (targetA == null && targetB != null) {
+                        else if (targetA == null && targetB != null && bond!=null){ //what if
+                            Gson gson = new Gson();
+                            GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
+                            resp.setContentType("application/json");
+                            Bond b;
+                            if(bond.equals("req"))
+                                b=Bond.REQUIRED_FOR;
+                            else b=Bond.DEPENDS_ON;
+                            Set<String> whatif = graphManager.getWhatIf(name,targetB,b);
+                            String json = gson.toJson(whatif);
+                            resp.setStatus(200);
+                            out.println(json);
+                            out.flush();
+                        }
+                        else if (targetA != null && targetB==null&& bond!=null){
+                            Gson gson = new Gson();
+                            GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
+                            resp.setContentType("application/json");
+                            Bond b;
+                            if(bond.equals("req"))
+                                b=Bond.REQUIRED_FOR;
+                            else b=Bond.DEPENDS_ON;
+                            Set<String> whatif = graphManager.getWhatIf(name,targetA,b);
+                            String json = gson.toJson(whatif);
+                            resp.setStatus(200);
+                            out.println(json);
+                            out.flush();
+                        }
+                        else if (targetA == null && targetB != null && bond==null) { //single target
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
@@ -75,7 +104,7 @@ public class GraphServlet extends HttpServlet {
                             resp.setStatus(200);
                             out.println(json);
                             out.flush();
-                        } else if (targetA != null) {
+                        } else if (targetA != null && targetB==null&& bond==null) {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
