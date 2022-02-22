@@ -22,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -278,8 +279,11 @@ public class MissionsController {
             while (!threadPoolExecutor.isTerminated()) {
                 System.out.println("NOT TERMINATED");
             }
+            System.out.println("RUN " + m[0].getTargets());
             //update progress
             m[0].setProgress();
+            System.out.println("PROGRESS: " + m[0].getProgress());
+            //TODO upload to server?
             //TODO - give price to worker. where is the price for each target, in the graphDTO? maybe add to missionDTO? (only has totalprice)
 
             //upload updated target to server
@@ -346,6 +350,36 @@ public class MissionsController {
         setupData();
         selectedMission = "";
         singupBT.setDisable(true);
+
+        checkboxCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Checkbox>("selectedState"));
+        missionNameCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("missionName"));
+        missionStatusCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("status"));
+        missionProgressCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("progress"));
+        missionWorkersCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("workers"));
+        missionPriceCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("totalPrice"));
+        missionCreatorCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("creatorName"));
+        graphNameCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("graphName"));
+        targetStatFinishedCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("executedTargets"));
+        targetStatWaitingCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("waitingTargets"));
+        typeIndepenCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("independenceCount"));
+        typeLeafCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("leafCount"));
+        typeMiddleCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("middleCount"));
+        typeRootCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("rootCount"));
+
+        checkboxCOL.setStyle("-fx-alignment: CENTER;");
+        missionNameCOL.setStyle("-fx-alignment: CENTER;");
+        missionStatusCOL.setStyle("-fx-alignment: CENTER;");
+        missionProgressCOL.setStyle("-fx-alignment: CENTER;");
+        missionWorkersCOL.setStyle("-fx-alignment: CENTER;");
+        missionPriceCOL.setStyle("-fx-alignment: CENTER;");
+        missionCreatorCOL.setStyle("-fx-alignment: CENTER;");
+        graphNameCOL.setStyle("-fx-alignment: CENTER;");
+        targetStatFinishedCOL.setStyle("-fx-alignment: CENTER;");
+        targetStatWaitingCOL.setStyle("-fx-alignment: CENTER;");
+        typeIndepenCOL.setStyle("-fx-alignment: CENTER;");
+        typeLeafCOL.setStyle("-fx-alignment: CENTER;");
+        typeMiddleCOL.setStyle("-fx-alignment: CENTER;");
+        typeRootCOL.setStyle("-fx-alignment: CENTER;");
     }
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {

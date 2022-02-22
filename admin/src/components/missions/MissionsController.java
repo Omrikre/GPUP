@@ -269,7 +269,7 @@ public class MissionsController {
                 .parse(MISSION_LIST)
                 .newBuilder()
                 .addQueryParameter("name", selectedMission)
-                .addQueryParameter("status", "Ready")
+                .addQueryParameter("status", "Execution")
                 .build()
                 .toString();
     }

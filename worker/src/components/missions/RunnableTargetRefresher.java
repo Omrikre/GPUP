@@ -35,10 +35,11 @@ public class RunnableTargetRefresher extends TimerTask {
 
     @Override
     public void run() {
+        System.out.println("IN RUN");
         if (!shouldUpdate.get())
             return;
-        if (threadsLeft.getValue() == 0)
-            return;
+//        if (threadsLeft.getValue() == 0)
+//            return;
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
@@ -66,6 +67,7 @@ public class RunnableTargetRefresher extends TimerTask {
                     Platform.runLater(() -> {
                         try {
                             TargetDTOWithoutCB t = GSON.fromJson(response.body().string(), TargetDTOWithoutCB.class);
+                            System.out.println("TARGET: "+t);
                             if (t.getTargetName() == null)
                                 targetDTOWithoutCBConsumer.accept(null);
                             else

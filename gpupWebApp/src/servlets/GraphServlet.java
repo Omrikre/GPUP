@@ -33,7 +33,7 @@ public class GraphServlet extends HttpServlet {
         if (name == null) { //no graph specified, returns the entire list
             resp.setContentType("application/json");
             try (PrintWriter out = resp.getWriter()) {
-                if (!(isCycle != null || targetA != null || targetB != null || bond != null)) {
+                if (!(isCycle != null || targetA != null || targetB != null || bond != null || targets != null)) {
                     Gson gson = new Gson();
                     GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                     List<GraphDTOWithoutCB> graphList = graphManager.getGraphsAsDTOs();
@@ -63,52 +63,49 @@ public class GraphServlet extends HttpServlet {
                         out.println(json);
                         out.flush();
                     } else {
-                        if(targetA!=null && targetB!=null && bond==null){
+                        if (targetA != null && targetB != null && bond == null) {
                             out.write("bond doesn't exist!");
                             resp.setStatus(404);
-                        }
-                        else if (targetA == null && targetB != null && bond!=null){ //what if
+                        } else if (targetA == null && targetB != null && bond != null) { //what if
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
                             Bond b;
-                            if(bond.equals("req"))
-                                b=Bond.REQUIRED_FOR;
-                            else b=Bond.DEPENDS_ON;
-                            Set<String> whatif = graphManager.getWhatIf(name,targetB,b);
+                            if (bond.equals("req"))
+                                b = Bond.REQUIRED_FOR;
+                            else b = Bond.DEPENDS_ON;
+                            Set<String> whatif = graphManager.getWhatIf(name, targetB, b);
                             String json = gson.toJson(whatif);
                             resp.setStatus(200);
                             out.println(json);
                             out.flush();
-                        }
-                        else if (targetA != null && targetB==null&& bond!=null){
+                        } else if (targetA != null && targetB == null && bond != null) {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
                             Bond b;
-                            if(bond.equals("req"))
-                                b=Bond.REQUIRED_FOR;
-                            else b=Bond.DEPENDS_ON;
-                            Set<String> whatif = graphManager.getWhatIf(name,targetA,b);
+                            if (bond.equals("req"))
+                                b = Bond.REQUIRED_FOR;
+                            else b = Bond.DEPENDS_ON;
+                            Set<String> whatif = graphManager.getWhatIf(name, targetA, b);
                             String json = gson.toJson(whatif);
                             resp.setStatus(200);
                             out.println(json);
                             out.flush();
-                        }
-                        else if (targetA == null && targetB != null && bond==null) { //single target
+                        } else if (targetA == null && targetB != null && bond == null) { //single target
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
-                            TargetDTOWithoutCB targetDTO = graphManager.getTargetDTO(name,targetB);
+                            TargetDTOWithoutCB targetDTO = graphManager.getTargetDTO(name, targetB);
                             String json = gson.toJson(targetDTO);
                             resp.setStatus(200);
                             out.println(json);
                             out.flush();
-                        } else if (targetA != null && targetB==null&& bond==null) {
+                        } else if (targetA != null && targetB == null && bond == null) {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
-                            TargetDTOWithoutCB targetDTO = graphManager.getTargetDTO(name,targetA);
+                            TargetDTOWithoutCB targetDTO = graphManager.getTargetDTO(name, targetA);
                             String json = gson.toJson(targetDTO);
                             resp.setStatus(200);
                             out.println(json);
@@ -117,14 +114,13 @@ public class GraphServlet extends HttpServlet {
                             Gson gson = new Gson();
                             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
                             resp.setContentType("application/json");
-                            if(targets!=null){
+                            if (targets != null) {
                                 String json = gson.toJson(graphManager.getTargetDTOList(name));
                                 out.println(json);
-                            }
-                            else{
+                            } else {
                                 GraphDTOWithoutCB graphDTO = graphManager.getGraphDTOByName(name);
-                            String json = gson.toJson(graphDTO);
-                            out.println(json);
+                                String json = gson.toJson(graphDTO);
+                                out.println(json);
                             }
                             out.flush();
                         }
@@ -161,11 +157,11 @@ public class GraphServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processRequest(req,resp);
+        processRequest(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processRequest(req,resp);
+        processRequest(req, resp);
     }
 }
