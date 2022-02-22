@@ -344,7 +344,6 @@ public class MissionsController {
     @FXML
     public void initialize() {
         numOfMissionsInTable = 0;
-        threadsLeft=new SimpleIntegerProperty(5);
         setAllButtonsDisable(true, "", "");
         selectedCheckBoxes = FXCollections.observableSet();
         unselectedCheckBoxes = FXCollections.observableSet();
@@ -383,6 +382,10 @@ public class MissionsController {
         typeLeafCOL.setStyle("-fx-alignment: CENTER;");
         typeMiddleCOL.setStyle("-fx-alignment: CENTER;");
         typeRootCOL.setStyle("-fx-alignment: CENTER;");
+    }
+
+    public void setUpThreads(int threads) {
+        threadsLeft = new SimpleIntegerProperty(threads);
     }
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {

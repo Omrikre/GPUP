@@ -263,6 +263,7 @@ public class AppController  implements Closeable {
         headerComponentController.makeAllButtonsDisable(false);
         autoUpdate.setValue(true);
         numThreads = threads;
+        missionsComponentController.setUpThreads(numThreads);
         setAllDataInPanes();
     }
  //TODO FIX THREADS
