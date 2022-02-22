@@ -228,7 +228,7 @@ public class AppController  implements Closeable {
     public int getMaxThreads() { return engine.getMaxThreads(); }
     public void runSimulation(int runTime, boolean randomRunTime, int success, int successWithWarnings,
                               int threadsNum, ArrayList<String> runTargetsArray, boolean fromScratch) throws FileException, InterruptedException {
-        engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum, fromScratch);
+        //engine.runSimulation(runTargetsArray, runTime, randomRunTime, success, successWithWarnings, threadsNum, fromScratch);
     }
     public String getFileName() { return engine.getFileName(); }
     public int getNumOfSets() { return engine.getSerialSets().size(); }
@@ -252,7 +252,7 @@ public class AppController  implements Closeable {
 
     public void runCompilation(Integer threads, ArrayList<String> targets, boolean fromScratch,
                                String inputPath, String outputPath) {
-        engine.runCompilation(targets,inputPath,outputPath,threads,fromScratch);
+       // engine.runCompilation(targets,inputPath,outputPath,threads,fromScratch);
     }
 
     public Engine getEngine() { return engine; }

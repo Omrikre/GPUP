@@ -38,7 +38,7 @@ public class DashboardRefresher extends TimerTask {
     @Override
     public void run() {
 
-       if (!shouldUpdate.get())
+        if (!shouldUpdate.get())
             return;
 
         String userUrl = HttpUrl

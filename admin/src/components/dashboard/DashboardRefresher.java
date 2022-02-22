@@ -105,9 +105,9 @@ public class DashboardRefresher extends TimerTask {
                         try {
                             String responseBody = response.body().string();
                             MissionDTOWithoutCB[] lst = GSON.fromJson(responseBody, MissionDTOWithoutCB[].class);
-                            System.out.println("__________");
-                            System.out.println(Arrays.asList(lst));
-                            System.out.println("__________");
+                            System.out.println("JSON: " + responseBody);
+                            System.out.println("ARRAY: " + lst.length);
+                            System.out.println("ARRAY AS LIST: " + Arrays.asList(lst));
                             missionsConsumer.accept(Arrays.asList(lst));
                             missionConsumerDashboard.accept(Arrays.asList(lst));
 

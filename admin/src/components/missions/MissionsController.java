@@ -33,27 +33,48 @@ import static components.app.HttpResourcesPaths.MISSION_LIST;
 
 public class MissionsController {
 
-    @FXML private TableView<MissionDTO> missionTV;
-    @FXML private TableColumn<MissionDTO, Checkbox> checkboxCOL;
-    @FXML private TableColumn<MissionDTO, String> missionNameCOL;
-    @FXML private TableColumn<MissionDTO, String> missionStatusCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionProgressCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionWorkersCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionPriceCOL;
-    @FXML private TableColumn<MissionDTO, String> missionCreatorCOL;
-    @FXML private TableColumn<MissionDTO, String> graphNameCOL;
-    @FXML private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
-    @FXML private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeIndepenCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeLeafCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeMiddleCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeRootCOL;
-    @FXML private Button startBT;
-    @FXML private Button pauseBT;
-    @FXML private Button resumeBT;
-    @FXML private Button stopBT;
-    @FXML private Button dupScratchBT;
-    @FXML private Button dupIncrementalBT;
+    @FXML
+    private TableView<MissionDTO> missionTV;
+    @FXML
+    private TableColumn<MissionDTO, Checkbox> checkboxCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionNameCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionStatusCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionProgressCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionWorkersCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionPriceCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionCreatorCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> graphNameCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeIndepenCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeLeafCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeMiddleCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeRootCOL;
+    @FXML
+    private Button startBT;
+    @FXML
+    private Button pauseBT;
+    @FXML
+    private Button resumeBT;
+    @FXML
+    private Button stopBT;
+    @FXML
+    private Button dupScratchBT;
+    @FXML
+    private Button dupIncrementalBT;
 
     private int numOfMissionsInTable;
     private String selectedMission;
@@ -95,20 +116,20 @@ public class MissionsController {
         typeMiddleCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("middleCount"));
         typeRootCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Integer>("rootCount"));
 
-        checkboxCOL.setStyle( "-fx-alignment: CENTER;");
-        missionNameCOL.setStyle( "-fx-alignment: CENTER;");
-        missionStatusCOL.setStyle( "-fx-alignment: CENTER;");
-        missionProgressCOL.setStyle( "-fx-alignment: CENTER;");
-        missionWorkersCOL.setStyle( "-fx-alignment: CENTER;");
-        missionPriceCOL.setStyle( "-fx-alignment: CENTER;");
-        missionCreatorCOL.setStyle( "-fx-alignment: CENTER;");
-        graphNameCOL.setStyle( "-fx-alignment: CENTER;");
-        targetStatFinishedCOL.setStyle( "-fx-alignment: CENTER;");
-        targetStatWaitingCOL.setStyle( "-fx-alignment: CENTER;");
-        typeIndepenCOL.setStyle( "-fx-alignment: CENTER;");
-        typeLeafCOL.setStyle( "-fx-alignment: CENTER;");
-        typeMiddleCOL.setStyle( "-fx-alignment: CENTER;");
-        typeRootCOL.setStyle( "-fx-alignment: CENTER;");
+        checkboxCOL.setStyle("-fx-alignment: CENTER;");
+        missionNameCOL.setStyle("-fx-alignment: CENTER;");
+        missionStatusCOL.setStyle("-fx-alignment: CENTER;");
+        missionProgressCOL.setStyle("-fx-alignment: CENTER;");
+        missionWorkersCOL.setStyle("-fx-alignment: CENTER;");
+        missionPriceCOL.setStyle("-fx-alignment: CENTER;");
+        missionCreatorCOL.setStyle("-fx-alignment: CENTER;");
+        graphNameCOL.setStyle("-fx-alignment: CENTER;");
+        targetStatFinishedCOL.setStyle("-fx-alignment: CENTER;");
+        targetStatWaitingCOL.setStyle("-fx-alignment: CENTER;");
+        typeIndepenCOL.setStyle("-fx-alignment: CENTER;");
+        typeLeafCOL.setStyle("-fx-alignment: CENTER;");
+        typeMiddleCOL.setStyle("-fx-alignment: CENTER;");
+        typeRootCOL.setStyle("-fx-alignment: CENTER;");
     }
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {
@@ -139,32 +160,32 @@ public class MissionsController {
     }
 
     public void updateMissionsList(List<MissionDTOWithoutCB> missions) {
-            if ((missions.size() == numOfMissionsInTable))
-                return;
-            numOfMissionsInTable = missions.size();
+        if ((missions.size() == numOfMissionsInTable))
+            return;
+        numOfMissionsInTable = missions.size();
 
-            List<MissionDTO> newMissionList = new ArrayList();
-            //ObservableList<MissionDTO> MissionsTV = missionTV.getItems();
-            MissionDTO tempDTO;
-            CheckBox tempCheckBox;
+        List<MissionDTO> newMissionList = new ArrayList();
+        //ObservableList<MissionDTO> MissionsTV = missionTV.getItems();
+        MissionDTO tempDTO;
+        CheckBox tempCheckBox;
 
-            for (MissionDTOWithoutCB mission : missions) {
-                tempCheckBox = new CheckBox();
-                if (selectedMission == mission.getMissionName()) {
-                    tempCheckBox.setSelected(true);
-                }
-                configureCheckBox(tempCheckBox, mission.getMissionName(), mission.getStatus());
-                tempDTO = new MissionDTO(mission.getAmountOfTargets(), null, mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
-                        , mission.getStatus(), mission.getProgress().toString()+"%", mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
-                        mission.getExecutedTargets(), mission.getWaitingTargets(), tempCheckBox, mission.getIndependenceCount(), mission.getLeafCount(), mission.getMiddleCount(), mission.getRootCount());
-
-                newMissionList.add(tempDTO);
+        for (MissionDTOWithoutCB mission : missions) {
+            tempCheckBox = new CheckBox();
+            if (selectedMission == mission.getMissionName()) {
+                tempCheckBox.setSelected(true);
             }
-            ObservableList<MissionDTO> OLMission = FXCollections.observableArrayList(newMissionList);
-            //OLGraphs.clear();
-            OLMissions = OLMission;
-            missionTV.setItems(OLMissions);
-            missionTV.refresh();
+            configureCheckBox(tempCheckBox, mission.getMissionName(), mission.getStatus());
+            tempDTO = new MissionDTO(mission.getAmountOfTargets(), new ArrayList<>(), mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
+                    , mission.getStatus(), mission.getProgress().toString() + "%", mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
+                    mission.getExecutedTargets(), mission.getWaitingTargets(), tempCheckBox, mission.getIndependenceCount(), mission.getLeafCount(), mission.getMiddleCount(), mission.getRootCount());
+
+            newMissionList.add(tempDTO);
+        }
+        ObservableList<MissionDTO> OLMission = FXCollections.observableArrayList(newMissionList);
+        //OLGraphs.clear();
+        OLMissions = OLMission;
+        missionTV.setItems(OLMissions);
+        missionTV.refresh();
     }
 
 
@@ -210,44 +231,55 @@ public class MissionsController {
     }
 
 
-    @FXML void dupIncrementalPR(ActionEvent event) {
+    @FXML
+    void dupIncrementalPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(false, selectedMission);
     }
-    @FXML void dupScratchPR(ActionEvent event) {
+
+    @FXML
+    void dupScratchPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(true, selectedMission);
     }
-    @FXML void pausePR(ActionEvent event) {
-                String finalUrl = HttpUrl
-                .parse(MISSION_LIST)
-                .newBuilder()
-                        .addQueryParameter("name",selectedMission)
-                        .addQueryParameter("status", "Paused")
-                .build()
-                .toString();
-    }
-    @FXML void resumePR(ActionEvent event) {
+
+    @FXML
+    void pausePR(ActionEvent event) {
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("name",selectedMission)
+                .addQueryParameter("name", selectedMission)
+                .addQueryParameter("status", "Paused")
+                .build()
+                .toString();
+    }
+
+    @FXML
+    void resumePR(ActionEvent event) {
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name", selectedMission)
                 .addQueryParameter("status", "Ready")
                 .build()
                 .toString();
     }
-    @FXML void startPR(ActionEvent event) {
+
+    @FXML
+    void startPR(ActionEvent event) {
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("name",selectedMission)
+                .addQueryParameter("name", selectedMission)
                 .addQueryParameter("status", "Ready")
                 .build()
                 .toString();
     }
-    @FXML void stopPR(ActionEvent event) {
+
+    @FXML
+    void stopPR(ActionEvent event) {
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("name",selectedMission)
+                .addQueryParameter("name", selectedMission)
                 .addQueryParameter("status", "Stopped")
                 .build()
                 .toString();

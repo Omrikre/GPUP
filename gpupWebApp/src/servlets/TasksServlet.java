@@ -86,7 +86,7 @@ public class TasksServlet extends HttpServlet {
                             if (name == null) { //all missions
                                 List<MissionDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
                                 String json = gson.toJson(lst);
-                                System.out.println("MISSIONS: " + json);
+                                //System.out.println("MISSIONS: " + json);
                                 out.println(json);
                                 resp.setStatus(200);
                             } else {

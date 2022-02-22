@@ -172,6 +172,7 @@ public class MissionsController {
 
     @FXML
     void stopPR(ActionEvent event) { //send to server
+        pause = true;
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
@@ -215,6 +216,8 @@ public class MissionsController {
 
 
     public void runTask(TargetDTOWithoutCB targetDTOWithoutCB) {
+        //TODO fix folders? low priority..
+
         if (targetDTOWithoutCB == null)
             return;
         if (pause)
