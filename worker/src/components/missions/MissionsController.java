@@ -270,7 +270,6 @@ public class MissionsController {
                     } else {
                         Platform.runLater(() -> {
                             try {
-                                final MissionDTOWithoutCB[] m = new MissionDTOWithoutCB[1];
                                 missionM = GSON.fromJson(response.body().string(), MissionDTOWithoutCB.class);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -283,25 +282,25 @@ public class MissionsController {
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
             threadsLeft.setValue(threadsLeft.getValue() - 1);
-            if (m[0].getCompilationFolder() == null) {
+            if (missionM.getCompilationFolder() == null) {
                 //run sim
                 targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
-                threadPoolExecutor.execute(new SimulationTask(m[0].getAmountOfTargets(), m[0].getRunTime(), m[0].isRandomRunTime(), targetDTOWithoutCB,
-                        m[0].getSuccess(), m[0].getSuccessWithWarnings()));
+                threadPoolExecutor.execute(new SimulationTask(missionM.getAmountOfTargets(), missionM.getRunTime(), missionM.isRandomRunTime(), targetDTOWithoutCB,
+                        missionM.getSuccess(), missionM.getSuccessWithWarnings()));
             } else {
                 //run comp
                 targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
-                threadPoolExecutor.execute(new CompilationTask(m[0].getAmountOfTargets(), m[0].getSrc(), m[0].getCompilationFolder(), targetDTOWithoutCB));
+                threadPoolExecutor.execute(new CompilationTask(missionM.getAmountOfTargets(), missionM.getSrc(), missionM.getCompilationFolder(), targetDTOWithoutCB));
             }
             threadsLeft.setValue(threadsLeft.getValue() + 1);
             threadPoolExecutor.shutdown();
             while (!threadPoolExecutor.isTerminated()) {
                 System.out.println("NOT TERMINATED");
             }
-            System.out.println("RUN " + m[0].getTargets());
+            System.out.println("RUN " + missionM.getTargets());
             //update progress
-            m[0].setProgress();
-            System.out.println("PROGRESS: " + m[0].getProgress());
+            missionM.setProgress();
+            System.out.println("PROGRESS: " + missionM.getProgress());
             //TODO upload to server?
             //TODO - give price to worker. where is the price for each target, in the graphDTO? maybe add to missionDTO? (only has totalprice)
 
