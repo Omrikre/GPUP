@@ -237,6 +237,64 @@ public class MissionsController {
         targetTimer.schedule(runnableTargetRefresher, TARGET_REFRESH_RATE, TARGET_REFRESH_RATE);
     }
 
+    private void runOnMission(TargetDTOWithoutCB targetDTOWithoutCB) {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
+                60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+        threadsLeft.setValue(threadsLeft.getValue() - 1);
+        if (missionM.getCompilationFolder() == null) {
+            //run sim
+            targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
+            threadPoolExecutor.execute(new SimulationTask(missionM.getAmountOfTargets(), missionM.getRunTime(), missionM.isRandomRunTime(), targetDTOWithoutCB,
+                    missionM.getSuccess(), missionM.getSuccessWithWarnings()));
+        } else {
+            //run comp
+            targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
+            threadPoolExecutor.execute(new CompilationTask(missionM.getAmountOfTargets(), missionM.getSrc(), missionM.getCompilationFolder(), targetDTOWithoutCB));
+        }
+        threadPoolExecutor.shutdown();
+        threadsLeft.setValue(threadsLeft.getValue() + 1);
+        missionM.setProgress();
+        System.out.println("PROGRESS: " + missionM.getProgress());
+        //update progress
+
+
+        //upload updated target to server
+        String json = GSON.toJson(targetDTOWithoutCB);
+        System.out.println("Target: " +json);
+        //first to task server!
+        String taskUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("upload", "true")
+                .addQueryParameter("name", selectedMission)
+                .addQueryParameter("json", json)
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(taskUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println(e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        System.out.println("uploaded successfully.");
+                    });
+                }
+            }
+        });
+    }
+
 
     public void runTask(TargetDTOWithoutCB targetDTOWithoutCB) {
         //TODO fix folders? low priority..
@@ -246,7 +304,6 @@ public class MissionsController {
         if (pause)
             return;
         else {
-            System.out.println("1");
             String finalUrl = HttpUrl
                     .parse(MISSION_LIST)
                     .newBuilder()
@@ -275,6 +332,7 @@ public class MissionsController {
                                 Gson gson = new Gson();
                                 String responseBody = response.body().string();
                                 missionM = gson.fromJson(responseBody, MissionDTOWithoutCB.class);
+                                runOnMission(targetDTOWithoutCB);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -284,65 +342,10 @@ public class MissionsController {
             });
 
 
-            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
-                    60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
-            threadsLeft.setValue(threadsLeft.getValue() - 1);
-            if (missionM.getCompilationFolder() == null) {
-                //run sim
-                targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
-                threadPoolExecutor.execute(new SimulationTask(missionM.getAmountOfTargets(), missionM.getRunTime(), missionM.isRandomRunTime(), targetDTOWithoutCB,
-                        missionM.getSuccess(), missionM.getSuccessWithWarnings()));
-            } else {
-                //run comp
-                targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
-                threadPoolExecutor.execute(new CompilationTask(missionM.getAmountOfTargets(), missionM.getSrc(), missionM.getCompilationFolder(), targetDTOWithoutCB));
-            }
-            threadsLeft.setValue(threadsLeft.getValue() + 1);
-            threadPoolExecutor.shutdown();
-            while (!threadPoolExecutor.isTerminated()) {
-                System.out.println("NOT TERMINATED");
-            }
-            System.out.println("RUN " + missionM.getTargets());
-            //update progress
-            missionM.setProgress();
-            System.out.println("PROGRESS: " + missionM.getProgress());
             //TODO upload to server?
             //TODO - give price to worker. where is the price for each target, in the graphDTO? maybe add to missionDTO? (only has totalprice)
 
-            //upload updated target to server
-            String json = GSON.toJson(targetDTOWithoutCB);
-            //first to task server!
-            String taskUrl = HttpUrl
-                    .parse(MISSION_LIST)
-                    .newBuilder()
-                    .addQueryParameter("upload", "true")
-                    .addQueryParameter("name", selectedMission)
-                    .addQueryParameter("json", json)
-                    .build()
-                    .toString();
 
-            HttpClientUtil.runAsync(taskUrl, new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    Platform.runLater(() ->
-                            System.out.println(e.getMessage())
-                    );
-                }
-
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    if (response.code() != 200) {
-                        String responseBody = response.body().string();
-                        Platform.runLater(() ->
-                                System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
-                        );
-                    } else {
-                        Platform.runLater(() -> {
-                            System.out.println("uploaded successfully.");
-                        });
-                    }
-                }
-            });
         }
     }
 
