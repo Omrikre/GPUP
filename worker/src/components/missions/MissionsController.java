@@ -90,6 +90,24 @@ public class MissionsController {
     @FXML
     private Button singupBT;
 
+    private IntegerProperty threadsLeft; // integer property threads --- //TODO start at numthreads from maincontroller
+    private Timer targetTimer;
+    private RunnableTargetRefresher runnableTargetRefresher;
+    private int numOfMissionsInTable;
+    private String selectedMission;
+    private IntegerBinding numCheckBoxesSelected;
+    private ObservableList<MissionDTO> OLMissions;
+    private ObservableSet<CheckBox> selectedCheckBoxes;
+    private ObservableSet<CheckBox> unselectedCheckBoxes;
+    private boolean pause = false;
+
+    private String selectedGraph;
+    private Timer timer;
+    private BooleanProperty autoUpdate;
+    private int numOfGraphs;
+    private AppController mainController;
+    private MissionDTOWithoutCB missionM;
+
 
     @FXML
     void singupPR(ActionEvent event) { //send to server
@@ -227,7 +245,6 @@ public class MissionsController {
         if (pause)
             return;
         else {
-            final MissionDTOWithoutCB[] m = new MissionDTOWithoutCB[1];
             String finalUrl = HttpUrl
                     .parse(MISSION_LIST)
                     .newBuilder()
@@ -253,7 +270,8 @@ public class MissionsController {
                     } else {
                         Platform.runLater(() -> {
                             try {
-                                m[0] = GSON.fromJson(response.body().string(), MissionDTOWithoutCB.class);
+                                final MissionDTOWithoutCB[] m = new MissionDTOWithoutCB[1];
+                                missionM = GSON.fromJson(response.body().string(), MissionDTOWithoutCB.class);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -323,23 +341,6 @@ public class MissionsController {
             });
         }
     }
-
-    private IntegerProperty threadsLeft; // integer property threads --- //TODO start at numthreads from maincontroller
-    private Timer targetTimer;
-    private RunnableTargetRefresher runnableTargetRefresher;
-    private int numOfMissionsInTable;
-    private String selectedMission;
-    private IntegerBinding numCheckBoxesSelected;
-    private ObservableList<MissionDTO> OLMissions;
-    private ObservableSet<CheckBox> selectedCheckBoxes;
-    private ObservableSet<CheckBox> unselectedCheckBoxes;
-    private boolean pause = false;
-
-    private String selectedGraph;
-    private Timer timer;
-    private BooleanProperty autoUpdate;
-    private int numOfGraphs;
-    private AppController mainController;
 
     @FXML
     public void initialize() {
