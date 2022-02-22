@@ -136,6 +136,7 @@ public class NewMissionCreatorController {
                 if (response.code() != 200) {
                     String responseBody = response.body().string();
                     Platform.runLater(() -> {
+                                System.out.println("RESPONSE CODE: " +response.code());
                             MsgLB.setText(responseBody);
                             createNewMissionSucceed = false;
                                 changeBTToOK(false);

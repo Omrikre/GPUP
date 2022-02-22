@@ -86,7 +86,7 @@ public class DashboardRefresher extends TimerTask {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 Platform.runLater(() ->
-                        System.out.println("error missionUrl table update")
+                        System.out.println("error missionUrl table update " + e.getMessage())
                 );
             }
 
