@@ -38,8 +38,8 @@ public class RunnableTargetRefresher extends TimerTask {
         System.out.println("IN RUN");
         if (!shouldUpdate.get())
             return;
-//        if (threadsLeft.getValue() == 0)
-//            return;
+        if (threadsLeft.getValue() == 0)
+            return;
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()

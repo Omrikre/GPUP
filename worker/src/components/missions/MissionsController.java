@@ -13,6 +13,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -142,6 +144,7 @@ public class MissionsController {
                 .parse(MISSION_LIST)
                 .newBuilder()
                 .addQueryParameter("name", selectedMission)
+                .addQueryParameter("add-worker", "true")
                 .addQueryParameter("sign-worker", "true")
                 .build()
                 .toString();
@@ -223,9 +226,7 @@ public class MissionsController {
             return;
         if (pause)
             return;
-
         else {
-
             final MissionDTOWithoutCB[] m = new MissionDTOWithoutCB[1];
             String finalUrl = HttpUrl
                     .parse(MISSION_LIST)
@@ -343,6 +344,7 @@ public class MissionsController {
     @FXML
     public void initialize() {
         numOfMissionsInTable = 0;
+        threadsLeft=new SimpleIntegerProperty(5);
         setAllButtonsDisable(true, "", "");
         selectedCheckBoxes = FXCollections.observableSet();
         unselectedCheckBoxes = FXCollections.observableSet();
@@ -350,6 +352,7 @@ public class MissionsController {
         setupData();
         selectedMission = "";
         singupBT.setDisable(true);
+        autoUpdate = new SimpleBooleanProperty(true);
 
         checkboxCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Checkbox>("selectedState"));
         missionNameCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("missionName"));
