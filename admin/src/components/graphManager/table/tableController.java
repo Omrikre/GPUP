@@ -268,22 +268,21 @@ public class tableController {
 
     // change panes methods
     @FXML void CYCLEmenuPr(ActionEvent event) {
-        clearTableCB(3);
+        clearTableCB();
 
         settingsBp.setCenter(cycleVBPane);
     }
     @FXML void PATHmenuPr(ActionEvent event) {
-        clearTableCB(1);
+        clearTableCB();
         settingsBp.setCenter(pathVBPane);
     }
     @FXML void WHATmenuPr(ActionEvent event) {
-        clearTableCB(2);
+        clearTableCB();
         settingsBp.setCenter(whatIfVBPane);
     }
 
-    private void clearTableCB(int tabNum) {
+    public void clearTableCB() {
         selectedCheckBoxes.forEach(checkBox -> checkBox.setSelected(false));
-        this.tabNum = tabNum;
     }
 
     // path tab

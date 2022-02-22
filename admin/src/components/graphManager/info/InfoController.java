@@ -55,6 +55,9 @@ public class InfoController {
         } else System.out.println("null fuck 2");
 
     }
+    public void cleanupData() {
+        infoByTargetGPController.resetData();
+    }
     public TargetDTOWithoutCB getTargetDTO(String targetName) {
         for (TargetDTOWithoutCB t : targets) {
             if (t.getTargetName() == targetName)

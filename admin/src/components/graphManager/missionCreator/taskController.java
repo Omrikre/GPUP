@@ -104,13 +104,20 @@ public class taskController {
         checkBoxCOL.setStyle( "-fx-alignment: CENTER;");
         targetTypeCOL.setStyle( "-fx-alignment: CENTER;");
 
-        //prefByTaskBPane.setCenter(compilationComponent);
-        //compilationBT.setSelected(true);
     }
     public void setMainController(AppController mainController) {this.mainController = mainController;}
 
     // data setup
     public void setupData(List<TargetDTOWithoutCB> targets) {
+        selectedCheckBoxes = FXCollections.observableSet();
+        unselectedCheckBoxes = FXCollections.observableSet();
+        numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
+
+        targetsMap = new HashMap<String, TargetDTO>();
+        taskProgress = 0;
+        pause = false;
+        infoWindowStillOpen = false;
+
         CheckBox tempCB;
         TargetDTO tempTDTO;
         List<TargetDTO> newTargetsLst = new ArrayList<>();
@@ -122,12 +129,21 @@ public class taskController {
             newTargetsLst.add(tempTDTO);
         }
 
+
+
+        simulationComponentController.cleanup();
+        compilationComponentController.cleanup();
+
+
         this.targetsList = newTargetsLst;
 
         OLTargets = FXCollections.observableArrayList(targetsList);
         setTable();
         rowClickData();
         loadBackComponents();
+        compilationBT.setSelected(false);
+        simulationBT.setSelected(false);
+        prefByTaskBPane.setCenter(null);
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { simulationComponentController.setSelectedNum(numCheckBoxesSelected); });
         numCheckBoxesSelected.addListener((obs, oldSelectedCount, newSelectedCount) -> { compilationComponentController.setSelectedNum(numCheckBoxesSelected); });
     }
@@ -151,14 +167,12 @@ public class taskController {
             }
         });
     }
-    private void cleanUpData() {
-        //TODO
-
-/*        resetTargetsStatus();
+    public void cleanUpData() {
+        //resetTargetsStatus();
         unselectAllCB();
         compilationComponentController.cleanup();
         simulationComponentController.cleanup();
-*/
+
     }
 
     @FXML void compilationPR(ActionEvent event) {

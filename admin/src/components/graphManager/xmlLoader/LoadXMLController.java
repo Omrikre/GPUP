@@ -289,8 +289,10 @@ public class LoadXMLController {
     }
 
     public void clear() {
-        if(!selectedCheckBoxes.isEmpty()) {
-            selectedCheckBoxes.forEach(cb -> cb.setSelected(false));
+        if(selectedCheckBoxes != null) {
+            if (!selectedCheckBoxes.isEmpty()) {
+                selectedCheckBoxes.forEach(cb -> cb.setSelected(false));
+            }
         }
     }
 }
