@@ -269,16 +269,18 @@ public class tableController {
     // change panes methods
     @FXML void CYCLEmenuPr(ActionEvent event) {
         clearTableCB();
-
         settingsBp.setCenter(cycleVBPane);
+        tabNum = 3;
     }
     @FXML void PATHmenuPr(ActionEvent event) {
         clearTableCB();
         settingsBp.setCenter(pathVBPane);
+        tabNum = 1;
     }
     @FXML void WHATmenuPr(ActionEvent event) {
         clearTableCB();
         settingsBp.setCenter(whatIfVBPane);
+        tabNum = 2;
     }
 
     public void clearTableCB() {
@@ -356,6 +358,8 @@ public class tableController {
     @FXML void pathClearTextPr(ActionEvent event) {
         PATHdepTextBox.clear();
         PATHreqTextBox.clear();
+        PATHAreqBLabel.setText("");
+        PATHAdepBLabel.setText("");
     }
     @FXML void pathGetPathPr(ActionEvent event) {
         pathClearTextBoxes();
