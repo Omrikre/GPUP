@@ -1,33 +1,36 @@
 package Engine.Tasks;
 
+import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Engine;
 import Engine.Enums.State;
 import Engine.Graph;
+import javafx.beans.property.IntegerProperty;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
 
+import static Engine.Engine.makeMStoString;
 import static java.lang.Thread.sleep;
 
 public class SimulationTask extends Task implements Runnable {
     private final int runTime;
     private final boolean randomRunTime;
-    private Graph.Target t, realTarget;
+    private TargetDTOWithoutCB t;
     private final int success;
     private final int successWithWarnings;
-    private String javac, log;
-    private Engine e;
+    private String javac="", log;
     private int amountOfTargets;
+    private IntegerProperty threadsLeft;
 
-    public SimulationTask(int amountOfTargets, Engine e, int runTime, boolean randomRunTime, Graph.Target t, Graph.Target realTarget, int success, int successWithWarnings) {
+    public SimulationTask(IntegerProperty threadsLeft, int amountOfTargets, int runTime, boolean randomRunTime, TargetDTOWithoutCB t,
+                          int success, int successWithWarnings) {
         super("Simulation");
+        this.threadsLeft=threadsLeft;
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
         this.t = t;
-        this.realTarget = realTarget;
         this.success = success;
         this.successWithWarnings = successWithWarnings;
-        this.e = e;
         this.amountOfTargets = amountOfTargets;
     }
 
@@ -40,30 +43,44 @@ public class SimulationTask extends Task implements Runnable {
             sleepTime = rand.nextInt(runTime);
         } else sleepTime = runTime;
         log = "going to sleep for " + sleepTime + " ms";
-        realTarget.setStartingTime(System.currentTimeMillis());
-        t.setStartingTime(System.currentTimeMillis());
+        long startTime=(System.currentTimeMillis());
         try {
             sleep(sleepTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         log += "\nwoke up!";
-        e.updateLog(log);
-        e.updateJavac("");
-        e.createTargetFileByName(t.getName());
-        try {
-            e.saveTargetInfoToFile(log);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        String directoryPath="c:\\gpup-working-dir" + "\\" + "Simulation" + " - " + makeMStoString(System.currentTimeMillis()).replace(":", ".");
+        File dir = new File(directoryPath);
+        dir.mkdirs();
+        try (Writer out = new BufferedWriter(
+                new OutputStreamWriter(
+                        new FileOutputStream((directoryPath + "\\" + t.getTargetName() + ".log"), true)))) {
+            out.write(log + "\n" + javac + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        e.progressCounter++;
-        e.calculateProgress(amountOfTargets);
-        realTarget.setEndingTime(System.currentTimeMillis());
-        t.setEndingTime(System.currentTimeMillis());
-        realTarget.setTime();
-        t.setTime();
-        t.setTargetStateByParameters(success, successWithWarnings);
-        realTarget.setTargetStateByParameters(success, successWithWarnings);
+//        .progressCounter++; //TODO progress???? how
+//        e.calculateProgress(amountOfTargets);
+        long endTime=(System.currentTimeMillis());
+        t.setTargetTime(endTime-startTime);
+        setTargetStateByParameters(success, successWithWarnings);
+        threadsLeft.setValue(threadsLeft.getValue()+1);
+    }
+
+    private void setTargetStateByParameters(int success, int successWithWarnings) {
+        Random rand = new Random();
+        float magicNumber = rand.nextFloat();
+        if ((float) (success) / 100 >= magicNumber) {
+            magicNumber = rand.nextFloat();
+            if ((float) (successWithWarnings) >= magicNumber) {
+                t.setTargetState(State.FINISHED_WARNINGS);
+            } else {
+                t.setTargetState(State.FINISHED_SUCCESS); //TODO - in servlet after sending, dont forget to set other targets states!
+            }
+        } else {
+            t.setTargetState(State.FINISHED_FAILURE);
+        }
     }
 
     /*public String simulationStartInfo(TargetDTO target) {

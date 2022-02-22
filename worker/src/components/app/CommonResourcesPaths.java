@@ -37,7 +37,7 @@ public class CommonResourcesPaths {
 
     // refresh
     public final static int REFRESH_RATE = 1000;
-
+    public final static int TARGET_REFRESH_RATE=2000;
 
 
 }

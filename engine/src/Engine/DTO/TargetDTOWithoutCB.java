@@ -172,23 +172,18 @@ public class TargetDTOWithoutCB {
     }
 
     public boolean isRoot() {
-        if(totalRequierments == 0)
-            return true;
-        else
-            return false;
+        return targetLocation.equals(Location.ROOT);
     }
 
     public boolean isLeaf() {
-        if(totalDependencies == 0)
-            return true;
-        else
-            return false;
+        return targetLocation.equals(Location.LEAF);
     }
 
     public boolean isIndependent() {
-        if (isLeaf() && isRoot())
-            return true;
-        else
-            return false;
+        return targetLocation.equals(Location.INDEPENDENT);
+    }
+
+    public boolean isMiddle(){
+        return targetLocation.equals(Location.MIDDLE);
     }
 }

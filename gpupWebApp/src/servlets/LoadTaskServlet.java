@@ -2,6 +2,8 @@ package servlets;
 
 import Engine.DTO.*;
 import Engine.Engine;
+import Engine.Enums.State;
+import Engine.Graph;
 import Engine.Enums.Location;
 import Engine.Enums.MissionState;
 import Engine.GraphManager;
@@ -56,7 +58,9 @@ public class LoadTaskServlet extends HttpServlet {
                 Map<String, TargetDTOWithoutCB> targetDTOMap = new HashMap<>();
                 List<String> targets = ServletUtils.getTaskManager(getServletContext()).getMissionByName(missionName).getTargets();
                 for (String s : targets) {
-                    targetDTOMap.put(s, ServletUtils.getGraphManager(getServletContext()).getTargetDTO(ServletUtils.getTaskManager(getServletContext()).getMissionByName(missionName).getGraphName(), s));
+                    TargetDTOWithoutCB t = ServletUtils.getGraphManager(getServletContext()).getTargetDTO(ServletUtils.getTaskManager(getServletContext()).getMissionByName(missionName).getGraphName(), s);
+                    t.setTargetState(State.FROZEN);
+                    targetDTOMap.put(s, t);
                 }
                 ServletUtils.getTaskManager(getServletContext()).addTaskFromScratch(missionName, newName, creatorName, targetDTOMap);
             } else if (incremental) {
@@ -65,12 +69,15 @@ public class LoadTaskServlet extends HttpServlet {
                 Gson gson = new Gson();
                 String[] targets = gson.fromJson(req.getParameter("targets-array"), String[].class);
                 List<String> targestList = Arrays.asList(targets);
-                Map<Location, Integer> locations = graphManager.getGraphOfRunnableTargetsFromArrayAndGraph(graphName, targestList).howManyTargetsInEachLocation();
+                Graph miniGraph = graphManager.getGraphOfRunnableTargetsFromArrayAndGraph(graphName, targestList);
+                Map<Location, Integer> locations = miniGraph.howManyTargetsInEachLocation();
                 MissionDTOWithoutCB task = new MissionDTOWithoutCB(amountOfTargets, targestList, src, compilationFolder, runtime, randomRunTime, success, successWithWarnings, missionName, MissionState.READY.toString(), 0, 0,
                         price, creatorName, graphName, 0, 0, locations.get(Location.INDEPENDENT), locations.get(Location.LEAF), locations.get(Location.MIDDLE), locations.get(Location.ROOT));
                 Map<String, TargetDTOWithoutCB> targetDTOMap = new HashMap<>();
-                for (String s : targets) {
-                    targetDTOMap.put(s, ServletUtils.getGraphManager(getServletContext()).getTargetDTO(graphName, s));
+                for (Graph.Target s : miniGraph.getTargets().values()) {
+                    TargetDTOWithoutCB t = new TargetDTOWithoutCB(s);
+                    t.setTargetState(State.FROZEN);
+                    targetDTOMap.put(s.getName(), t);
                 }
                 ServletUtils.getTaskManager(getServletContext()).addTask(task, targetDTOMap);
             }

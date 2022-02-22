@@ -2,11 +2,17 @@ package components.missions;
 
 import Engine.DTO.MissionDTO;
 import Engine.DTO.MissionDTOWithoutCB;
+import Engine.DTO.TargetDTOWithoutCB;
+import Engine.Enums.State;
+import Engine.Tasks.CompilationTask;
+import Engine.Tasks.SimulationTask;
 import components.app.AppController;
+import http.HttpClientUtil;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -16,48 +22,340 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.util.List;
-import java.util.Timer;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static Engine.Engine.makeMStoString;
+import static components.app.CommonResourcesPaths.TARGET_REFRESH_RATE;
+import static components.app.HttpResourcesPaths.*;
 
 public class MissionsController {
 
-    @FXML private TableView<MissionDTO> missionTV;
-    @FXML private TableColumn<MissionDTO, Checkbox> checkboxCOL;
-    @FXML private TableColumn<?, ?> yourStatusCOL; //TODO
-    @FXML private TableColumn<MissionDTO, String> missionNameCOL;
-    @FXML private TableColumn<MissionDTO, String> missionStatusCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionProgressCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionWorkersCOL;
-    @FXML private TableColumn<MissionDTO, Integer> missionPriceCOL;
-    @FXML private TableColumn<MissionDTO, String> missionCreatorCOL;
-    @FXML private TableColumn<MissionDTO, String> graphNameCOL;
-    @FXML private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
-    @FXML private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeIndepenCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeLeafCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeMiddleCOL;
-    @FXML private TableColumn<MissionDTO, Integer> typeRootCOL;
-    @FXML private Button startBT;
-    @FXML private Button pauseBT;
-    @FXML private Button resumeBT;
-    @FXML private Button stopBT;
-    @FXML private Button singupBT;
+    @FXML
+    private TableView<MissionDTO> missionTV;
+    @FXML
+    private TableColumn<MissionDTO, Checkbox> checkboxCOL;
+    @FXML
+    private TableColumn<?, ?> yourStatusCOL; //TODO
+    @FXML
+    private TableColumn<MissionDTO, String> missionNameCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionStatusCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionProgressCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionWorkersCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> missionPriceCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> missionCreatorCOL;
+    @FXML
+    private TableColumn<MissionDTO, String> graphNameCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> targetStatFinishedCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> targetStatWaitingCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeIndepenCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeLeafCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeMiddleCOL;
+    @FXML
+    private TableColumn<MissionDTO, Integer> typeRootCOL;
+    @FXML
+    private Button startBT;
+    @FXML
+    private Button pauseBT;
+    @FXML
+    private Button resumeBT;
+    @FXML
+    private Button stopBT;
+    @FXML
+    private Button singupBT;
 
 
-    @FXML void singupPR(ActionEvent event) {} //send to server
-    @FXML void pausePR(ActionEvent event) {}
-    @FXML void resumePR(ActionEvent event) {}
-    @FXML void startPR(ActionEvent event) {}
-    @FXML void stopPR(ActionEvent event) {} //send to server
+    @FXML
+    void singupPR(ActionEvent event) { //send to server
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name", selectedMission)
+                .addQueryParameter("add-worker", "true")
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println(e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println(("signup Fail code: " + response.code()) + " " + responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        System.out.println("successfully added worker to mission");
+                    });
+                }
+            }
+        });
+    }
+
+    @FXML
+    void pausePR(ActionEvent event) {
+        //pause=true
+        pause = true;
+    }
+
+    @FXML
+    void resumePR(ActionEvent event) {
+        //pause=false
+        pause = false;
+    }
+
+    @FXML
+    void startPR(ActionEvent event) {
+        pause = false;
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name", selectedMission)
+                .addQueryParameter("sign-worker", "true")
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println(e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println(("signup Fail code: " + response.code()) + " " + responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+
+                        System.out.println("successfully added worker to mission");
+                    });
+                }
+            }
+        });
+    }
+
+    @FXML
+    void stopPR(ActionEvent event) { //send to server
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("name", selectedMission)
+                .addQueryParameter("add-worker", "false")
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println(e.getMessage())
+                );
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    Platform.runLater(() ->
+                            System.out.println(("signup Fail code: " + response.code()) + " " + responseBody)
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                        //stop the mission.
+                        System.out.println("successfully removed worker from mission!");
+                    });
+                }
+            }
+        });
+    }
+
+    private void getRunnableTarget(BooleanProperty autoUpdate) { //TODO - close
+        this.autoUpdate = autoUpdate;
+        runnableTargetRefresher = new RunnableTargetRefresher(
+                threadsLeft, selectedMission, this.autoUpdate, this::runTask);
+        targetTimer = new Timer();
+        targetTimer.schedule(runnableTargetRefresher, TARGET_REFRESH_RATE, TARGET_REFRESH_RATE);
+    }
+
+
+    public void runTask(TargetDTOWithoutCB targetDTOWithoutCB) {
+        if (targetDTOWithoutCB == null)
+            return;
+        if (pause)
+            return;
+
+        else {
+
+            final MissionDTOWithoutCB[] m = new MissionDTOWithoutCB[1];
+            String finalUrl = HttpUrl
+                    .parse(MISSION_LIST)
+                    .newBuilder()
+                    .addQueryParameter("name", selectedMission)
+                    .build()
+                    .toString();
+
+            HttpClientUtil.runAsync(finalUrl, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Platform.runLater(() ->
+                            System.out.println(e.getMessage())
+                    );
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.code() != 200) {
+                        String responseBody = response.body().string();
+                        Platform.runLater(() ->
+                                System.out.println(("mission Fail code: " + response.code()) + " " + responseBody)
+                        );
+                    } else {
+                        Platform.runLater(() -> {
+                            try {
+                                m[0] = GSON.fromJson(response.body().string(), MissionDTOWithoutCB.class);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+                }
+            });
+
+            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
+                    60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+            if (m[0].getCompilationFolder() == null) {
+
+                //run sim
+                targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
+                threadsLeft.setValue(threadsLeft.getValue() - 1);
+                threadPoolExecutor.execute(new SimulationTask(threadsLeft, m[0].getAmountOfTargets(), m[0].getRunTime(), m[0].isRandomRunTime(), targetDTOWithoutCB,
+                        m[0].getSuccess(), m[0].getSuccessWithWarnings()));
+            } else {
+                //run comp
+                targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
+                threadsLeft.setValue(threadsLeft.getValue() - 1);
+                threadPoolExecutor.execute(new CompilationTask(threadsLeft, m[0].getAmountOfTargets(), m[0].getSrc(), m[0].getCompilationFolder(), targetDTOWithoutCB));
+            }
+            threadPoolExecutor.shutdown();
+            while (!threadPoolExecutor.isTerminated()) {
+                System.out.println("NOT TERMINATED");
+            }
+
+            //upload updated target to server
+            String json = GSON.toJson(targetDTOWithoutCB);
+            //first to task server!
+            String taskUrl = HttpUrl
+                    .parse(MISSION_LIST)
+                    .newBuilder()
+                    .addQueryParameter("upload", "true")
+                    .addQueryParameter("name", selectedMission)
+                    .addQueryParameter("json", json)
+                    .build()
+                    .toString();
+
+            HttpClientUtil.runAsync(taskUrl, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Platform.runLater(() ->
+                            System.out.println(e.getMessage())
+                    );
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.code() != 200) {
+                        String responseBody = response.body().string();
+                        Platform.runLater(() ->
+                                System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
+                        );
+                    } else {
+                        Platform.runLater(() -> {
+                            System.out.println("uploaded successfully.");
+                        });
+                    }
+                }
+            });
+//            //upload task to graph server: //TODO - should we do this?
+//            String graphUrl = HttpUrl
+//                    .parse(GRAPH_LIST)
+//                    .newBuilder()
+//                    .addQueryParameter("upload", "true")
+//                                .addQueryParameter("name", selectedMission)
+//                    .addQueryParameter("json", json)
+//                    .build()
+//                    .toString();
+//
+//            HttpClientUtil.runAsync(graphUrl, new Callback() {
+//                @Override
+//                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                    Platform.runLater(() ->
+//                            System.out.println(e.getMessage())
+//                    );
+//                }
+//
+//                @Override
+//                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//                    if (response.code() != 200) {
+//                        String responseBody = response.body().string();
+//                        Platform.runLater(() ->
+//                                System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
+//                        );
+//                    } else {
+//                        Platform.runLater(() -> {
+//                            System.out.println("uploaded successfully!");
+//                        });
+//                    }
+//                }
+//            });
+        }
+    }
+
+    private IntegerProperty threadsLeft; // integer property threads --- //TODO start at numthreads from maincontroller
+    private Timer targetTimer;
+    private RunnableTargetRefresher runnableTargetRefresher;
     private int numOfMissionsInTable;
     private String selectedMission;
     private IntegerBinding numCheckBoxesSelected;
     private ObservableList<MissionDTO> OLMissions;
     private ObservableSet<CheckBox> selectedCheckBoxes;
     private ObservableSet<CheckBox> unselectedCheckBoxes;
+    private boolean pause = false;
 
     private String selectedGraph;
     private Timer timer;

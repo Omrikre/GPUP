@@ -1,13 +1,16 @@
 package Engine.Tasks;
 
+import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Engine;
 import Engine.Enums.State;
 import Engine.Graph;
+import javafx.beans.property.IntegerProperty;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static Engine.Engine.makeMStoString;
 
 public class CompilationTask extends Task implements Runnable {
     private String src; //check if exists!
@@ -15,19 +18,19 @@ public class CompilationTask extends Task implements Runnable {
     private String FQN;
     private String javac, log;
     private Integer progressCount;
-    private Graph.Target target, realTarget;
-    private Engine e;
+    private TargetDTOWithoutCB target;
     private int amountOfTargets;
+    private IntegerProperty threadsLeft;
 
-    public CompilationTask(int amountOfTargets, Engine e, String src, String compilationFolder, Graph.Target target, Graph.Target realTarget) {
+
+    public CompilationTask(IntegerProperty threadsLeft, int amountOfTargets, String src, String compilationFolder, TargetDTOWithoutCB target) {
         super("Compilation");
+        this.threadsLeft=threadsLeft;
         this.src = src;
         this.compilationFolder = compilationFolder;
-        this.target = target;
-        this.realTarget = realTarget;
-        this.e = e;
+       this.target=target;
         this.amountOfTargets = amountOfTargets;
-        FQN = realTarget.getInfo();
+        FQN = target.getTargetInfo();
         //convert to real path
         FQN = FQN.replace(".", "\\");
         FQN += ".java";
@@ -45,8 +48,7 @@ public class CompilationTask extends Task implements Runnable {
         processBuilder.directory(new File(src));
         //processBuilder.command("javac", "-d", compilationFolder, "-cp", compilationFolder, FQN);
         Process result = null;
-        realTarget.setStartingTime(System.currentTimeMillis());
-        target.setStartingTime(System.currentTimeMillis());
+        long startTime=(System.currentTimeMillis());
         try {
             result = processBuilder.start();
         } catch (IOException e) {
@@ -58,32 +60,30 @@ public class CompilationTask extends Task implements Runnable {
             e.printStackTrace();
         }
 
-        e.progressCounter++;
-        e.calculateProgress(amountOfTargets);
-        realTarget.setEndingTime(System.currentTimeMillis());
-        target.setEndingTime(System.currentTimeMillis());
-        realTarget.setTime();
-        target.setTime();
+//        e.progressCounter++; //TODO progress??? how
+//        e.calculateProgress(amountOfTargets);
+        long endTime=(System.currentTimeMillis());
+        target.setTargetTime(endTime-startTime);
         javac = "The success line: " + result.getOutputStream().toString();
         if (result.exitValue() != 0)
             javac = "The failure line: " + result.getErrorStream().toString();
-        log = "the file being compiled: " + target.getInfo() + "\n"
+        log = "the file being compiled: " + target.getTargetInfo() + "\n"
                 + "The CMD line about to be excecuted: " + "javac -d " + compilationFolder + " -cp " + compilationFolder + " " + FQN + "\n"
-                + "how much time the compiler worked: " + target.getTime() + "ms";
-        e.updateJavac(javac);
-        e.updateLog(log);
-        e.createTargetFileByName(target.getName());
-        try {
-            e.saveTargetInfoToFile(log + "\n" + javac);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+                + "how much time the compiler worked: " + target.getTargetTime() + "ms";
+        String directoryPath="c:\\gpup-working-dir" + "\\" + "Compilation" + " - " + makeMStoString(System.currentTimeMillis()).replace(":", ".");
+        File dir = new File(directoryPath);
+        dir.mkdirs();
+        try (Writer out = new BufferedWriter(
+                new OutputStreamWriter(
+                        new FileOutputStream((directoryPath + "\\" + target.getTargetName() + ".log"), true)))) {
+            out.write(log + "\n" + javac + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         if (result.exitValue() == 0) {
-            target.setFinishedTargetState(State.FINISHED_SUCCESS);
-            realTarget.setFinishedTargetState(State.FINISHED_SUCCESS);
+            target.setTargetState(State.FINISHED_SUCCESS);
         } else {
-            target.setFinishedTargetState(State.FINISHED_FAILURE);
-            realTarget.setFinishedTargetState(State.FINISHED_FAILURE);
+            target.setTargetState(State.FINISHED_FAILURE);
         }
 
     }
