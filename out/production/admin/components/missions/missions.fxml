@@ -34,7 +34,8 @@
                       <TableColumn fx:id="checkboxCOL" editable="false" minWidth="11.0" prefWidth="29.0" resizable="false" />
                       <TableColumn fx:id="missionNameCOL" editable="false" minWidth="60.0" prefWidth="128.0" text="Mission Name" />
                         <TableColumn fx:id="missionStatusCOL" prefWidth="105.0" text="Status" />
-                        <TableColumn fx:id="missionProgressCOL" prefWidth="75.0" text="Progress" />
+                        <TableColumn fx:id="missionTypeCOL" minWidth="50.0" prefWidth="74.0" text="Mission Type" />
+                        <TableColumn fx:id="missionProgressCOL" minWidth="30.0" prefWidth="28.0" text="Progress" />
                         <TableColumn fx:id="missionWorkersCOL" editable="false" minWidth="60.0" prefWidth="75.0" text="Workers" />
                         <TableColumn fx:id="missionPriceCOL" editable="false" minWidth="60.0" prefWidth="85.0" text="Price" />
                         <TableColumn fx:id="missionCreatorCOL" editable="false" minWidth="60.0" prefWidth="129.0" text="Creator" />
