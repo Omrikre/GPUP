@@ -6,6 +6,7 @@ import Engine.DTO.TargetDTOWithoutCB;
 import Engine.Enums.State;
 import Engine.Tasks.CompilationTask;
 import Engine.Tasks.SimulationTask;
+import com.google.gson.Gson;
 import components.app.AppController;
 import http.HttpClientUtil;
 import javafx.application.Platform;
@@ -245,6 +246,7 @@ public class MissionsController {
         if (pause)
             return;
         else {
+            System.out.println("1");
             String finalUrl = HttpUrl
                     .parse(MISSION_LIST)
                     .newBuilder()
@@ -256,7 +258,7 @@ public class MissionsController {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     Platform.runLater(() ->
-                            System.out.println(e.getMessage())
+                            System.out.println("FAIL " + e.getMessage())
                     );
                 }
 
@@ -270,7 +272,9 @@ public class MissionsController {
                     } else {
                         Platform.runLater(() -> {
                             try {
-                                missionM = GSON.fromJson(response.body().string(), MissionDTOWithoutCB.class);
+                                Gson gson = new Gson();
+                                String responseBody = response.body().string();
+                                missionM = gson.fromJson(responseBody, MissionDTOWithoutCB.class);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -278,6 +282,7 @@ public class MissionsController {
                     }
                 }
             });
+
 
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
