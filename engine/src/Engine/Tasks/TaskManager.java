@@ -20,6 +20,10 @@ public class TaskManager {
         workersMissionsMap = new HashMap<>();
     }
 
+    public synchronized MissionDTOWithoutCB getMissionForWorker(String wName, String mName) {
+        return getMissionByNameFromList(workersMissionsMap.get(wName), mName);
+    }
+
     public synchronized void updateTarget(String mName, TargetDTOWithoutCB t) {
         targetsMap.get(mName).get(t.getTargetName()).setTargetState(t.getTargetState());
         targetsMap.get(mName).get(t.getTargetName()).setTargetTime(t.getTargetTime());
