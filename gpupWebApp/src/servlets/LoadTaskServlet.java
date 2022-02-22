@@ -31,14 +31,28 @@ public class LoadTaskServlet extends HttpServlet {
             Integer amountOfTargets = Integer.parseInt(req.getParameter("amount-of-targets"));
             String src = req.getParameter("src"); //source folder
             String compilationFolder = req.getParameter("compilation-folder");
-            Integer runtime = Integer.parseInt(req.getParameter("runtime"));
+            String r = req.getParameter("runtime");
+            Integer runtime;
+            if (r != null)
+                runtime = Integer.parseInt(r);
+            else runtime = 0;
             Boolean randomRunTime;
             String temp = req.getParameter("random-runtime");
-            if (temp.equals(String.valueOf(true)))
-                randomRunTime = true;
-            else randomRunTime = false;
-            Integer success = Integer.parseInt(req.getParameter("success"));
-            Integer successWithWarnings = Integer.parseInt(req.getParameter("success-warnings"));
+            if (temp != null) {
+                if (temp.equals(String.valueOf(true)))
+                    randomRunTime = true;
+                else randomRunTime = false;
+            } else randomRunTime = false;
+            String ss = req.getParameter("success");
+            Integer success;
+            if (ss != null)
+                success = Integer.parseInt(ss);
+            else success = 0;
+            String sw = req.getParameter("success-warnings");
+            Integer successWithWarnings;
+            if (sw != null)
+                successWithWarnings = Integer.parseInt(sw);
+            else successWithWarnings = 0;
             String missionName = req.getParameter("name");
             //String creatorName = req.getParameter("creator");
             String creatorName = SessionUtils.getUsername(req);

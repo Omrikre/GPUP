@@ -163,7 +163,7 @@ public class MissionsController {
                     );
                 } else {
                     Platform.runLater(() -> {
-
+                        getRunnableTarget(autoUpdate);
                         System.out.println("successfully added worker to mission");
                     });
                 }
