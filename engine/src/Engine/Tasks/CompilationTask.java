@@ -20,12 +20,10 @@ public class CompilationTask extends Task implements Runnable {
     private Integer progressCount;
     private TargetDTOWithoutCB target;
     private int amountOfTargets;
-    private IntegerProperty threadsLeft;
 
 
-    public CompilationTask(IntegerProperty threadsLeft, int amountOfTargets, String src, String compilationFolder, TargetDTOWithoutCB target) {
+    public CompilationTask( int amountOfTargets, String src, String compilationFolder, TargetDTOWithoutCB target) {
         super("Compilation");
-        this.threadsLeft=threadsLeft;
         this.src = src;
         this.compilationFolder = compilationFolder;
        this.target=target;
@@ -60,8 +58,6 @@ public class CompilationTask extends Task implements Runnable {
             e.printStackTrace();
         }
 
-//        e.progressCounter++; //TODO progress??? how
-//        e.calculateProgress(amountOfTargets);
         long endTime=(System.currentTimeMillis());
         target.setTargetTime(endTime-startTime);
         javac = "The success line: " + result.getOutputStream().toString();

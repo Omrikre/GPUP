@@ -20,12 +20,10 @@ public class SimulationTask extends Task implements Runnable {
     private final int successWithWarnings;
     private String javac="", log;
     private int amountOfTargets;
-    private IntegerProperty threadsLeft;
 
-    public SimulationTask(IntegerProperty threadsLeft, int amountOfTargets, int runTime, boolean randomRunTime, TargetDTOWithoutCB t,
+    public SimulationTask( int amountOfTargets, int runTime, boolean randomRunTime, TargetDTOWithoutCB t,
                           int success, int successWithWarnings) {
         super("Simulation");
-        this.threadsLeft=threadsLeft;
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
         this.t = t;
@@ -60,12 +58,9 @@ public class SimulationTask extends Task implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        .progressCounter++; //TODO progress???? how
-//        e.calculateProgress(amountOfTargets);
         long endTime=(System.currentTimeMillis());
         t.setTargetTime(endTime-startTime);
         setTargetStateByParameters(success, successWithWarnings);
-        threadsLeft.setValue(threadsLeft.getValue()+1);
     }
 
     private void setTargetStateByParameters(int success, int successWithWarnings) {

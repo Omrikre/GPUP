@@ -27,11 +27,12 @@ public class MissionDTOWithoutCB {
     private Integer leafCount;
     private Integer middleCount;
     private Integer rootCount;
+    private int progressCounter = 0;
 
     public MissionDTOWithoutCB(Integer amountOfTargets, List<String> targets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
-        this.targets=targets;
-        this.src=src;
+        this.targets = targets;
+        this.src = src;
         this.compilationFolder = compilationFolder;
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
@@ -140,6 +141,11 @@ public class MissionDTOWithoutCB {
         this.progress = progress;
     }
 
+    public void setProgress() {
+        progressCounter++;
+        progress = (progressCounter / 100) * amountOfTargets;
+    }
+
     public Integer getWorkers() {
         return workers;
     }
@@ -221,25 +227,25 @@ public class MissionDTOWithoutCB {
     }
 
     @Override
-        public String toString() {
-            return "MissionDTO{" +
-                    "amountOfTargets=" + amountOfTargets +
-                    ", compilationFolder='" + compilationFolder + '\'' +
-                    ", runTime=" + runTime +
-                    ", randomRunTime=" + randomRunTime +
-                    ", success=" + success +
-                    ", successWithWarnings=" + successWithWarnings +
-                    ", missionName='" + missionName + '\'' +
-                    ", status=" + status +
-                    ", progress=" + progress +
-                    ", workers=" + workers +
-                    ", totalPrice=" + totalPrice +
-                    ", creatorName='" + creatorName + '\'' +
-                    ", graphName='" + graphName + '\'' +
-                    ", executedTargets=" + executedTargets +
-                    ", waitingTargets=" + waitingTargets +
-                    '}';
-        }
+    public String toString() {
+        return "MissionDTO{" +
+                "amountOfTargets=" + amountOfTargets +
+                ", compilationFolder='" + compilationFolder + '\'' +
+                ", runTime=" + runTime +
+                ", randomRunTime=" + randomRunTime +
+                ", success=" + success +
+                ", successWithWarnings=" + successWithWarnings +
+                ", missionName='" + missionName + '\'' +
+                ", status=" + status +
+                ", progress=" + progress +
+                ", workers=" + workers +
+                ", totalPrice=" + totalPrice +
+                ", creatorName='" + creatorName + '\'' +
+                ", graphName='" + graphName + '\'' +
+                ", executedTargets=" + executedTargets +
+                ", waitingTargets=" + waitingTargets +
+                '}';
     }
+}
 
 

@@ -259,23 +259,25 @@ public class MissionsController {
 
             ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
                     60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+            threadsLeft.setValue(threadsLeft.getValue() - 1);
             if (m[0].getCompilationFolder() == null) {
-
                 //run sim
                 targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
-                threadsLeft.setValue(threadsLeft.getValue() - 1);
-                threadPoolExecutor.execute(new SimulationTask(threadsLeft, m[0].getAmountOfTargets(), m[0].getRunTime(), m[0].isRandomRunTime(), targetDTOWithoutCB,
+                threadPoolExecutor.execute(new SimulationTask(m[0].getAmountOfTargets(), m[0].getRunTime(), m[0].isRandomRunTime(), targetDTOWithoutCB,
                         m[0].getSuccess(), m[0].getSuccessWithWarnings()));
             } else {
                 //run comp
                 targetDTOWithoutCB.setTargetState(State.IN_PROCESS);
-                threadsLeft.setValue(threadsLeft.getValue() - 1);
-                threadPoolExecutor.execute(new CompilationTask(threadsLeft, m[0].getAmountOfTargets(), m[0].getSrc(), m[0].getCompilationFolder(), targetDTOWithoutCB));
+                threadPoolExecutor.execute(new CompilationTask(m[0].getAmountOfTargets(), m[0].getSrc(), m[0].getCompilationFolder(), targetDTOWithoutCB));
             }
+            threadsLeft.setValue(threadsLeft.getValue() + 1);
             threadPoolExecutor.shutdown();
             while (!threadPoolExecutor.isTerminated()) {
                 System.out.println("NOT TERMINATED");
             }
+            //update progress
+            m[0].setProgress();
+            //TODO - give price to worker. where is the price for each target, in the graphDTO? maybe add to missionDTO? (only has totalprice)
 
             //upload updated target to server
             String json = GSON.toJson(targetDTOWithoutCB);
@@ -311,38 +313,6 @@ public class MissionsController {
                     }
                 }
             });
-//            //upload task to graph server: //TODO - should we do this?
-//            String graphUrl = HttpUrl
-//                    .parse(GRAPH_LIST)
-//                    .newBuilder()
-//                    .addQueryParameter("upload", "true")
-//                                .addQueryParameter("name", selectedMission)
-//                    .addQueryParameter("json", json)
-//                    .build()
-//                    .toString();
-//
-//            HttpClientUtil.runAsync(graphUrl, new Callback() {
-//                @Override
-//                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                    Platform.runLater(() ->
-//                            System.out.println(e.getMessage())
-//                    );
-//                }
-//
-//                @Override
-//                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                    if (response.code() != 200) {
-//                        String responseBody = response.body().string();
-//                        Platform.runLater(() ->
-//                                System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
-//                        );
-//                    } else {
-//                        Platform.runLater(() -> {
-//                            System.out.println("uploaded successfully!");
-//                        });
-//                    }
-//                }
-//            });
         }
     }
 
@@ -419,7 +389,7 @@ public class MissionsController {
                 }
                 configureCheckBox(tempCheckBox, mission.getMissionName(), mission.getStatus());
                 tempDTO = new MissionDTO(mission.getAmountOfTargets(), null, mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
-                        , mission.getStatus(), mission.getProgress().toString()+"%", mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
+                        , mission.getStatus(), mission.getProgress().toString() + "%", mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
                         mission.getExecutedTargets(), mission.getWaitingTargets(), tempCheckBox, mission.getIndependenceCount(), mission.getLeafCount(), mission.getMiddleCount(), mission.getRootCount());
 
                 newMissionList.add(tempDTO);
