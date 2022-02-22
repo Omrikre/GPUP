@@ -142,7 +142,19 @@ public class GraphController {
 
     public void disableAllHeaderBt(boolean bool) {headerCompController.makeButtonsDisable(bool);}
 
-    public void showXMLManagerPane() { graphBP.setCenter(XMLComp); }
+    public void showXMLManagerPane() {
+        graphBP.setCenter(XMLComp);
+        //resetDataInAllPanes();
+    }
+
+    private void resetDataInAllPanes() {
+        infoComponentController.cleanupData();
+        tableComponentController.initialize();
+        tableComponentController.clearTableCB();
+        missionCreateComponentController.initialize();
+        missionCreateComponentController.cleanUpData();
+    }
+
     public void showGraphInfoPane() {
         graphBP.setCenter(infoComponent);
         if(!cycleMsgShownAlready && graphContainsCycle) {
@@ -192,6 +204,8 @@ public class GraphController {
                             TargetDTOWithoutCB[] targets = GSON.fromJson(responseBody, TargetDTOWithoutCB[].class);
                             infoComponentController.setupData(selectedGraphDTO, Arrays.asList(targets));
                             tableComponentController.setupData(Arrays.asList(targets));
+                            missionCreateComponentController.initialize();
+                            missionCreateComponentController.loadBackComponents();
                             missionCreateComponentController.setPrice(selectedGraphDTO.getCompPricePerTarget(), selectedGraphDTO.getSimPricePerTarget());
                             missionCreateComponentController.setupData(Arrays.asList(targets));
                         } catch (IOException e) {

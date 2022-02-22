@@ -62,8 +62,10 @@ public class NewMissionCreatorController {
     public void setMainController(AppController controller) { mainController = controller; }
 
     private void sendNewMissionRequest() {
-        if(createNewMissionSucceed)
+        if(createNewMissionSucceed) {
             this.mainController.closeCreateNewMissionWin();
+            return;
+        }
 
         MsgLB.setText("");
         createBT.setDisable(true);

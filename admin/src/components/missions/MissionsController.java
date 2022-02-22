@@ -7,6 +7,7 @@ import Engine.DTO.MissionDTOWithoutCB;
 import Engine.DTO.TargetDTO;
 import components.app.AppController;
 import components.graphManager.xmlLoader.LoadXMLRefresher;
+import http.HttpClientUtil;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
@@ -21,9 +22,14 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.HttpUrl;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -88,6 +94,7 @@ public class MissionsController {
     private BooleanProperty autoUpdate;
     private int numOfGraphs;
     private AppController mainController;
+    private String httpUrl;
 
     @FXML
     public void initialize() {
@@ -243,50 +250,73 @@ public class MissionsController {
 
     @FXML
     void pausePR(ActionEvent event) {
-        String finalUrl = HttpUrl
+        httpUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
                 .addQueryParameter("name", selectedMission)
                 .addQueryParameter("status", "Paused")
                 .build()
                 .toString();
+        sendRequest();
     }
 
     @FXML
     void resumePR(ActionEvent event) {
-        String finalUrl = HttpUrl
+        httpUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
                 .addQueryParameter("name", selectedMission)
                 .addQueryParameter("status", "Ready")
                 .build()
                 .toString();
+        sendRequest();
     }
 
     @FXML
     void startPR(ActionEvent event) {
-        String finalUrl = HttpUrl
+        httpUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
                 .addQueryParameter("name", selectedMission)
                 .addQueryParameter("status", "Execution")
                 .build()
                 .toString();
+        sendRequest();
     }
 
     @FXML
     void stopPR(ActionEvent event) {
-        String finalUrl = HttpUrl
+        httpUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
                 .addQueryParameter("name", selectedMission)
                 .addQueryParameter("status", "Stopped")
                 .build()
                 .toString();
+        sendRequest();
     }
+
+    private void sendRequest() {
+
+        HttpClientUtil.runAsync(httpUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                System.out.println("error");
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                System.out.println("ok");
+        }});
+    }
+
+
+
 
     public void setMainController(AppController appController) {
         this.mainController = appController;
     }
+
+
 
 }
