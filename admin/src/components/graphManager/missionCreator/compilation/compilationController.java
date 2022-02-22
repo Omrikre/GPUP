@@ -78,6 +78,7 @@ public class compilationController {
         depOnBT.setDisable(true);
         reqForBT.setDisable(true);
         priceLB.setText("-");
+        checkIfToOpenRunBT();
 
 
         useWhatIfBT.setOnAction((event) -> {
@@ -298,7 +299,7 @@ public class compilationController {
     }
 
     private void checkIfToOpenRunBT() {
-        runBT.setDisable(inputPath == null || outputPath == null);
+        runBT.setDisable(inputPath == null || outputPath == null );
     }
 
     public void setSelectedNum(IntegerBinding numCheckBoxesSelected) {

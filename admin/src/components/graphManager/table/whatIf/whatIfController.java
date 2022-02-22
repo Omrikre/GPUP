@@ -156,7 +156,9 @@ public class whatIfController {
     // what if tab
     public void whatIfSetup() {}
     public void setWhatBtDisable(boolean disable) { WHATgetWhatBt.setDisable(disable);}
-    private void whatIfClearTextBoxes() {}
+    private void whatIfClearTextBoxes() {
+
+    }
     @FXML void whatIfClearTextPr(ActionEvent event) {
         WHATdepTextBox.clear();
         WHATreqTextBox.clear();

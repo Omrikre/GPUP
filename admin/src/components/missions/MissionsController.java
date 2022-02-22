@@ -95,6 +95,7 @@ public class MissionsController {
     private int numOfGraphs;
     private AppController mainController;
     private String httpUrl;
+    private boolean stopRefrash;
 
     @FXML
     public void initialize() {
@@ -107,6 +108,7 @@ public class MissionsController {
         selectedMission = "";
         dupScratchBT.setDisable(false); //TODO 123
         dupIncrementalBT.setDisable(false);
+        stopRefrash = false;
 
         checkboxCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Checkbox>("selectedState"));
         missionNameCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, String>("missionName"));
@@ -141,7 +143,7 @@ public class MissionsController {
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {
         if (bool) {
-            selectedMission = "";
+            //selectedMission = "";
 
             startBT.setDisable(true);
             pauseBT.setDisable(true);
@@ -161,14 +163,15 @@ public class MissionsController {
             pauseBT.setDisable(false);
             stopBT.setDisable(false);
         }
-        selectedMission = missionName;
+        //selectedMission = missionName;
         dupScratchBT.setDisable(false);
         dupIncrementalBT.setDisable(false);
     }
 
     public void updateMissionsList(List<MissionDTOWithoutCB> missions) {
-        if ((missions.size() == numOfMissionsInTable))
+        if (stopRefrash)
             return;
+
         numOfMissionsInTable = missions.size();
 
         List<MissionDTO> newMissionList = new ArrayList();
@@ -178,7 +181,7 @@ public class MissionsController {
 
         for (MissionDTOWithoutCB mission : missions) {
             tempCheckBox = new CheckBox();
-            if (selectedMission == mission.getMissionName()) {
+            if (selectedMission.equals(mission.getMissionName())) {
                 tempCheckBox.setSelected(true);
             }
             configureCheckBox(tempCheckBox, mission.getMissionName(), mission.getStatus());
@@ -189,10 +192,8 @@ public class MissionsController {
             newMissionList.add(tempDTO);
         }
         ObservableList<MissionDTO> OLMission = FXCollections.observableArrayList(newMissionList);
-        //OLGraphs.clear();
         OLMissions = OLMission;
         missionTV.setItems(OLMissions);
-        missionTV.refresh();
     }
 
 
@@ -218,11 +219,15 @@ public class MissionsController {
                 unselectedCheckBoxes.remove(checkBox);
                 selectedCheckBoxes.add(checkBox);
                 setMissionSelected(missionStatus, missionName, true);
+                System.out.println("------------- selected: " + missionName);
+                selectedMission = missionName;
+                stopRefrash = true;
             } else {
                 selectedCheckBoxes.remove(checkBox);
                 unselectedCheckBoxes.add(checkBox);
                 setMissionSelected("", "", false);
-
+                selectedMission = "";
+                stopRefrash = false;
             }
         });
     }
@@ -241,11 +246,13 @@ public class MissionsController {
     @FXML
     void dupIncrementalPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(false, selectedMission);
+        unselectAll();
     }
 
     @FXML
     void dupScratchPR(ActionEvent event) {
         mainController.openCreateNewMissionWin(true, selectedMission);
+        unselectAll();
     }
 
     @FXML
@@ -258,6 +265,7 @@ public class MissionsController {
                 .build()
                 .toString();
         sendRequest();
+        unselectAll();
     }
 
     @FXML
@@ -270,6 +278,7 @@ public class MissionsController {
                 .build()
                 .toString();
         sendRequest();
+        unselectAll();
     }
 
     @FXML
@@ -282,6 +291,7 @@ public class MissionsController {
                 .build()
                 .toString();
         sendRequest();
+        unselectAll();
     }
 
     @FXML
@@ -294,6 +304,7 @@ public class MissionsController {
                 .build()
                 .toString();
         sendRequest();
+        unselectAll();
     }
 
     private void sendRequest() {
@@ -301,13 +312,15 @@ public class MissionsController {
         HttpClientUtil.runAsync(httpUrl, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.out.println("error");
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                System.out.println("ok");
         }});
+    }
+
+    private void unselectAll() {
+        selectedCheckBoxes.forEach(cb -> cb.setSelected(false));
     }
 
 
