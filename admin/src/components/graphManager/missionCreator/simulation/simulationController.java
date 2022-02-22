@@ -22,8 +22,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 
-import static components.app.HttpResourcesPaths.ADD_MISSION;
+import static components.app.HttpResourcesPaths.*;
+import static components.app.HttpResourcesPaths.GSON;
 
 
 public class simulationController {
@@ -225,13 +227,68 @@ public class simulationController {
     @FXML void reqForPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
         whatIfMakeDisable();
-        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.REQUIRED_FOR));
+        String url = createHttpCall(Bond.REQUIRED_FOR, name);
+        sendCallToServer(url);
 
     }
     @FXML void depOnPr(ActionEvent event) {
         String name = runTargetsArray.get(0);
+        System.out.println(name);
         whatIfMakeDisable();
-        parentController.setWhatIfSelections(parentController.getWhatIf(name, Bond.DEPENDS_ON));
+        String url = createHttpCall(Bond.DEPENDS_ON, name);
+        sendCallToServer(url);
+    }
+
+    private String createHttpCall(Bond bond, String targetName) {
+        String url;
+        if(bond == Bond.REQUIRED_FOR) {
+            url = HttpUrl
+                    .parse(GRAPH_LIST)
+                    .newBuilder()
+                    .addQueryParameter("target-a", targetName)
+                    .addQueryParameter("graphname", parentController.getGraphName())
+                    .addQueryParameter("bond", "req") //"dep" or "req"
+                    .build()
+                    .toString();
+        }
+        else {
+            url = HttpUrl
+                    .parse(GRAPH_LIST)
+                    .newBuilder()
+                    .addQueryParameter("target-a", targetName)
+                    .addQueryParameter("graphname", parentController.getGraphName())
+                    .addQueryParameter("bond", "dep") //"dep" or "req"
+                    .build()
+                    .toString();
+        }
+        return url;
+    }
+    private void sendCallToServer(String url) {
+        HttpClientUtil.runAsync(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
+                    System.out.println(responseBody); //TODO - Delete
+                    Platform.runLater(() -> {
+                            }
+                    );
+                } else {
+                    Platform.runLater(() -> {
+                            try {
+                                Set<String> res = GSON.fromJson(response.body().string(), Set.class);
+                                System.out.println(res);
+                                parentController.setWhatIfSelections(res);                                } catch (IOException e) {
+                            }
+                        }
+                    );
+                }
+            }
+        });
     }
 
 
@@ -243,6 +300,8 @@ public class simulationController {
         }
         reqForBT.setSelected(false);
         depOnBT.setSelected(false);
+        reqForBT.setDisable(true);
+        depOnBT.setDisable(true);
     }
     private void whatIfMakeEnable() {
         useWhatIfBT.setSelected(false);

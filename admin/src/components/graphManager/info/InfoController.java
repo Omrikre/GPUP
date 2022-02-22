@@ -27,8 +27,6 @@ public class InfoController {
     @FXML private generalInfoController generalInfoGPController;
     @FXML private VBox infoByTargetGP;
     @FXML private targetInfoController infoByTargetGPController;
-    @FXML private BorderPane treeViewBP;
-    @FXML private treeViewController treeViewBPController;
 
     private GraphController parentController;
     private GraphDTO graph;
@@ -41,7 +39,6 @@ public class InfoController {
 
     @FXML
     public void initialize() {
-        treeViewBPController.setParentController(this);
         infoByTargetGPController.setParentController(this);
     }
 
@@ -55,15 +52,6 @@ public class InfoController {
         if(infoByTargetGPController != null) {
             infoByTargetGPController.resetData();
             infoByTargetGPController.setChoiceTargetBox(targets);
-        } else System.out.println("null fuck 2");
-        if(treeViewBPController != null) {
-            if (!graph.isContainsCycle()) {
-                treeViewBPController.setTrees(targets);
-                treeViewTab.setDisable(false);
-            }
-            else {
-                treeViewTab.setDisable(true);
-            }
         } else System.out.println("null fuck 2");
 
     }

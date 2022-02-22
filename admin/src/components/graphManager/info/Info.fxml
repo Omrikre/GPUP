@@ -29,15 +29,6 @@
                         </BorderPane>
                      </content>
                 </Tab>
-                  <Tab fx:id="treeViewTab" text="Tree View">
-                     <content>
-                        <BorderPane prefHeight="200.0" prefWidth="200.0">
-                           <center>
-                              <fx:include fx:id="treeViewBP" source="treeViewInfo/treeViewInfo.fxml" />
-                           </center>
-                        </BorderPane>
-                     </content>
-                  </Tab>
               </tabs>
             </TabPane>
          </content>

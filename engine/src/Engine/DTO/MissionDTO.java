@@ -20,7 +20,7 @@ public class MissionDTO {
     //the rest are for the display:
     private String missionName;
     private String status;
-    private Integer progress;
+    private String progress;
     private Integer workers;
     private Integer totalPrice;
     private String creatorName;
@@ -35,7 +35,7 @@ public class MissionDTO {
     private CheckBox selectedState;
 
 
-    public MissionDTO(Integer amountOfTargets, List<String> targets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, CheckBox selectedState, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
+    public MissionDTO(Integer amountOfTargets, List<String> targets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, String progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, CheckBox selectedState, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
         this.targets=targets;
         this.src=src;
@@ -140,11 +140,11 @@ public class MissionDTO {
         this.status = status;
     }
 
-    public Integer getProgress() {
+    public String getProgress() {
         return progress;
     }
 
-    public void setProgress(Integer progress) {
+    public void setProgress(String progress) {
         this.progress = progress;
     }
 

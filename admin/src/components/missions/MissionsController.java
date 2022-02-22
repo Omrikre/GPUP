@@ -139,7 +139,6 @@ public class MissionsController {
     }
 
     public void updateMissionsList(List<MissionDTOWithoutCB> missions) {
-        Platform.runLater(() -> {
             if ((missions.size() == numOfMissionsInTable))
                 return;
             numOfMissionsInTable = missions.size();
@@ -156,7 +155,7 @@ public class MissionsController {
                 }
                 configureCheckBox(tempCheckBox, mission.getMissionName(), mission.getStatus());
                 tempDTO = new MissionDTO(mission.getAmountOfTargets(), null, mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
-                        , mission.getStatus(), mission.getProgress(), mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
+                        , mission.getStatus(), mission.getProgress().toString()+"%", mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
                         mission.getExecutedTargets(), mission.getWaitingTargets(), tempCheckBox, mission.getIndependenceCount(), mission.getLeafCount(), mission.getMiddleCount(), mission.getRootCount());
 
                 newMissionList.add(tempDTO);
@@ -166,8 +165,6 @@ public class MissionsController {
             OLMissions = OLMission;
             missionTV.setItems(OLMissions);
             missionTV.refresh();
-        });
-
     }
 
 
