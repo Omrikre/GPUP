@@ -245,8 +245,7 @@ public class LoadXMLController {
                 Platform.runLater(() ->
                         System.out.println("error send th file: " + file.getName()));
 
-                uploadInfo1LB.setText("error: unable to send the file");
-                uploadInfo2LB.setText("file name: " + file.getName());
+
 
             }
 
@@ -256,8 +255,7 @@ public class LoadXMLController {
                     String responseBody = response.body().string();
                     System.out.println("error send the file: " + file.getName());
                     System.out.println(responseBody);
-                    uploadInfo1LB.setText(responseBody);
-                    uploadInfo2LB.setText("file name: " + file.getName());
+
 
                 }
                 else {

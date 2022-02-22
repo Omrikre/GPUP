@@ -312,7 +312,7 @@ public class compilationController {
         if(SelectedNum == 0 || compilationPrice == 0)
             runBT.setDisable(true);
         else
-            runBT.setDisable(false);
+            checkIfToOpenRunBT();
     }
 
     private void whatIfMakeDisable() {
