@@ -27,10 +27,11 @@ public class MissionDTOWithoutCB {
     private Integer leafCount;
     private Integer middleCount;
     private Integer rootCount;
-    private int progressCounter = 0;
+    private int progressCounter;
 
     public MissionDTOWithoutCB(Integer amountOfTargets, List<String> targets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, Integer progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount) {
         this.amountOfTargets = amountOfTargets;
+        progressCounter = 0;
         this.targets = targets;
         this.src = src;
         this.compilationFolder = compilationFolder;
@@ -142,8 +143,12 @@ public class MissionDTOWithoutCB {
     }
 
     public void setProgress() {
-        progressCounter++;
-        progress = (progressCounter / 100) * amountOfTargets;
+        if (progress != 100) {
+            progressCounter++;
+            progress = (progressCounter * 100) / amountOfTargets;
+        }
+        if (progress == 100)
+            status = "Finished";
     }
 
     public Integer getWorkers() {
