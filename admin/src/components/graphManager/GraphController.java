@@ -55,9 +55,9 @@ public class GraphController {
     // graph info
     private BorderPane infoComponent;
     private InfoController infoComponentController;
-    private BorderPane cycleMsgComponent;
+/*    private BorderPane cycleMsgComponent;
     private cycleWarningInfoController cycleMsgComponentController;
-    private Stage cycleMsgWin;
+    private Stage cycleMsgWin;*/
 
     private boolean cycleMsgShownAlready = false;
     private boolean graphContainsCycle;
@@ -98,7 +98,7 @@ public class GraphController {
             infoComponentController = fxmlLoader.getController();
             infoComponentController.setParentController(this);
 
-            // info - cycle warning
+/*            // info - cycle warning
             fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(getClass().getResource(INFO_CYCLE_MSG_fXML_RESOURCE));
             cycleMsgComponent = fxmlLoader.load();
@@ -110,7 +110,7 @@ public class GraphController {
             cycleMsgWin.setScene(new Scene(cycleMsgComponent));
             cycleMsgWin.initModality(Modality.APPLICATION_MODAL);
             cycleMsgWin.setResizable(false);
-            System.out.println(" -- (graph manager) info done --");
+            System.out.println(" -- (graph manager) info done --");*/
 
             // targets info - table pane
             fxmlLoader = new FXMLLoader();
@@ -157,15 +157,17 @@ public class GraphController {
 
     public void showGraphInfoPane() {
         graphBP.setCenter(infoComponent);
-        if(!cycleMsgShownAlready && graphContainsCycle) {
+/*        if(!cycleMsgShownAlready && graphContainsCycle) {
             cycleMsgWin.show();
             cycleMsgShownAlready = true;
-        }
+        }*/
     }
     public void showTargetsInfoPane() { graphBP.setCenter(tableComponent); }
     public void showMissionCreatorPane() { graphBP.setCenter(missionCreateComponent); }
 
+/*
     public void closeCycleWarning() { cycleMsgWin.close(); }
+*/
     public void startDataRefresher(BooleanProperty autoUpdate) { //TODO
         XMLCompController.startXMLGraphTableRefresher(autoUpdate);
     }

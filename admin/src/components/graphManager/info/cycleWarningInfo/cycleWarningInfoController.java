@@ -14,7 +14,9 @@ public class cycleWarningInfoController {
     public void setMainController(GraphController parentController) {
         this.parentController = parentController;
     }
-    @FXML void OkPr(ActionEvent event) { parentController.closeCycleWarning(); }
+    @FXML void OkPr(ActionEvent event) {
+        //parentController.closeCycleWarning();
+    }
 
 
     public void setParentController(GraphController graphController) {

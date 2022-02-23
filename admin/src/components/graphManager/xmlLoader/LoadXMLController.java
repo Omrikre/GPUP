@@ -52,10 +52,10 @@ public class LoadXMLController {
     @FXML private TableColumn<GraphDTO, Integer> middleCOL;
     @FXML private TableColumn<GraphDTO, Integer> rootCol;
 
-    @FXML private Label selectedGraphLB; //TODO
+    @FXML private Label selectedGraphLB;
     @FXML private Label uploadInfo1LB;
     @FXML private Label uploadInfo2LB;
-    @FXML private Button uploadXMLBT; //TODO
+    @FXML private Button uploadXMLBT;
 
 
     private GraphController graphParentController;
@@ -168,16 +168,17 @@ public class LoadXMLController {
 
         checkBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
             if (isNowSelected) {
+                uploadXMLBT.setDisable(true);
                 unselectedCheckBoxes.remove(checkBox);
                 selectedCheckBoxes.add(checkBox);
                 setupNames(GraphName);
                 for (GraphDTO g : OLGraphs) {
-                    System.out.println(g.getGraphName() + " " + GraphName);
                     if (g.getGraphName().equals(GraphName))
                         selectedGraphDTO = g;
                 }
                 setGraphSelected(GraphName, true);
             } else {
+                uploadXMLBT.setDisable(false);
                 selectedCheckBoxes.remove(checkBox);
                 unselectedCheckBoxes.add(checkBox);
                 clearLastName();
@@ -262,6 +263,7 @@ public class LoadXMLController {
                     //uploadInfo1LB.setText("upload successfully");
                     //uploadInfo2LB.setText("file name: " + file.getName()); //todo
                     System.out.println("ok");
+
                 }
             }
         });

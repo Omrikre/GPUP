@@ -59,7 +59,7 @@
       </HBox>
       <HBox alignment="CENTER" prefHeight="46.0" prefWidth="282.0">
          <children>
-            <Label fx:id="CYCLEifInCycleLabel" text="Label">
+            <Label fx:id="CYCLEifInCycleLabel">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
