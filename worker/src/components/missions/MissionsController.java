@@ -255,9 +255,6 @@ public class MissionsController {
         threadsLeft.setValue(threadsLeft.getValue() + 1);
         missionM.setProgress();
         System.out.println("PROGRESS: " + missionM.getProgress());
-        //update progress
-
-
         //upload updated target to server
         String json = GSON.toJson(targetDTOWithoutCB);
         System.out.println("Target: " +json);

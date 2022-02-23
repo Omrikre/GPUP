@@ -63,21 +63,25 @@ public class TaskManager {
         for (MissionDTOWithoutCB m : workersMissionsMap.get(wName)) {
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.INDEPENDENT) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets()+1);
                     return t;
                 }
             }
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.LEAF) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets()+1);
                     return t;
                 }
             }
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.MIDDLE) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets()+1);
                     return t;
                 }
             }
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.ROOT) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets()+1);
                     return t;
                 }
             }

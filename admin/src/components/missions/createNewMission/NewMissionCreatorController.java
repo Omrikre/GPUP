@@ -148,6 +148,7 @@ public class NewMissionCreatorController {
                     Platform.runLater(() -> {
                         try {
                             String responseBody = response.body().string();
+                            System.out.println("MISSION DUPE RESPONSE: \n"+responseBody);
                             MsgLB.setText("The mission was created successfully");
                             createNewMissionSucceed = true;
                             changeBTToOK(true);

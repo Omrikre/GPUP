@@ -28,7 +28,11 @@ public class LoadTaskServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("object/task");
         try (PrintWriter out = resp.getWriter()) {
-            Integer amountOfTargets = Integer.parseInt(req.getParameter("amount-of-targets"));
+            String aot = req.getParameter("amount-of-targets");
+            Integer amountOfTargets;
+            if (aot != null)
+                amountOfTargets = Integer.parseInt(aot);
+            else amountOfTargets = 0;
             String src = req.getParameter("src"); //source folder
             String compilationFolder = req.getParameter("compilation-folder");
             String r = req.getParameter("runtime");
@@ -61,13 +65,16 @@ public class LoadTaskServlet extends HttpServlet {
             Boolean incremental = Boolean.valueOf(req.getParameter("incremental"));
             String newName = req.getParameter("new-name");
             GraphManager graphManager = ServletUtils.getGraphManager(getServletContext());
-            GraphDTOWithoutCB graph = graphManager.getGraphDTOByName(graphName);
-            Integer price;
-            if (compilationFolder == null)
-                price = amountOfTargets * graph.getSimPricePerTarget();
-            else
-                price = amountOfTargets * graph.getCompPricePerTarget();
 
+            Integer price = null;
+            if (graphName != null) {
+                GraphDTOWithoutCB graph = graphManager.getGraphDTOByName(graphName);
+
+                if (compilationFolder == null)
+                    price = amountOfTargets * graph.getSimPricePerTarget();
+                else
+                    price = amountOfTargets * graph.getCompPricePerTarget();
+            }
             if (fromScratch) {
                 Map<String, TargetDTOWithoutCB> targetDTOMap = new HashMap<>();
                 List<String> targets = ServletUtils.getTaskManager(getServletContext()).getMissionByName(missionName).getTargets();
@@ -100,6 +107,7 @@ public class LoadTaskServlet extends HttpServlet {
             System.out.println("Task " + ServletUtils.getTaskManager(getServletContext()).getMissionByName(missionName).getMissionName() + " was added successfully.");
 
         }
+
     }
 
     @Override
