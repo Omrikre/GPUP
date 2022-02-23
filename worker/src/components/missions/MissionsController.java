@@ -393,7 +393,7 @@ public class MissionsController {
                                 Gson gson = new Gson();
                                 String responseBody = response.body().string();
                                 missionM = gson.fromJson(responseBody, MissionDTOWithoutCB.class);
-                                runOnMission(targetDTOWithoutCB);
+                                //runOnMission(targetDTOWithoutCB);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

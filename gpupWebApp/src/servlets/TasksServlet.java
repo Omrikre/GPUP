@@ -75,8 +75,8 @@ public class TasksServlet extends HttpServlet {
             } else {
                 if (workerMission != null) {
                     Gson gson = new Gson();
-                    String json = gson.toJson(ServletUtils.getTaskManager(getServletContext()).getMissionForWorker(workerName, name));
-                    out.println(json);
+                    String js = gson.toJson(ServletUtils.getTaskManager(getServletContext()).getMissionForWorker(workerName, name));
+                    out.println(js);
                     resp.setStatus(200);
                 } else {
                     if (isUpload) {
@@ -91,8 +91,8 @@ public class TasksServlet extends HttpServlet {
                             if (isGet) {
                                 TargetDTOWithoutCB t = ServletUtils.getTaskManager(getServletContext()).getAvailableTargetForWorker(wName);
                                 Gson gson = new Gson();
-                                String json = gson.toJson(t);
-                                out.println(json);
+                                String js = gson.toJson(t);
+                                out.println(js);
                                 resp.setStatus(200);
                             } else {
                                 if (add != null) { //signup
@@ -125,21 +125,21 @@ public class TasksServlet extends HttpServlet {
                                         Gson gson = new Gson();
                                         if (name == null) { //all missions
                                             List<MissionDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTaskDTOList();
-                                            String json = gson.toJson(lst);
+                                            String js = gson.toJson(lst);
                                             //System.out.println("MISSIONS: " + json);
-                                            out.println(json);
+                                            out.println(js);
                                             resp.setStatus(200);
                                         } else {
                                             if (targets == null) { //get only mission
                                                 MissionDTOWithoutCB m = ServletUtils.getTaskManager(getServletContext()).getMissionByName(name);
-                                                String json = gson.toJson(m);
-                                                out.write(json);
+                                                String js = gson.toJson(m);
+                                                out.write(js);
                                                 resp.setStatus(200);
                                             } else { //get mission targets
                                                 List<TargetDTOWithoutCB> lst = ServletUtils.getTaskManager(getServletContext()).getTargets(name);
-                                                String json = gson.toJson(lst);
-                                                System.out.println("targets: " + json);
-                                                out.println(json);
+                                                String js = gson.toJson(lst);
+                                                System.out.println("targets: " + js);
+                                                out.println(js);
                                                 resp.setStatus(200);
                                             }
                                         }

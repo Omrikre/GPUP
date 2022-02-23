@@ -20,7 +20,7 @@ public class CompilationTask extends Task implements Runnable {
     private Integer progressCount;
     private TargetDTOWithoutCB target;
     private int amountOfTargets;
-    private String folder
+    private String folder;
 
 
     public CompilationTask(String folder, int amountOfTargets, String src, String compilationFolder, TargetDTOWithoutCB target) {
