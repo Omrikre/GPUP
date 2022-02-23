@@ -17,7 +17,7 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String usernameFromSession = SessionUtils.getUsername(req);
         UserManager userManager = ServletUtils.getUserManager(getServletContext());
-
+        ServletUtils.getTaskManager(getServletContext()).removeWorkerFromAllTasks(usernameFromSession);
         System.out.println(usernameFromSession);
         if (usernameFromSession != null) {
             System.out.println("Clearing session for " + usernameFromSession);

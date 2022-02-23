@@ -3,6 +3,7 @@ package Engine.Tasks;
 import Engine.DTO.MissionDTOWithoutCB;
 import Engine.DTO.TargetDTO;
 import Engine.DTO.TargetDTOWithoutCB;
+import Engine.DTO.TargetForWorkerDTO;
 import Engine.Enums.Location;
 import Engine.Enums.MissionState;
 import Engine.Enums.State;
@@ -20,11 +21,45 @@ public class TaskManager {
         workersMissionsMap = new HashMap<>();
     }
 
-    public synchronized ----- getTargetDTOForWorker(String tName, String mName, String wName){
-
+    //gets a set of missionDTOs and finds a target, returns it
+    public synchronized TargetForWorkerDTO getTargetFromSetOfMissions(Set<String> set) {
+        for (String s : set) { //going through every mission
+            MissionDTOWithoutCB m = getMissionByName(s);
+            for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
+                if (t.getTargetLocation().equals(Location.INDEPENDENT) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
+                            m.getSuccessWithWarnings(), t);
+                }
+            }
+            for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
+                if (t.getTargetLocation().equals(Location.LEAF) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
+                            m.getSuccessWithWarnings(), t);
+                }
+            }
+            for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
+                if (t.getTargetLocation().equals(Location.MIDDLE) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
+                            m.getSuccessWithWarnings(), t);
+                }
+            }
+            for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
+                if (t.getTargetLocation().equals(Location.ROOT) && t.getTargetState().equals(State.FROZEN)) {
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
+                            m.getSuccessWithWarnings(), t);
+                }
+            }
+        }
+        return null;
     }
 
-    public
+//    public synchronized ----- getTargetDTOForWorker(String tName, String mName, String wName){
+//
+//    }
 
     public synchronized MissionDTOWithoutCB getMissionForWorker(String wName, String mName) {
         return getMissionByNameFromList(workersMissionsMap.get(wName), mName);
@@ -64,9 +99,11 @@ public class TaskManager {
     }
 
     public synchronized void removeWorkerFromAllTasks(String wName) {
-        for (MissionDTOWithoutCB m : workersMissionsMap.get(wName)) {
-            m.setWorkers(m.getWorkers() - 1);
-            workersMissionsMap.get(wName).remove(m);
+        if (workersMissionsMap.containsKey(wName)) {
+            for (MissionDTOWithoutCB m : workersMissionsMap.get(wName)) {
+                m.setWorkers(m.getWorkers() - 1);
+                workersMissionsMap.get(wName).remove(m);
+            }
         }
     }
 
