@@ -35,7 +35,6 @@ public class RunnableTargetRefresher extends TimerTask {
 
     @Override
     public void run() {
-        System.out.println("IN RUN");
         if (!shouldUpdate.get())
             return;
         if (threadsLeft.getValue() == 0)

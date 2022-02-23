@@ -90,7 +90,7 @@
                <children>
                   <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                      <children>
-                        <Label text="Last uploded file:">
+                        <Label>
                            <font>
                               <Font name="System Bold" size="15.0" />
                            </font>
