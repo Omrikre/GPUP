@@ -181,33 +181,39 @@ public class TaskManager {
     }
 
     public synchronized void addTask(MissionDTOWithoutCB task, Map<String, TargetDTOWithoutCB> targets) {
-        taskList.add(task);
-        targetsMap.put(task.getMissionName(), targets);
+        if (getMissionByName(task.getMissionName()) != null) {
+            taskList.add(task);
+            targetsMap.put(task.getMissionName(), targets);
+        }
     }
 
     public synchronized void addTaskFromScratch(String name, String newName, String creatorName, Map<String, TargetDTOWithoutCB> targets) {
-        MissionDTOWithoutCB original = getMissionByName(name);
-        MissionDTOWithoutCB temp = new MissionDTOWithoutCB(original.getAmountOfTargets(), original.getTargets(), original.getSrc(), original.getCompilationFolder(), original.getRunTime(), original.isRandomRunTime(),
-                original.getSuccess(), original.getSuccessWithWarnings(), newName, MissionState.READY.toString(), 0, 0, original.getTotalPrice(), creatorName, original.getGraphName(), 0, 0,
-                original.getIndependenceCount(), original.getLeafCount(), original.getMiddleCount(), original.getRootCount());
-        taskList.add(temp);
-        targetsMap.put(newName, targets);
+        if (getMissionByName(newName) != null) {
+            MissionDTOWithoutCB original = getMissionByName(name);
+            MissionDTOWithoutCB temp = new MissionDTOWithoutCB(original.getAmountOfTargets(), original.getTargets(), original.getSrc(), original.getCompilationFolder(), original.getRunTime(), original.isRandomRunTime(),
+                    original.getSuccess(), original.getSuccessWithWarnings(), newName, MissionState.READY.toString(), 0, 0, original.getTotalPrice(), creatorName, original.getGraphName(), 0, 0,
+                    original.getIndependenceCount(), original.getLeafCount(), original.getMiddleCount(), original.getRootCount());
+            taskList.add(temp);
+            targetsMap.put(newName, targets);
+        }
     }
 
     public synchronized void addTaskIncremental(String name, String newName, String creatorName) {
-        MissionDTOWithoutCB original = getMissionByName(name);
-        MissionDTOWithoutCB temp = new MissionDTOWithoutCB(original.getAmountOfTargets(), original.getTargets(), original.getSrc(), original.getCompilationFolder(), original.getRunTime(), original.isRandomRunTime(),
-                original.getSuccess(), original.getSuccessWithWarnings(), newName, MissionState.READY.toString(), 0, 0, original.getTotalPrice(), creatorName, original.getGraphName(), 0, 0,
-                original.getIndependenceCount(), original.getLeafCount(), original.getMiddleCount(), original.getRootCount());
-        taskList.add(temp);
-        Map<String, TargetDTOWithoutCB> mapMap = new HashMap<>();
-        //turn all failed and skipped targets to frozen!
-        for (TargetDTOWithoutCB t : targetsMap.get(name).values()) {
-            if (t.getTargetState().equals(State.FINISHED_FAILURE) || t.getTargetState().equals(State.SKIPPED))
-                t.setTargetState(State.FROZEN);
-            mapMap.put(t.getTargetName(), t);
+        if (getMissionByName(newName) != null) {
+            MissionDTOWithoutCB original = getMissionByName(name);
+            MissionDTOWithoutCB temp = new MissionDTOWithoutCB(original.getAmountOfTargets(), original.getTargets(), original.getSrc(), original.getCompilationFolder(), original.getRunTime(), original.isRandomRunTime(),
+                    original.getSuccess(), original.getSuccessWithWarnings(), newName, MissionState.READY.toString(), 0, 0, original.getTotalPrice(), creatorName, original.getGraphName(), 0, 0,
+                    original.getIndependenceCount(), original.getLeafCount(), original.getMiddleCount(), original.getRootCount());
+            taskList.add(temp);
+            Map<String, TargetDTOWithoutCB> mapMap = new HashMap<>();
+            //turn all failed and skipped targets to frozen!
+            for (TargetDTOWithoutCB t : targetsMap.get(name).values()) {
+                if (t.getTargetState().equals(State.FINISHED_FAILURE) || t.getTargetState().equals(State.SKIPPED))
+                    t.setTargetState(State.FROZEN);
+                mapMap.put(t.getTargetName(), t);
+            }
+            targetsMap.put(newName, mapMap);
         }
-        targetsMap.put(newName, mapMap);
     }
 
     public synchronized MissionDTOWithoutCB getMissionByName(String name) {
