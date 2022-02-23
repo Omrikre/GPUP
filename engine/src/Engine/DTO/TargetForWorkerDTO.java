@@ -36,6 +36,70 @@ public class TargetForWorkerDTO {
         this.t = t;
     }
 
+    public Integer getAmountOfTargets() {
+        return amountOfTargets;
+    }
+
+    public void setAmountOfTargets(Integer amountOfTargets) {
+        this.amountOfTargets = amountOfTargets;
+    }
+
+    public String getSrc() {
+        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
+
+    public String getCompilationFolder() {
+        return compilationFolder;
+    }
+
+    public void setCompilationFolder(String compilationFolder) {
+        this.compilationFolder = compilationFolder;
+    }
+
+    public Integer getRunTime() {
+        return runTime;
+    }
+
+    public void setRunTime(Integer runTime) {
+        this.runTime = runTime;
+    }
+
+    public boolean isRandomRunTime() {
+        return randomRunTime;
+    }
+
+    public void setRandomRunTime(boolean randomRunTime) {
+        this.randomRunTime = randomRunTime;
+    }
+
+    public Integer getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Integer success) {
+        this.success = success;
+    }
+
+    public Integer getSuccessWithWarnings() {
+        return successWithWarnings;
+    }
+
+    public void setSuccessWithWarnings(Integer successWithWarnings) {
+        this.successWithWarnings = successWithWarnings;
+    }
+
+    public TargetDTOWithoutCB getT() {
+        return t;
+    }
+
+    public void setT(TargetDTOWithoutCB t) {
+        this.t = t;
+    }
+
     public String getMissionName() {
         return missionName;
     }

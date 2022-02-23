@@ -3,6 +3,7 @@ package components.missions;
 import Engine.DTO.MissionDTO;
 import Engine.DTO.MissionDTOWithoutCB;
 import Engine.DTO.TargetDTOWithoutCB;
+import Engine.DTO.TargetForWorkerDTO;
 import Engine.Enums.State;
 import Engine.Tasks.CompilationTask;
 import Engine.Tasks.SimulationTask;
@@ -113,7 +114,6 @@ public class MissionsController {
     private Set<String> pausedSet = new HashSet<>();
     private Set<String> runningSet = new HashSet<>();
     private Set<String> finSet = new HashSet<>();
-
 
 
     @FXML
@@ -301,6 +301,68 @@ public class MissionsController {
         targetTimer.schedule(runnableTargetRefresher, TARGET_REFRESH_RATE, TARGET_REFRESH_RATE);
     }
 
+    public void runMission(TargetForWorkerDTO t, boolean isComp, String folder) {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
+                60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+        threadsLeft.setValue(threadsLeft.getValue() - 1);
+        if (t.getCompilationFolder() == null) {
+            //run sim
+            t.getT().setTargetState(State.IN_PROCESS);
+            threadPoolExecutor.execute(new SimulationTask(folder, t.getAmountOfTargets(), t.getRunTime(), t.isRandomRunTime(), t.getT(),
+                    t.getSuccess(), t.getSuccessWithWarnings()));
+        } else {
+            //run comp
+            t.getT().setTargetState(State.IN_PROCESS);
+            threadPoolExecutor.execute(new CompilationTask(folder, t.getAmountOfTargets(), t.getSrc(), t.getCompilationFolder(), t.getT()));
+        }
+        threadPoolExecutor.shutdown();
+        if (t.getT().getTargetState().equals(State.FINISHED_WARNINGS) || t.getT().getTargetState().equals(State.FINISHED_SUCCESS)) {
+            if (isComp) {
+                t.getT().getCompCreds();
+                //add comp credits to worker
+            } else {
+                t.getT().getSimCreds();
+                //add sim credits to worker
+            }
+            threadsLeft.setValue(threadsLeft.getValue() + 1);
+            //upload updated target to server
+            String json = GSON.toJson(t.getT());
+            System.out.println("Target: " + json);
+            //first to task server!
+            String taskUrl = HttpUrl
+                    .parse(MISSION_LIST)
+                    .newBuilder()
+                    .addQueryParameter("upload", "true")
+                    .addQueryParameter("name", selectedMission)
+                    .addQueryParameter("json", json)
+                    .build()
+                    .toString();
+
+            HttpClientUtil.runAsync(taskUrl, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Platform.runLater(() ->
+                            System.out.println(e.getMessage())
+                    );
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.code() != 200) {
+                        String responseBody = response.body().string();
+                        Platform.runLater(() ->
+                                System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
+                        );
+                    } else {
+                        Platform.runLater(() -> {
+                            System.out.println("uploaded successfully.");
+                        });
+                    }
+                }
+            });
+        }
+    }
+
     public void closeChat() {
         if (targetTimer != null && runnableTargetRefresher != null) {
             runnableTargetRefresher.cancel();
@@ -367,56 +429,65 @@ public class MissionsController {
 */
 
     public void runTask(TargetDTOWithoutCB targetDTOWithoutCB) {
-        //TODO fix folders? low priority..
+        String finalUrl = HttpUrl
+                .parse(MISSION_LIST)
+                .newBuilder()
+                .addQueryParameter("json", GSON.toJson(pausedSet))
+                .addQueryParameter("special", "true")
+                .build()
+                .toString();
 
-        if (targetDTOWithoutCB == null)
-            return;
-        if (pause)
-            return;
-        else {
-            String finalUrl = HttpUrl
-                    .parse(MISSION_LIST)
-                    .newBuilder()
-                    .addQueryParameter("name", selectedMission)
-                    .build()
-                    .toString();
+        HttpClientUtil.runAsync(finalUrl, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Platform.runLater(() ->
+                        System.out.println("FAIL " + e.getMessage())
+                );
+            }
 
-            HttpClientUtil.runAsync(finalUrl, new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    String responseBody = response.body().string();
                     Platform.runLater(() ->
-                            System.out.println("FAIL " + e.getMessage())
+                            System.out.println(("target Fail code: " + response.code()) + " " + responseBody)
                     );
-                }
-
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    if (response.code() != 200) {
-                        String responseBody = response.body().string();
-                        Platform.runLater(() ->
-                                System.out.println(("mission Fail code: " + response.code()) + " " + responseBody)
-                        );
-                    } else {
-                        Platform.runLater(() -> {
-                            try {
-                                Gson gson = new Gson();
-                                String responseBody = response.body().string();
-                                missionM = gson.fromJson(responseBody, MissionDTOWithoutCB.class);
-                                //runOnMission(targetDTOWithoutCB);
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                } else {
+                    Platform.runLater(() -> {
+                        try {
+                            Gson gson = new Gson();
+                            String responseBody = response.body().string();
+                            TargetForWorkerDTO t = gson.fromJson(responseBody, TargetForWorkerDTO.class);
+                            boolean isComp = false;
+                            String directoryPath;
+                            if (t != null) {
+                                if (t.getCompilationFolder() != null) {
+                                    isComp = true;
+                                    //create comp folder
+                                    directoryPath = "c:\\gpup-working-dir" + "\\" + "Compilation" + " - " + makeMStoString(System.currentTimeMillis()).replace(":", ".");
+                                    File dir = new File(directoryPath);
+                                    dir.mkdirs();
+                                } else {//create sim folder
+                                    directoryPath = "c:\\gpup-working-dir" + "\\" + "Simulation" + " - " + makeMStoString(System.currentTimeMillis()).replace(":", ".");
+                                    File dir = new File(directoryPath);
+                                    dir.mkdirs();
+                                }
+                                //send those in parameter
+                                runMission(t, isComp, directoryPath);
                             }
-                        });
-                    }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
-            });
+            }
+        });
 
 
-            //TODO upload to server?
-            //TODO - give price to worker. where is the price for each target, in the graphDTO? maybe add to missionDTO? (only has totalprice)
+        //TODO upload to server?
+        //TODO - give price to worker. where is the price for each target, in the graphDTO? maybe add to missionDTO? (only has totalprice)
 
 
-        }
     }
 
 
@@ -441,22 +512,19 @@ public class MissionsController {
             resumeBT.setDisable(true);
             stopBT.setDisable(true);
             singupBT.setDisable(true);
-        }
-        else if (runningSet.contains(selectedMission)) {
+        } else if (runningSet.contains(selectedMission)) {
             startBT.setDisable(true);
             pauseBT.setDisable(false);
             resumeBT.setDisable(true);
             stopBT.setDisable(false);
             singupBT.setDisable(true);
-        }
-        else if (pausedSet.contains(selectedMission)) {
+        } else if (pausedSet.contains(selectedMission)) {
             startBT.setDisable(true);
             pauseBT.setDisable(true);
             resumeBT.setDisable(false);
             stopBT.setDisable(false);
             singupBT.setDisable(true);
-        }
-        else {
+        } else {
             startBT.setDisable(true);
             pauseBT.setDisable(true);
             resumeBT.setDisable(true);
@@ -480,50 +548,46 @@ public class MissionsController {
 
     public void updateMissionsList(List<MissionDTOWithoutCB> missions) {
 
-            if (stopRefrash)
-                return;
-            numOfMissionsInTable = missions.size();
+        if (stopRefrash)
+            return;
+        numOfMissionsInTable = missions.size();
 
-            List<MissionDTO> newMissionList = new ArrayList();
-            ObservableList<MissionDTO> MissionsTV = missionTV.getItems();
-            MissionDTO tempDTO;
-            CheckBox tempCheckBox;
+        List<MissionDTO> newMissionList = new ArrayList();
+        ObservableList<MissionDTO> MissionsTV = missionTV.getItems();
+        MissionDTO tempDTO;
+        CheckBox tempCheckBox;
 
-            for (MissionDTOWithoutCB mission : missions) {
-                tempCheckBox = new CheckBox();
-                String myCurrStatus = "Unregistered";
-                if(mission.getStatus() == "Finished") {
-                    ifContainsDelete();
-                    finSet.add(mission.getMissionName());
-                }
-                else if (regSet.contains(mission.getMissionName())) {
-                    myCurrStatus = "Registered";
-                }
-                else if (finSet.contains(mission.getMissionName())) {
-                    myCurrStatus = "Finished";
-                }
-                else if (pausedSet.contains(mission.getMissionName())) {
-                    myCurrStatus = "Paused";
-                }
-                else if (runningSet.contains(mission.getMissionName())) {
-                    myCurrStatus = "Running";
-                }
-
-                if (selectedMission == mission.getMissionName()) {
-                    tempCheckBox.setSelected(true);
-                }
-                configureCheckBox(tempCheckBox, mission.getMissionName(), myCurrStatus);
-                tempDTO = new MissionDTO(mission.getAmountOfTargets(), null, mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
-                        , mission.getStatus(), mission.getProgress().toString() + "%", mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
-                        mission.getExecutedTargets(), mission.getWaitingTargets(),mission.getRootCount() , mission.getIndependenceCount(), mission.getLeafCount(), mission.getMiddleCount(), myCurrStatus,tempCheckBox );
-
-                newMissionList.add(tempDTO);
+        for (MissionDTOWithoutCB mission : missions) {
+            tempCheckBox = new CheckBox();
+            String myCurrStatus = "Unregistered";
+            if (mission.getStatus() == "Finished") {
+                ifContainsDelete();
+                finSet.add(mission.getMissionName());
+            } else if (regSet.contains(mission.getMissionName())) {
+                myCurrStatus = "Registered";
+            } else if (finSet.contains(mission.getMissionName())) {
+                myCurrStatus = "Finished";
+            } else if (pausedSet.contains(mission.getMissionName())) {
+                myCurrStatus = "Paused";
+            } else if (runningSet.contains(mission.getMissionName())) {
+                myCurrStatus = "Running";
             }
-            ObservableList<MissionDTO> OLMission = FXCollections.observableArrayList(newMissionList);
-            //OLGraphs.clear();
-            OLMissions = OLMission;
-            missionTV.setItems(OLMissions);
-            missionTV.refresh();
+
+            if (selectedMission == mission.getMissionName()) {
+                tempCheckBox.setSelected(true);
+            }
+            configureCheckBox(tempCheckBox, mission.getMissionName(), myCurrStatus);
+            tempDTO = new MissionDTO(mission.getAmountOfTargets(), null, mission.getSrc(), mission.getCompilationFolder(), mission.getRunTime(), mission.isRandomRunTime(), mission.getSuccess(), mission.getSuccessWithWarnings(), mission.getMissionName()
+                    , mission.getStatus(), mission.getProgress().toString() + "%", mission.getWorkers(), mission.getTotalPrice(), mission.getCreatorName(), mission.getGraphName(),
+                    mission.getExecutedTargets(), mission.getWaitingTargets(), mission.getRootCount(), mission.getIndependenceCount(), mission.getLeafCount(), mission.getMiddleCount(), myCurrStatus, tempCheckBox);
+
+            newMissionList.add(tempDTO);
+        }
+        ObservableList<MissionDTO> OLMission = FXCollections.observableArrayList(newMissionList);
+        //OLGraphs.clear();
+        OLMissions = OLMission;
+        missionTV.setItems(OLMissions);
+        missionTV.refresh();
     }
 
     private void configureCheckBox(CheckBox checkBox, String missionName, String missionStatus) {
