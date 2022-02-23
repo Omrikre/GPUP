@@ -31,6 +31,7 @@ public class MissionDTO {
     private Integer leafCount;
     private Integer middleCount;
     private Integer rootCount;
+    private String myStatus;
 
     private CheckBox selectedState;
 
@@ -58,6 +59,41 @@ public class MissionDTO {
         this.leafCount = leafCount;
         this.middleCount = middleCount;
         this.rootCount = rootCount;
+    }
+
+    public MissionDTO(Integer amountOfTargets, List<String> targets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, String missionName, String status, String progress, Integer workers, Integer totalPrice, String creatorName, String graphName, Integer executedTargets, Integer waitingTargets, Integer independenceCount, Integer leafCount, Integer middleCount, Integer rootCount, String myStatus, CheckBox selectedState) {
+        this.amountOfTargets = amountOfTargets;
+        this.targets = targets;
+        this.src = src;
+        this.compilationFolder = compilationFolder;
+        this.runTime = runTime;
+        this.randomRunTime = randomRunTime;
+        this.success = success;
+        this.successWithWarnings = successWithWarnings;
+        this.missionName = missionName;
+        this.status = status;
+        this.progress = progress;
+        this.workers = workers;
+        this.totalPrice = totalPrice;
+        this.creatorName = creatorName;
+        this.graphName = graphName;
+        this.executedTargets = executedTargets;
+        this.waitingTargets = waitingTargets;
+        this.independenceCount = independenceCount;
+        this.leafCount = leafCount;
+        this.middleCount = middleCount;
+        this.rootCount = rootCount;
+        this.myStatus = myStatus;
+        this.selectedState = selectedState;
+    }
+
+
+    public String getMyStatus() {
+        return myStatus;
+    }
+
+    public void setMyStatus(String myStatus) {
+        this.myStatus = myStatus;
     }
 
     public Integer getAmountOfTargets() {
