@@ -293,7 +293,7 @@ public class MissionsController {
         });
     }
 
-    public void getRunnableTarget(BooleanProperty autoUpdate) { //TODO - close
+    public void getRunnableTarget(BooleanProperty autoUpdate) {
         this.autoUpdate = autoUpdate;
         runnableTargetRefresher = new RunnableTargetRefresher(
                 threadsLeft, selectedMission, this.autoUpdate, this::runTask);

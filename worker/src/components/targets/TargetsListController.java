@@ -2,11 +2,20 @@ package components.targets;
 
 import Engine.DTO.MissionDTO;
 import Engine.DTO.TargetForWorkerDTO;
+import javafx.beans.property.BooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+
+import static components.app.CommonResourcesPaths.REFRESH_RATE;
 
 public class TargetsListController {
 
@@ -18,6 +27,10 @@ public class TargetsListController {
     @FXML private TableColumn<TargetForWorkerDTO, Integer> receivedCoinsCOL;
     @FXML private Label availableThreadsLB;
     @FXML private Label totalThreadsLB;
+    private BooleanProperty autoUpdate;
+    private TargetRefresher targetRefresher;
+    private Timer targetTimer;
+    private ObservableList<TargetForWorkerDTO> targetsOL;
 
 
     @FXML public void initialize() {
@@ -32,6 +45,34 @@ public class TargetsListController {
         targetNameCOL.setStyle("-fx-alignment: CENTER;");
         missionStatusCOL.setStyle("-fx-alignment: CENTER;");
         receivedCoinsCOL.setStyle("-fx-alignment: CENTER;");
+    }
+
+    public void startListRefresher(BooleanProperty autoUpdate) {
+        this.autoUpdate = autoUpdate;
+        targetRefresher = new TargetRefresher(
+                this::updateTargetTable, this.autoUpdate);
+        targetTimer = new Timer();
+        targetTimer.schedule(targetRefresher, REFRESH_RATE, REFRESH_RATE);
+    }
+
+    public void closeTargets() {
+        if (targetRefresher != null && targetTimer != null) {
+            targetTimer.cancel();
+            targetRefresher.cancel();
+        }
+    }
+
+    public void updateTargetTable(List<TargetForWorkerDTO> targetList) {
+        List<TargetForWorkerDTO> newTargetList = new ArrayList();
+        //ObservableList<TargetForWorkerDTO> MissionsTV = missionTV.getItems();
+        MissionDTO tempDTO;
+
+        newTargetList.addAll(targetList);
+        ObservableList<TargetForWorkerDTO> targetsOL = FXCollections.observableArrayList(newTargetList);
+        //missionTV.clear();
+        this.targetsOL = targetsOL;
+        missionTV.setItems(targetsOL);
+        missionTV.refresh();
     }
 
 

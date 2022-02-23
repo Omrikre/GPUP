@@ -199,8 +199,8 @@ public class AppController  implements Closeable {
     public void setRefreshersActive() {
         dashboardComponentController.startListRefresher(autoUpdate);
         chatComponentController.startChatRefresher(autoUpdate);
-        missionsComponentController.getRunnableTarget(autoUpdate); //TODO
-        //graphManagerComponentController.startDataRefresher(autoUpdate);
+        missionsComponentController.getRunnableTarget(autoUpdate);
+        targetsComponentsController.startListRefresher(autoUpdate);
     }
 
 
@@ -300,7 +300,7 @@ public class AppController  implements Closeable {
         chatComponentController.closeChat();
         dashboardComponentController.closeDashboard();
         missionsComponentController.closeChat();
-        //TODO - graphManagerComponentController.closeGraphManager();
+        targetsComponentsController.closeTargets();
     }
 
 
