@@ -85,13 +85,17 @@ public class TaskManager {
     public synchronized List<TargetForWorkerDTO> getTargetForWorkerDTO(String wName) { //gets a list of all active targets for the current worker
         List<TargetForWorkerDTO> res = new ArrayList<>();
         for (MissionDTOWithoutCB m : workersMissionsMap.get(wName)) {
-            if (!m.getStatus().equals("Finished")) {
-                for (TargetDTOWithoutCB temp : targetsMap.get(m.getMissionName()).values()) {
-                    if (temp.getTargetState().equals(State.WAITING)) {
-                        temp.setTargetState(State.IN_PROCESS);
-                        TargetForWorkerDTO toAdd = new TargetForWorkerDTO(m.getMissionName(), m.getStatus(), temp.getTargetName(), temp.getTargetState().toString(), 0);
-                        res.add(toAdd);
-                    }
+            for (TargetDTOWithoutCB temp : targetsMap.get(m.getMissionName()).values()) {
+                if (temp.getTargetState().equals(State.WAITING)) {
+                    temp.setTargetState(State.IN_PROCESS);
+                    TargetForWorkerDTO toAdd = new TargetForWorkerDTO(m.getMissionName(), m.getStatus(), temp.getTargetName(), temp.getTargetState().toString(), 0);
+                    res.add(toAdd);
+                }
+                if (temp.getTargetState().equals(State.FINISHED_SUCCESS) ||
+                        temp.getTargetState().equals(State.FINISHED_WARNINGS) ||
+                        temp.getTargetState().equals(State.FINISHED_FAILURE)) {
+                    TargetForWorkerDTO toAdd = new TargetForWorkerDTO(m.getMissionName(), m.getStatus(), temp.getTargetName(), temp.getTargetState().toString(), 0);
+                    res.add(toAdd);
                 }
             }
         }
