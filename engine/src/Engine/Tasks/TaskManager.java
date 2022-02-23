@@ -89,6 +89,8 @@ public class TaskManager {
         if (workersMissionsMap.get(wName) != null) {
             for (MissionDTOWithoutCB m : workersMissionsMap.get(wName)) {
                 for (TargetDTOWithoutCB temp : targetsMap.get(m.getMissionName()).values()) {
+                    System.out.println("COMP CREDS: " +temp.getCompCreds());
+                    System.out.println("SIM CREDS: " +temp.getSimCreds());
                     System.out.println("CURR TARGET STATE: " + temp.getTargetState());
                     if (temp.getTargetState().equals(State.WAITING)) {
                         temp.setTargetState(State.IN_PROCESS);

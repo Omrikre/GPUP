@@ -32,7 +32,7 @@ public class Engine {
     private Graph g;
     private Task task;
     private String directoryPath, targetFilePath, slash, fileName;
-    private Path XMLFilePath=Paths.get("c:\\gpup-working-dir");
+    private Path XMLFilePath = Paths.get("c:\\gpup-working-dir");
     private boolean newRun;
     private final String systemStateFileEnding = ".bin";
     private int maxThreads;
@@ -625,6 +625,8 @@ public class Engine {
 //            }
 //        }
         miniGraph.setLocationForAllTargets();
+        miniGraph.setCompilationPrice((g.getCompilationPrice()));
+        miniGraph.setSimulationPrice(g.getSimulationPrice());
         return miniGraph;
     }
 

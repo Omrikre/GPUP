@@ -104,7 +104,7 @@ public class MissionsController {
     private ObservableSet<CheckBox> selectedCheckBoxes;
     private ObservableSet<CheckBox> unselectedCheckBoxes;
     private boolean pause = false;
-    private int creds;
+    private int creds=0;
 
     private String selectedGraph;
     private Timer timer;

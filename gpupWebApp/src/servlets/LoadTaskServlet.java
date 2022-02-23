@@ -96,8 +96,9 @@ public class LoadTaskServlet extends HttpServlet {
                         price, creatorName, graphName, 0, 0, locations.get(Location.INDEPENDENT), locations.get(Location.LEAF), locations.get(Location.MIDDLE), locations.get(Location.ROOT));
                 Map<String, TargetDTOWithoutCB> targetDTOMap = new HashMap<>();
                 for (Graph.Target s : miniGraph.getTargets().values()) {
-                    TargetDTOWithoutCB t = new TargetDTOWithoutCB(s);
+                    TargetDTOWithoutCB t = new TargetDTOWithoutCB(miniGraph.getSimulationPrice(), miniGraph.getCompilationPrice(),s);
                     t.setTargetState(State.FROZEN);
+                    System.out.println("LOADED CRED: " + t.getSimCreds());
                     targetDTOMap.put(s.getName(), t);
                 }
                 ServletUtils.getTaskManager(getServletContext()).addTask(task, targetDTOMap);
