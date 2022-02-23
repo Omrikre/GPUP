@@ -106,8 +106,8 @@ public class MissionsController {
         numCheckBoxesSelected = Bindings.size(selectedCheckBoxes);
         setupData();
         selectedMission = "";
-        dupScratchBT.setDisable(false); //TODO 123
-        dupIncrementalBT.setDisable(false);
+        dupScratchBT.setDisable(true); //TODO 123
+        dupIncrementalBT.setDisable(true);
         stopRefrash = false;
 
         checkboxCOL.setCellValueFactory(new PropertyValueFactory<MissionDTO, Checkbox>("selectedState"));

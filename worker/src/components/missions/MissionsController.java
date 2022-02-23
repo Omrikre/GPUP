@@ -496,7 +496,6 @@ public class MissionsController {
     }
 
     private void setAllButtonsDisable(boolean bool, String missionStatus, String missionName) {
-        selectedMission = missionName;
         if (bool) {
             selectedMission = "";
             startBT.setDisable(true);
@@ -504,7 +503,10 @@ public class MissionsController {
             resumeBT.setDisable(true);
             stopBT.setDisable(true);
             singupBT.setDisable(true);
+            return;
         }
+
+        selectedMission = missionName;
 
         if (regSet.contains(selectedMission)) {
             startBT.setDisable(false);
@@ -529,7 +531,7 @@ public class MissionsController {
             pauseBT.setDisable(true);
             resumeBT.setDisable(true);
             stopBT.setDisable(true);
-            singupBT.setDisable(true);
+            singupBT.setDisable(false);
         }
 
     }
@@ -587,7 +589,7 @@ public class MissionsController {
         //OLGraphs.clear();
         OLMissions = OLMission;
         missionTV.setItems(OLMissions);
-        missionTV.refresh();
+        //missionTV.refresh();
     }
 
     private void configureCheckBox(CheckBox checkBox, String missionName, String missionStatus) {
@@ -611,6 +613,7 @@ public class MissionsController {
                 selectedCheckBoxes.remove(checkBox);
                 unselectedCheckBoxes.add(checkBox);
                 setMissionSelected("", "", false);
+                System.out.println("------------- unselected: " + missionName);
                 selectedMission = "";
                 stopRefrash = false;
             }
@@ -638,6 +641,7 @@ public class MissionsController {
 
     private void unselectAll() {
         selectedCheckBoxes.forEach(cb -> cb.setSelected(false));
+        setMissionSelected("","",false);
     }
 
 

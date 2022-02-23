@@ -63,6 +63,8 @@ public class TargetsListController {
     }
 
     public void updateTargetTable(List<TargetForWorkerDTO> targetList) {
+        if(targetList == null)
+            return;
         List<TargetForWorkerDTO> newTargetList = new ArrayList();
         //ObservableList<TargetForWorkerDTO> MissionsTV = missionTV.getItems();
         MissionDTO tempDTO;

@@ -63,6 +63,12 @@ public class TargetRefresher extends TimerTask {
                         try {
                             String responseBody = response.body().string();
                             TargetForWorkerDTO[] lst = GSON.fromJson(responseBody, TargetForWorkerDTO[].class);
+                            if(lst==null) {
+                                System.out.println("lst is null ------");
+                                return;
+                            }
+                            else
+                                System.out.println(lst.toString());
                             targetConsumer.accept(Arrays.asList(lst));
                         } catch (IOException e) {
                             e.printStackTrace();
