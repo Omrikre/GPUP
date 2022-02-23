@@ -112,6 +112,7 @@ public class MissionsController {
     private Set<String> regSet = new HashSet<>();
     private Set<String> pausedSet = new HashSet<>();
     private Set<String> runningSet = new HashSet<>();
+    private Set<String> finSet = new HashSet<>();
 
 
 
@@ -451,7 +452,7 @@ public class MissionsController {
             pauseBT.setDisable(true);
             resumeBT.setDisable(true);
             stopBT.setDisable(true);
-            singupBT.setDisable(false);
+            singupBT.setDisable(true);
         }
 
     }
@@ -482,15 +483,23 @@ public class MissionsController {
             for (MissionDTOWithoutCB mission : missions) {
                 tempCheckBox = new CheckBox();
                 String myCurrStatus = "Unregistered";
-                if (regSet.contains(mission.getMissionName())) {
+                if(mission.getStatus() == "Finished") {
+                    ifContainsDelete();
+                    finSet.add(mission.getMissionName());
+                }
+                else if (regSet.contains(mission.getMissionName())) {
                     myCurrStatus = "Registered";
                 }
-                if (pausedSet.contains(mission.getMissionName())) {
+                else if (finSet.contains(mission.getMissionName())) {
+                    myCurrStatus = "Finished";
+                }
+                else if (pausedSet.contains(mission.getMissionName())) {
                     myCurrStatus = "Paused";
                 }
-                if (runningSet.contains(mission.getMissionName())) {
+                else if (runningSet.contains(mission.getMissionName())) {
                     myCurrStatus = "Running";
                 }
+
                 if (selectedMission == mission.getMissionName()) {
                     tempCheckBox.setSelected(true);
                 }
