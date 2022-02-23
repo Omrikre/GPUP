@@ -111,7 +111,7 @@ public class AppController implements Closeable {
         try {
             autoUpdate.setValue(false);
             //usersListComponentController.close();
-            //graphAdminComponentController.close();
+            //graphAdminComponentController.close(FF);
         } catch (Exception ignored) {}
     }
 

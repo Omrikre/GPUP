@@ -274,7 +274,7 @@ public class AppController  implements Closeable {
 
     public void logout() {
         headerComponentController.makeAllButtonsDisable(true);
-        //TODO - graphManagerComponentController.clearAfterLogout();
+        //graphManagerComponentController.clearAfterLogout();
     }
     public void setInActive() {
         try {
@@ -299,6 +299,7 @@ public class AppController  implements Closeable {
         HttpClientUtil.shutdown();
         chatComponentController.closeChat();
         dashboardComponentController.closeDashboard();
+        missionsComponentController.closeChat();
         //TODO - graphManagerComponentController.closeGraphManager();
     }
 
