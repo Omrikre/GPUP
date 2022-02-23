@@ -25,6 +25,22 @@ public class TargetForWorkerDTO {
         this.credits = credits;
     }
 
+    public TargetForWorkerDTO(String missionName, String taskType, String targetName, String status, Integer credits, Integer amountOfTargets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, TargetDTOWithoutCB t) {
+        this.missionName = missionName;
+        this.taskType = taskType;
+        this.targetName = targetName;
+        this.status = status;
+        this.credits = credits;
+        this.amountOfTargets = amountOfTargets;
+        this.src = src;
+        this.compilationFolder = compilationFolder;
+        this.runTime = runTime;
+        this.randomRunTime = randomRunTime;
+        this.success = success;
+        this.successWithWarnings = successWithWarnings;
+        this.t = t;
+    }
+
     public TargetForWorkerDTO(Integer amountOfTargets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, TargetDTOWithoutCB t) {
         this.amountOfTargets = amountOfTargets;
         this.src = src;

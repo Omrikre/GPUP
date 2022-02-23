@@ -28,6 +28,7 @@ public class TaskManager {
             for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
                 if (t.getTargetLocation().equals(Location.INDEPENDENT) && t.getTargetState().equals(State.FROZEN)) {
                     m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    t.setTargetState(State.WAITING);
                     return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
                             m.getSuccessWithWarnings(), t);
                 }
@@ -35,6 +36,7 @@ public class TaskManager {
             for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
                 if (t.getTargetLocation().equals(Location.LEAF) && t.getTargetState().equals(State.FROZEN)) {
                     m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    t.setTargetState(State.WAITING);
                     return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
                             m.getSuccessWithWarnings(), t);
                 }
@@ -42,6 +44,7 @@ public class TaskManager {
             for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
                 if (t.getTargetLocation().equals(Location.MIDDLE) && t.getTargetState().equals(State.FROZEN)) {
                     m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    t.setTargetState(State.WAITING);
                     return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
                             m.getSuccessWithWarnings(), t);
                 }
@@ -49,6 +52,7 @@ public class TaskManager {
             for (TargetDTOWithoutCB t : targetsMap.get(s).values()) { //trying to find a viable target in a mission
                 if (t.getTargetLocation().equals(Location.ROOT) && t.getTargetState().equals(State.FROZEN)) {
                     m.setWaitingTargets(m.getWaitingTargets() + 1);
+                    t.setTargetState(State.WAITING);
                     return new TargetForWorkerDTO(m.getAmountOfTargets(), m.getSrc(), m.getCompilationFolder(), m.getRunTime(), m.isRandomRunTime(), m.getSuccess(),
                             m.getSuccessWithWarnings(), t);
                 }
@@ -75,7 +79,23 @@ public class TaskManager {
         if (t.getTargetState().equals(State.FINISHED_FAILURE)) {
             setAllReqForSkipped(mName, targetsMap.get(mName).get(t.getTargetName()));
         }
+        //TODO if mission finished, remove worker from it?
+    }
 
+    public synchronized List<TargetForWorkerDTO> getTargetForWorkerDTO(String wName) { //gets a list of all active targets for the current worker
+        List<TargetForWorkerDTO> res = new ArrayList<>();
+        for (MissionDTOWithoutCB m : workersMissionsMap.get(wName)) {
+            if (!m.getStatus().equals("Finished")) {
+                for (TargetDTOWithoutCB temp : targetsMap.get(m.getMissionName()).values()) {
+                    if (temp.getTargetState().equals(State.WAITING)) {
+                        temp.setTargetState(State.IN_PROCESS);
+                        TargetForWorkerDTO toAdd = new TargetForWorkerDTO(m.getMissionName(), m.getStatus(), temp.getTargetName(), temp.getTargetState().toString(), 0);
+                        res.add(toAdd);
+                    }
+                }
+            }
+        }
+        return res;
     }
 
     private void setAllReqForSkipped(String mName, TargetDTOWithoutCB t) {

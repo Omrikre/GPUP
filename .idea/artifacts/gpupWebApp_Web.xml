@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="gpupWebApp:Web">
+    <output-path>$PROJECT_DIR$/out/artifacts/gpupWebApp_Web</output-path>
+    <root id="archive" name="gpupWebApp_Web.war">
+      <element id="artifact" artifact-name="gpupWebApp:Web exploded" />
+    </root>
+  </artifact>
+</component>
