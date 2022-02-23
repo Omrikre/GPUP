@@ -67,11 +67,11 @@ public class RunnableTargetRefresher extends TimerTask {
                     Platform.runLater(() -> {
                         try {
                             TargetDTOWithoutCB t = GSON.fromJson(response.body().string(), TargetDTOWithoutCB.class);
-                            System.out.println("TARGET: "+t);
-                            if (t.getTargetName() == null)
-                                targetDTOWithoutCBConsumer.accept(null);
-                            else
-                                targetDTOWithoutCBConsumer.accept(t);
+                            System.out.println("TARGET: " + t);
+                                if (t == null)
+                                    targetDTOWithoutCBConsumer.accept(null);
+                                else
+                                    targetDTOWithoutCBConsumer.accept(t);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
