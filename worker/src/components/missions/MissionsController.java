@@ -220,7 +220,10 @@ public class MissionsController {
         pause = false;
         ifContainsDelete();
         runningSet.add(selectedMission);
+        String n = selectedMission;
+        System.out.println("MISSION: " + selectedMission);
         unselectAll();
+        selectedMission = n;
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
@@ -302,65 +305,76 @@ public class MissionsController {
     }
 
     public void runMission(TargetForWorkerDTO t, boolean isComp, String folder) {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
-                60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
-        threadsLeft.setValue(threadsLeft.getValue() - 1);
-        if (t.getCompilationFolder() == null) {
-            //run sim
-            t.getT().setTargetState(State.IN_PROCESS);
-            threadPoolExecutor.execute(new SimulationTask(folder, t.getAmountOfTargets(), t.getRunTime(), t.isRandomRunTime(), t.getT(),
-                    t.getSuccess(), t.getSuccessWithWarnings()));
-        } else {
-            //run comp
-            t.getT().setTargetState(State.IN_PROCESS);
-            threadPoolExecutor.execute(new CompilationTask(folder, t.getAmountOfTargets(), t.getSrc(), t.getCompilationFolder(), t.getT()));
-        }
-        threadPoolExecutor.shutdown();
-        if (t.getT().getTargetState().equals(State.FINISHED_WARNINGS) || t.getT().getTargetState().equals(State.FINISHED_SUCCESS)) {
-            if (isComp) {
-                t.getT().getCompCreds();
-                //add comp credits to worker
+        new Thread(() -> {
+            System.out.println("RUN MISSION");
+            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,
+                    60, TimeUnit.MINUTES, new LinkedBlockingQueue<Runnable>());
+            System.out.println("THREADS LEFT BEFORE TASK " + threadsLeft.getValue());
+            if (t.getCompilationFolder() == null) {
+                //run sim
+                //t.getT().setTargetState(State.IN_PROCESS);
+                threadPoolExecutor.execute(new SimulationTask(folder, t.getAmountOfTargets(), t.getRunTime(), t.isRandomRunTime(), t,
+                        t.getSuccess(), t.getSuccessWithWarnings()));
+                threadsLeft.setValue(threadsLeft.getValue() - 1);
             } else {
-                t.getT().getSimCreds();
-                //add sim credits to worker
+                //run comp
+                //t.getT().setTargetState(State.IN_PROCESS);
+                threadPoolExecutor.execute(new CompilationTask(folder, t.getAmountOfTargets(), t.getSrc(), t.getCompilationFolder(), t));
+                threadsLeft.setValue(threadsLeft.getValue() - 1);
             }
+            threadPoolExecutor.shutdown();
+            while (!threadPoolExecutor.isTerminated()) {
+                System.out.println("NOT TERMINATED");
+            }
+            System.out.println("TARGET STATE: " + t.getT().getTargetState());
             threadsLeft.setValue(threadsLeft.getValue() + 1);
-            //upload updated target to server
-            String json = GSON.toJson(t.getT());
-            System.out.println("Target: " + json);
-            //first to task server!
-            String taskUrl = HttpUrl
-                    .parse(MISSION_LIST)
-                    .newBuilder()
-                    .addQueryParameter("upload", "true")
-                    .addQueryParameter("name", selectedMission)
-                    .addQueryParameter("json", json)
-                    .build()
-                    .toString();
-
-            HttpClientUtil.runAsync(taskUrl, new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    Platform.runLater(() ->
-                            System.out.println(e.getMessage())
-                    );
+            System.out.println("THREADS LEFT AFTER TASK " + threadsLeft.getValue());
+            if (t.getT().getTargetState().equals(State.FINISHED_WARNINGS) || t.getT().getTargetState().equals(State.FINISHED_SUCCESS) || t.getT().getTargetState().equals(State.FINISHED_FAILURE)) {
+                if (isComp) {
+                    t.getT().getCompCreds();
+                    //add comp credits to worker
+                } else {
+                    t.getT().getSimCreds();
+                    //add sim credits to worker
                 }
+                //upload updated target to server
+                String json = GSON.toJson(t.getT());
+                System.out.println("Target: " + json);
+                //first to task server!
+                String taskUrl = HttpUrl
+                        .parse(MISSION_LIST)
+                        .newBuilder()
+                        .addQueryParameter("upload", "true")
+                        .addQueryParameter("name", t.getMissionName())
+                        .addQueryParameter("json", json)
+                        .build()
+                        .toString();
 
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    if (response.code() != 200) {
-                        String responseBody = response.body().string();
+                HttpClientUtil.runAsync(taskUrl, new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
                         Platform.runLater(() ->
-                                System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
+                                System.out.println(e.getMessage())
                         );
-                    } else {
-                        Platform.runLater(() -> {
-                            System.out.println("uploaded successfully.");
-                        });
                     }
-                }
-            });
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        if (response.code() != 200) {
+                            String responseBody = response.body().string();
+                            Platform.runLater(() ->
+                                    System.out.println(("upload Fail code: " + response.code()) + " " + responseBody)
+                            );
+                        } else {
+                            Platform.runLater(() -> {
+                                System.out.println("uploaded successfully.");
+                            });
+                        }
+                    }
+                });
+            }
         }
+        ).start();
     }
 
     public void closeChat() {
@@ -429,10 +443,11 @@ public class MissionsController {
 */
 
     public void runTask(TargetDTOWithoutCB targetDTOWithoutCB) {
+        System.out.println("RUN TASK");
         String finalUrl = HttpUrl
                 .parse(MISSION_LIST)
                 .newBuilder()
-                .addQueryParameter("json", GSON.toJson(pausedSet))
+                .addQueryParameter("json", GSON.toJson(runningSet))
                 .addQueryParameter("special", "true")
                 .build()
                 .toString();
@@ -457,7 +472,9 @@ public class MissionsController {
                         try {
                             Gson gson = new Gson();
                             String responseBody = response.body().string();
+                            System.out.println("RUNTASK JSON: " + responseBody);
                             TargetForWorkerDTO t = gson.fromJson(responseBody, TargetForWorkerDTO.class);
+                            System.out.println("RUNTASK TARGET: " + t);
                             boolean isComp = false;
                             String directoryPath;
                             if (t != null) {
@@ -641,7 +658,7 @@ public class MissionsController {
 
     private void unselectAll() {
         selectedCheckBoxes.forEach(cb -> cb.setSelected(false));
-        setMissionSelected("","",false);
+        setMissionSelected("", "", false);
     }
 
 

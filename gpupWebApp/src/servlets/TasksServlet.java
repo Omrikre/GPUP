@@ -106,8 +106,9 @@ public class TasksServlet extends HttpServlet {
                                     out.println(js);
                                     resp.setStatus(200);
                                 } else {
-                                    if (add != null) { //signup
+                                    if (shouldAdd) { //signup
                                         if (shouldSign) {
+                                            System.out.println("MISSION NAME IN SERVLET: " +name);
                                             ServletUtils.getTaskManager(getServletContext()).signWorkerUpForTask(wName, name);
                                             if (ServletUtils.getTaskManager(getServletContext()).getMissionByName(name).getCompilationFolder() == null)
                                                 out.println("sim");

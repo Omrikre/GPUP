@@ -62,6 +62,7 @@ public class TargetRefresher extends TimerTask {
                     Platform.runLater(() -> {
                         try {
                             String responseBody = response.body().string();
+                            System.out.println("TARGET LIST JSON: " + responseBody);
                             TargetForWorkerDTO[] lst = GSON.fromJson(responseBody, TargetForWorkerDTO[].class);
                             if(lst==null) {
                                 System.out.println("lst is null ------");

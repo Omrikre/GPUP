@@ -144,11 +144,11 @@ public class MissionDTOWithoutCB {
 
     public void setProgressCounter() {
         this.progressCounter++;
+        this.setProgress();
     }
 
-    public void setProgress() {
+    private void setProgress() {
         if (progress != 100) {
-            progressCounter++;
             progress = (progressCounter * 100) / amountOfTargets;
         }
         if (progress == 100)

@@ -1,6 +1,7 @@
 package Engine.Tasks;
 
 import Engine.DTO.TargetDTOWithoutCB;
+import Engine.DTO.TargetForWorkerDTO;
 import Engine.Engine;
 import Engine.Enums.State;
 import Engine.Graph;
@@ -15,14 +16,14 @@ import static java.lang.Thread.sleep;
 public class SimulationTask extends Task implements Runnable {
     private final int runTime;
     private final boolean randomRunTime;
-    private TargetDTOWithoutCB t;
+    private TargetForWorkerDTO t;
     private final int success;
     private final int successWithWarnings;
     private String javac = "", log;
     private int amountOfTargets;
     private String folder;
 
-    public SimulationTask(String folder, int amountOfTargets, int runTime, boolean randomRunTime, TargetDTOWithoutCB t,
+    public SimulationTask(String folder, int amountOfTargets, int runTime, boolean randomRunTime, TargetForWorkerDTO t,
                           int success, int successWithWarnings) {
         super("Simulation");
         this.folder = folder;
@@ -36,6 +37,7 @@ public class SimulationTask extends Task implements Runnable {
 
     @Override
     public void run() {
+        t.getT().setTargetState(State.IN_PROCESS);
         String log;
         int sleepTime;
         if (randomRunTime) {
@@ -59,8 +61,10 @@ public class SimulationTask extends Task implements Runnable {
             e.printStackTrace();
         }
         long endTime = (System.currentTimeMillis());
-        t.setTargetTime(endTime - startTime);
+        t.getT().setTargetTime(endTime - startTime);
+        System.out.println("TARGET STATE BEFORE: " + t.getT().getTargetState());
         setTargetStateByParameters(success, successWithWarnings);
+        System.out.println("TARGET STATE AFTER: " + t.getT().getTargetState());
     }
 
     private void setTargetStateByParameters(int success, int successWithWarnings) {
@@ -69,12 +73,12 @@ public class SimulationTask extends Task implements Runnable {
         if ((float) (success) / 100 >= magicNumber) {
             magicNumber = rand.nextFloat();
             if ((float) (successWithWarnings) >= magicNumber) {
-                t.setTargetState(State.FINISHED_WARNINGS);
+                t.getT().setTargetState(State.FINISHED_WARNINGS);
             } else {
-                t.setTargetState(State.FINISHED_SUCCESS); //TODO - in servlet after sending, dont forget to set other targets states!
+                t.getT().setTargetState(State.FINISHED_SUCCESS); //TODO - in servlet after sending, dont forget to set other targets states!
             }
         } else {
-            t.setTargetState(State.FINISHED_FAILURE);
+            t.getT().setTargetState(State.FINISHED_FAILURE);
         }
     }
 

@@ -41,7 +41,8 @@ public class TargetForWorkerDTO {
         this.t = t;
     }
 
-    public TargetForWorkerDTO(Integer amountOfTargets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, TargetDTOWithoutCB t) {
+    public TargetForWorkerDTO(String missionName, Integer amountOfTargets, String src, String compilationFolder, Integer runTime, boolean randomRunTime, Integer success, Integer successWithWarnings, TargetDTOWithoutCB t) {
+        this.missionName = missionName;
         this.amountOfTargets = amountOfTargets;
         this.src = src;
         this.compilationFolder = compilationFolder;

@@ -156,6 +156,7 @@ public class TargetDTOWithoutCB {
 
     public void setTargetState(State targetState) {
         this.targetState = targetState;
+        this.targetStateString=targetState.toString();
     }
 
     public String getTargetStateString() {
