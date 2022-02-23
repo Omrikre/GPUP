@@ -20,10 +20,12 @@ public class CompilationTask extends Task implements Runnable {
     private Integer progressCount;
     private TargetDTOWithoutCB target;
     private int amountOfTargets;
+    private String folder
 
 
-    public CompilationTask( int amountOfTargets, String src, String compilationFolder, TargetDTOWithoutCB target) {
+    public CompilationTask(String folder, int amountOfTargets, String src, String compilationFolder, TargetDTOWithoutCB target) {
         super("Compilation");
+        this.folder=folder;
         this.src = src;
         this.compilationFolder = compilationFolder;
        this.target=target;
@@ -66,12 +68,9 @@ public class CompilationTask extends Task implements Runnable {
         log = "the file being compiled: " + target.getTargetInfo() + "\n"
                 + "The CMD line about to be excecuted: " + "javac -d " + compilationFolder + " -cp " + compilationFolder + " " + FQN + "\n"
                 + "how much time the compiler worked: " + target.getTargetTime() + "ms";
-        String directoryPath="c:\\gpup-working-dir" + "\\" + "Compilation" + " - " + makeMStoString(System.currentTimeMillis()).replace(":", ".");
-        File dir = new File(directoryPath);
-        dir.mkdirs();
         try (Writer out = new BufferedWriter(
                 new OutputStreamWriter(
-                        new FileOutputStream((directoryPath + "\\" + target.getTargetName() + ".log"), true)))) {
+                        new FileOutputStream((folder + "\\" + target.getTargetName() + ".log"), true)))) {
             out.write(log + "\n" + javac + "\n");
         } catch (IOException e) {
             e.printStackTrace();

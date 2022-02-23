@@ -22,6 +22,26 @@ public class TargetDTOWithoutCB {
     private int serialSetsBelongs; //how many serial sets the target is in
     private int totalDependencies;
     private int totalRequierments;
+    private int simCreds, CompCreds;
+
+    public TargetDTOWithoutCB(int simCreds, int compCreds, Graph.Target t) {
+        this.simCreds = simCreds;
+        this.CompCreds = compCreds;
+        this.targetName = t.getName();
+        this.targetLocation = t.getLocation();
+        this.targetLocationString = t.getLocation().toString();
+        this.targetDependsOn = t.getDependsOn();
+        this.targetDependsOnNum = this.targetDependsOn.size();
+        this.targetRequiredFor = t.getRequiredFor();
+        this.targetRequiredForNum = this.targetRequiredFor.size();
+        this.targetInfo = t.getInfo();
+        this.targetState = t.getState();
+        this.targetStateString = this.targetState.toString();
+        this.targetTime = t.getTime();
+        this.serialSetsBelongs = t.getSerialSetsBelongs();
+        this.totalDependencies = t.getDependsOn().size();
+        this.totalRequierments = t.getRequiredFor().size();
+    }
 
 
     public TargetDTOWithoutCB(String targetName, Location targetLocation, String targetLocationString, Set<String> targetDependsOn, int targetDependsOnNum, Set<String> targetRequiredFor, int targetRequiredForNum, String targetInfo, State targetState, String targetStateString, long targetTime, int serialSetsBelongs, int totalDependencies, int totalRequierments) {
@@ -56,6 +76,14 @@ public class TargetDTOWithoutCB {
         this.serialSetsBelongs = t.getSerialSetsBelongs();
         this.totalDependencies = t.getDependsOn().size();
         this.totalRequierments = t.getRequiredFor().size();
+    }
+
+    public int getCompCreds() {
+        return CompCreds;
+    }
+
+    public int getSimCreds() {
+        return simCreds;
     }
 
     public String getTargetName() {
@@ -183,7 +211,7 @@ public class TargetDTOWithoutCB {
         return targetLocation.equals(Location.INDEPENDENT);
     }
 
-    public boolean isMiddle(){
+    public boolean isMiddle() {
         return targetLocation.equals(Location.MIDDLE);
     }
 }

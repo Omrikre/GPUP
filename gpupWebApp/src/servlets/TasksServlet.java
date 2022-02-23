@@ -86,7 +86,9 @@ public class TasksServlet extends HttpServlet {
                             if (add != null) { //signup
                                 if (shouldSign) {
                                     ServletUtils.getTaskManager(getServletContext()).signWorkerUpForTask(wName, name);
-                                    out.println(ServletUtils.getTaskManager(getServletContext()).getMissionByName(name));
+                                    if (ServletUtils.getTaskManager(getServletContext()).getMissionByName(name).getCompilationFolder() == null)
+                                        out.println("sim");
+                                    else out.println("comp");
                                     resp.setStatus(200);
                                 } else {
                                     String stat = ServletUtils.getTaskManager(getServletContext()).getMissionByName(name).getStatus();

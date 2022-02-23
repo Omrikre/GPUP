@@ -20,11 +20,20 @@ public class TaskManager {
         workersMissionsMap = new HashMap<>();
     }
 
+    public synchronized ----- getTargetDTOForWorker(String tName, String mName, String wName){
+
+    }
+
+    public
+
     public synchronized MissionDTOWithoutCB getMissionForWorker(String wName, String mName) {
         return getMissionByNameFromList(workersMissionsMap.get(wName), mName);
     }
 
     public synchronized void updateTarget(String mName, TargetDTOWithoutCB t) {
+        getMissionByName(mName).setWaitingTargets(getMissionByName(mName).getWaitingTargets() - 1);
+        getMissionByName(mName).setExecutedTargets(getMissionByName(mName).getExecutedTargets() + 1);
+        getMissionByName(mName).setProgressCounter();
         targetsMap.get(mName).get(t.getTargetName()).setTargetState(t.getTargetState());
         targetsMap.get(mName).get(t.getTargetName()).setTargetTime(t.getTargetTime());
         //set all req for skipped.
@@ -37,8 +46,10 @@ public class TaskManager {
     private void setAllReqForSkipped(String mName, TargetDTOWithoutCB t) {
         for (String s : t.getTargetRequiredFor()) {
             setAllReqForSkipped(mName, targetsMap.get(mName).get(s));
-            if (!targetsMap.get(mName).get(s).getTargetState().equals(State.SKIPPED))
+            if (!targetsMap.get(mName).get(s).getTargetState().equals(State.SKIPPED)) {
                 targetsMap.get(mName).get(s).setTargetState(State.SKIPPED);
+                getMissionByName(mName).setProgressCounter();
+            }
         }
     }
 
@@ -63,25 +74,25 @@ public class TaskManager {
         for (MissionDTOWithoutCB m : workersMissionsMap.get(wName)) {
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.INDEPENDENT) && t.getTargetState().equals(State.FROZEN)) {
-                    m.setWaitingTargets(m.getWaitingTargets()+1);
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
                     return t;
                 }
             }
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.LEAF) && t.getTargetState().equals(State.FROZEN)) {
-                    m.setWaitingTargets(m.getWaitingTargets()+1);
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
                     return t;
                 }
             }
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.MIDDLE) && t.getTargetState().equals(State.FROZEN)) {
-                    m.setWaitingTargets(m.getWaitingTargets()+1);
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
                     return t;
                 }
             }
             for (TargetDTOWithoutCB t : targetsMap.get(m.getMissionName()).values()) {
                 if (t.getTargetLocation().equals(Location.ROOT) && t.getTargetState().equals(State.FROZEN)) {
-                    m.setWaitingTargets(m.getWaitingTargets()+1);
+                    m.setWaitingTargets(m.getWaitingTargets() + 1);
                     return t;
                 }
             }

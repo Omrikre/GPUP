@@ -33,7 +33,7 @@ public class GraphManager {
     }
 
     public synchronized TargetDTOWithoutCB getTargetDTO(String graphname, String targetName) {
-        return new TargetDTOWithoutCB(graphMap.get(graphname).getTargetByName(targetName));
+        return new TargetDTOWithoutCB(graphMap.get(graphname).getSimulationPrice(), graphMap.get(graphname).getCompilationPrice(), graphMap.get(graphname).getTargetByName(targetName));
     }
 
     public synchronized List<TargetDTOWithoutCB> getTargetDTOList(String graphname) {

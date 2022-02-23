@@ -18,12 +18,14 @@ public class SimulationTask extends Task implements Runnable {
     private TargetDTOWithoutCB t;
     private final int success;
     private final int successWithWarnings;
-    private String javac="", log;
+    private String javac = "", log;
     private int amountOfTargets;
+    private String folder;
 
-    public SimulationTask( int amountOfTargets, int runTime, boolean randomRunTime, TargetDTOWithoutCB t,
+    public SimulationTask(String folder, int amountOfTargets, int runTime, boolean randomRunTime, TargetDTOWithoutCB t,
                           int success, int successWithWarnings) {
         super("Simulation");
+        this.folder = folder;
         this.runTime = runTime;
         this.randomRunTime = randomRunTime;
         this.t = t;
@@ -41,25 +43,23 @@ public class SimulationTask extends Task implements Runnable {
             sleepTime = rand.nextInt(runTime);
         } else sleepTime = runTime;
         log = "going to sleep for " + sleepTime + " ms";
-        long startTime=(System.currentTimeMillis());
+        long startTime = (System.currentTimeMillis());
         try {
             sleep(sleepTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         log += "\nwoke up!";
-        String directoryPath="c:\\gpup-working-dir" + "\\" + "Simulation" + " - " + makeMStoString(System.currentTimeMillis()).replace(":", ".");
-        File dir = new File(directoryPath);
-        dir.mkdirs();
+
         try (Writer out = new BufferedWriter(
                 new OutputStreamWriter(
-                        new FileOutputStream((directoryPath + "\\" + t.getTargetName() + ".log"), true)))) {
+                        new FileOutputStream((folder + "\\" + t.getTargetName() + ".log"), true)))) {
             out.write(log + "\n" + javac + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        long endTime=(System.currentTimeMillis());
-        t.setTargetTime(endTime-startTime);
+        long endTime = (System.currentTimeMillis());
+        t.setTargetTime(endTime - startTime);
         setTargetStateByParameters(success, successWithWarnings);
     }
 

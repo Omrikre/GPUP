@@ -142,6 +142,10 @@ public class MissionDTOWithoutCB {
         this.progress = progress;
     }
 
+    public void setProgressCounter() {
+        this.progressCounter++;
+    }
+
     public void setProgress() {
         if (progress != 100) {
             progressCounter++;
