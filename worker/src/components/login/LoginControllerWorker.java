@@ -46,7 +46,6 @@ public class LoginControllerWorker {
         TextFormatter format = new TextFormatter(numThreadsSP.getValueFactory().getConverter(), numThreadsSP.getValueFactory().getValue());
         numThreadsSP.getEditor().setTextFormatter(format);
         numThreadsSP.getValueFactory().valueProperty().bindBidirectional(format.valueProperty());
-
         userNameTF.requestFocus();
     }
 

@@ -2,7 +2,9 @@ package components.targets;
 
 import Engine.DTO.MissionDTO;
 import Engine.DTO.TargetForWorkerDTO;
+import components.app.AppController;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -19,21 +21,31 @@ import static components.app.CommonResourcesPaths.REFRESH_RATE;
 
 public class TargetsListController {
 
-    @FXML private TableView<TargetForWorkerDTO> missionTV;
-    @FXML private TableColumn<TargetForWorkerDTO, String> missionNameCOL;
-    @FXML private TableColumn<TargetForWorkerDTO, String> taskTypeCOL;
-    @FXML private TableColumn<TargetForWorkerDTO, String> targetNameCOL;
-    @FXML private TableColumn<TargetForWorkerDTO, String> missionStatusCOL;
-    @FXML private TableColumn<TargetForWorkerDTO, Integer> receivedCoinsCOL;
-    @FXML private Label availableThreadsLB;
-    @FXML private Label totalThreadsLB;
+    @FXML
+    private TableView<TargetForWorkerDTO> missionTV;
+    @FXML
+    private TableColumn<TargetForWorkerDTO, String> missionNameCOL;
+    @FXML
+    private TableColumn<TargetForWorkerDTO, String> taskTypeCOL;
+    @FXML
+    private TableColumn<TargetForWorkerDTO, String> targetNameCOL;
+    @FXML
+    private TableColumn<TargetForWorkerDTO, String> missionStatusCOL;
+    @FXML
+    private TableColumn<TargetForWorkerDTO, Integer> receivedCoinsCOL;
+    @FXML
+    private Label availableThreadsLB;
+    @FXML
+    private Label totalThreadsLB;
     private BooleanProperty autoUpdate;
     private TargetRefresher targetRefresher;
     private Timer targetTimer;
     private ObservableList<TargetForWorkerDTO> targetsOL;
+    private AppController mainController;
+    private IntegerProperty threadsLeft;
 
-
-    @FXML public void initialize() {
+    @FXML
+    public void initialize() {
         missionNameCOL.setCellValueFactory(new PropertyValueFactory<TargetForWorkerDTO, String>("missionName"));
         taskTypeCOL.setCellValueFactory(new PropertyValueFactory<TargetForWorkerDTO, String>("taskType"));
         targetNameCOL.setCellValueFactory(new PropertyValueFactory<TargetForWorkerDTO, String>("targetName"));
@@ -62,8 +74,14 @@ public class TargetsListController {
         }
     }
 
+    public void setThreads(IntegerProperty threadsLeft) {
+        totalThreadsLB.setText(String.valueOf(mainController.getNumThreads()));
+        this.threadsLeft = threadsLeft;
+        availableThreadsLB.setText(threadsLeft.getValue().toString());
+    }
+
     public void updateTargetTable(List<TargetForWorkerDTO> targetList) {
-        if(targetList == null)
+        if (targetList == null)
             return;
         List<TargetForWorkerDTO> newTargetList = new ArrayList();
         //ObservableList<TargetForWorkerDTO> MissionsTV = missionTV.getItems();
@@ -75,9 +93,18 @@ public class TargetsListController {
         this.targetsOL = targetsOL;
         missionTV.setItems(targetsOL);
         missionTV.refresh();
+        availableThreadsLB.setText(threadsLeft.getValue().toString());
+
+    }
+
+    public void updateThreadsLeftLabel(int threadsLeft) {
+        availableThreadsLB.setText(String.valueOf(threadsLeft));
     }
 
 
+    public void setMainController(AppController appController) {
+        this.mainController = appController;
+    }
 }
 
 

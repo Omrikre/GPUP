@@ -94,16 +94,25 @@ public class TaskManager {
                         temp.setTargetState(State.IN_PROCESS);
                         System.out.println("ADDED TARGET PROCESS");
                         TargetForWorkerDTO toAdd = new TargetForWorkerDTO(m.getMissionName(), m.getStatus(), temp.getTargetName(), temp.getTargetState().toString(), 0);
+                        if (m.getCompilationFolder() == null)
+                            toAdd.setCredits(temp.getSimCreds());
+                        else toAdd.setCredits(temp.getCompCreds());
                         res.add(toAdd);
                     } else if (temp.getTargetState().equals(State.FINISHED_SUCCESS) ||
                             temp.getTargetState().equals(State.FINISHED_WARNINGS) ||
                             temp.getTargetState().equals(State.FINISHED_FAILURE)) {
                         System.out.println("ADDED TARGET FINISHED");
                         TargetForWorkerDTO toAdd = new TargetForWorkerDTO(m.getMissionName(), m.getStatus(), temp.getTargetName(), temp.getTargetState().toString(), 0);
+                        if (m.getCompilationFolder() == null)
+                            toAdd.setCredits(temp.getSimCreds());
+                        else toAdd.setCredits(temp.getCompCreds());
                         res.add(toAdd);
                     } else if (temp.getTargetState().equals(State.IN_PROCESS)) {
                         System.out.println("ADDED TARGET PROCESS");
                         TargetForWorkerDTO toAdd = new TargetForWorkerDTO(m.getMissionName(), m.getStatus(), temp.getTargetName(), temp.getTargetState().toString(), 0);
+                        if (m.getCompilationFolder() == null)
+                            toAdd.setCredits(temp.getSimCreds());
+                        else toAdd.setCredits(temp.getCompCreds());
                         res.add(toAdd);
                     }
                 }

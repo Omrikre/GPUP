@@ -55,7 +55,7 @@ public class SimulationTask extends Task implements Runnable {
 
         try (Writer out = new BufferedWriter(
                 new OutputStreamWriter(
-                        new FileOutputStream((folder + "\\" + t.getTargetName() + ".log"), true)))) {
+                        new FileOutputStream((folder + "\\" + t.getT().getTargetName() + ".log"), true)))) {
             out.write(log + "\n" + javac + "\n");
         } catch (IOException e) {
             e.printStackTrace();

@@ -75,6 +75,7 @@ public class DashboardRefresher extends TimerTask {
                     Platform.runLater(() -> {
                         try {
                             String responseBody = response.body().string();
+                            System.out.println("USER LIST: " +responseBody);
                             User[] lst = GSON.fromJson(responseBody, User[].class);
                             usersListConsumer.accept(Arrays.asList(lst));
                         } catch (IOException e) {

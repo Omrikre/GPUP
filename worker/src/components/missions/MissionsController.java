@@ -4,6 +4,7 @@ import Engine.DTO.MissionDTO;
 import Engine.DTO.MissionDTOWithoutCB;
 import Engine.DTO.TargetDTOWithoutCB;
 import Engine.DTO.TargetForWorkerDTO;
+import Engine.Enums.MissionState;
 import Engine.Enums.State;
 import Engine.Tasks.CompilationTask;
 import Engine.Tasks.SimulationTask;
@@ -97,11 +98,13 @@ public class MissionsController {
     private RunnableTargetRefresher runnableTargetRefresher;
     private int numOfMissionsInTable;
     private String selectedMission;
+    private String missionStatus;
     private IntegerBinding numCheckBoxesSelected;
     private ObservableList<MissionDTO> OLMissions;
     private ObservableSet<CheckBox> selectedCheckBoxes;
     private ObservableSet<CheckBox> unselectedCheckBoxes;
     private boolean pause = false;
+    private int creds;
 
     private String selectedGraph;
     private Timer timer;
@@ -160,6 +163,10 @@ public class MissionsController {
         typeRootCOL.setStyle("-fx-alignment: CENTER;");
     }
 
+    public void setMainController(AppController appController) {
+        this.mainController = appController;
+    }
+
 
     @FXML
     void singupPR(ActionEvent event) { //send to server
@@ -199,6 +206,10 @@ public class MissionsController {
         });
     }
 
+    public IntegerProperty getThreadsLeft() {
+        return threadsLeft;
+    }
+
     @FXML
     void pausePR(ActionEvent event) {
         pause = true;
@@ -217,45 +228,51 @@ public class MissionsController {
 
     @FXML
     void startPR(ActionEvent event) {
-        pause = false;
-        ifContainsDelete();
-        runningSet.add(selectedMission);
-        String n = selectedMission;
-        System.out.println("MISSION: " + selectedMission);
-        unselectAll();
-        selectedMission = n;
-        String finalUrl = HttpUrl
-                .parse(MISSION_LIST)
-                .newBuilder()
-                .addQueryParameter("name", selectedMission)
-                .addQueryParameter("add-worker", "true")
-                .addQueryParameter("sign-worker", "true")
-                .build()
-                .toString();
+        for (MissionDTO m : OLMissions) {
+            if (m.getMissionName().equals(selectedMission))
+                missionStatus = m.getStatus();
+        }
+        if (missionStatus.equals(MissionState.EXECUTION.toString())) {
+            pause = false;
+            ifContainsDelete();
+            runningSet.add(selectedMission);
+            String n = selectedMission;
+            System.out.println("MISSION: " + selectedMission);
+            unselectAll();
+            selectedMission = n;
+            String finalUrl = HttpUrl
+                    .parse(MISSION_LIST)
+                    .newBuilder()
+                    .addQueryParameter("name", selectedMission)
+                    .addQueryParameter("add-worker", "true")
+                    .addQueryParameter("sign-worker", "true")
+                    .build()
+                    .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        System.out.println(e.getMessage())
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                if (response.code() != 200) {
-                    String responseBody = response.body().string();
+            HttpClientUtil.runAsync(finalUrl, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
                     Platform.runLater(() ->
-                            System.out.println(("signup Fail code: " + response.code()) + " " + responseBody)
+                            System.out.println(e.getMessage())
                     );
-                } else {
-                    Platform.runLater(() -> {
-                        System.out.println("successfully added worker to mission");
-                        //TODO - HERE
-                    });
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    if (response.code() != 200) {
+                        String responseBody = response.body().string();
+                        Platform.runLater(() ->
+                                System.out.println(("signup Fail code: " + response.code()) + " " + responseBody)
+                        );
+                    } else {
+                        Platform.runLater(() -> {
+                            System.out.println("successfully added worker to mission");
+                            //TODO - HERE
+                        });
+                    }
+                }
+            });
+        }
     }
 
     @FXML
@@ -331,10 +348,13 @@ public class MissionsController {
             System.out.println("THREADS LEFT AFTER TASK " + threadsLeft.getValue());
             if (t.getT().getTargetState().equals(State.FINISHED_WARNINGS) || t.getT().getTargetState().equals(State.FINISHED_SUCCESS) || t.getT().getTargetState().equals(State.FINISHED_FAILURE)) {
                 if (isComp) {
-                    t.getT().getCompCreds();
+                    creds = (t.getT().getCompCreds());
+
                     //add comp credits to worker
                 } else {
-                    t.getT().getSimCreds();
+
+                    creds = (t.getT().getSimCreds());
+
                     //add sim credits to worker
                 }
                 //upload updated target to server
@@ -367,6 +387,8 @@ public class MissionsController {
                             );
                         } else {
                             Platform.runLater(() -> {
+                                System.out.println("CREDITS: " + creds);
+                                mainController.setCredits(creds);
                                 System.out.println("uploaded successfully.");
                             });
                         }

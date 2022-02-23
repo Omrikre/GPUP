@@ -20,23 +20,30 @@ import static components.app.HttpResourcesPaths.LOGOUT_PAGE;
 
 public class MainLoginController {
 
-    @FXML private Button loginBT;
-    @FXML private Label userNameLB;
-    @FXML private Label userNameNameLB;
-    @FXML private Label loadResponseLB;
-    @FXML private Label userNameLB1;
-    @FXML private Label numThreadsLB;
-    @FXML private Label userNameLB11;
-    @FXML private Label creditsLB;
+    @FXML
+    private Button loginBT;
+    @FXML
+    private Label userNameLB;
+    @FXML
+    private Label userNameNameLB;
+    @FXML
+    private Label loadResponseLB;
+    @FXML
+    private Label userNameLB1;
+    @FXML
+    private Label numThreadsLB;
+    @FXML
+    private Label userNameLB11;
+    @FXML
+    private Label creditsLB;
     private AppController mainController;
     private boolean loggedIn;
+    private Integer credits;
 
 
-
-
-
-
-    @FXML public void initialize() {
+    @FXML
+    public void initialize() {
+        credits = 0;
         userNameNameLB.setText("-");
         numThreadsLB.setText("-");
         creditsLB.setText("-");
@@ -46,9 +53,9 @@ public class MainLoginController {
     }
 
 
-
-    @FXML void loginPR(ActionEvent event) {
-        if(!loggedIn)
+    @FXML
+    void loginPR(ActionEvent event) {
+        if (!loggedIn)
             mainController.openLoginWin();
         else {
             loggedOut();
@@ -92,6 +99,7 @@ public class MainLoginController {
             }
         });
     }
+
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
@@ -100,8 +108,14 @@ public class MainLoginController {
         loggedIn = true;
         userNameNameLB.setText(userName);
         numThreadsLB.setText(numOfThreads);
+        mainController.setNumThreads(Integer.parseInt(numOfThreads));
         creditsLB.setText("0");
         loginBT.setText("Logout");
         loginBT.setDefaultButton(false);
+    }
+
+    public void setCredits(int credits) {
+        this.credits += credits;
+        creditsLB.setText(this.credits.toString());
     }
 }
